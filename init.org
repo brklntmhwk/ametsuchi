@@ -66,9 +66,6 @@ For simplicity, assume that there are only two sets, 𝐀 and 𝐁, where 𝐀 �
 :END:
 
 **** twist
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Hot-reload Emacs Lisp packages configured with twist.nix
 #+end_quote
@@ -86,8 +83,6 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 :END:
 
 **** use-package
-:PROPERTIES:
-:END:
 #+begin_quote
 A configuration macro for simplifying your .emacs
 #+end_quote
@@ -115,9 +110,6 @@ A configuration macro for simplifying your .emacs
 :END:
 
 **** Directory
-:PROPERTIES:
-:END:
-
 #+begin_src emacs-lisp
   (require 'xdg)
 
@@ -140,9 +132,6 @@ A configuration macro for simplifying your .emacs
   	(concat (xdg-user-dir "DOCUMENTS") "/emacs/"))
 #+end_src
 **** custom
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tools for declaring and initializing options
 #+end_quote
@@ -154,9 +143,6 @@ tools for declaring and initializing options
   	(load custom-file :no-error-if-file-is-missing))
 #+end_src
 **** no-littering
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Help keeping ~/.config/emacs clean
 #+end_quote
@@ -173,9 +159,6 @@ Help keeping ~/.config/emacs clean
 :END:
 
 **** edebug
-:PROPERTIES:
-:END:
-
 #+begin_quote
 a source-level debugger for Emacs Lisp
 #+end_quote
@@ -186,9 +169,6 @@ a source-level debugger for Emacs Lisp
   	(setq edebug-inhibit-emacs-lisp-mode-bindings t))
 #+end_src
 **** gcmh
-:PROPERTIES:
-:END:
-
 #+begin_quote
 The Garbage Collector Magic Hack
 #+end_quote
@@ -208,9 +188,6 @@ The Garbage Collector Magic Hack
 :END:
 
 **** toggle-map
-:PROPERTIES:
-:END:
-
 Eight looks like going back and forth between two states as in its shape,"8".
 #+begin_src emacs-lisp
   (defvar toggle-prefix "<f8>"
@@ -234,9 +211,6 @@ Eight looks like going back and forth between two states as in its shape,"8".
   (keymap-global-set toggle-prefix 'toggle-map-prefix)
 #+end_src
 **** repeat
-:PROPERTIES:
-:END:
-
 #+begin_quote
 convenient way to repeat the previous command
 #+end_quote
@@ -250,9 +224,6 @@ convenient way to repeat the previous command
 :END:
 
 **** cl-lib
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Common Lisp extensions for Emacs
 #+end_quote
@@ -266,9 +237,6 @@ Common Lisp extensions for Emacs
 :CUSTOM_ID: help
 :END:
 **** casual
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Transient user interfaces for various modes
 #+end_quote
@@ -287,9 +255,6 @@ Transient user interfaces for various modes
   				 ("M-?" . casual-image-tmenu))))
 #+end_src
 **** help
-:PROPERTIES:
-:END:
-
 #+begin_quote
 help commands for Emacs
 #+end_quote
@@ -299,9 +264,6 @@ help commands for Emacs
   	(help-window-keep-selected t))
 #+end_src
 **** helpful
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A better Emacs *help* buffer
 #+end_quote
@@ -319,9 +281,6 @@ A better Emacs *help* buffer
   	 ("C-d" .  helpful-at-point)))
 #+end_src
 **** transient
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Transient commands
 #+end_quote
@@ -346,9 +305,6 @@ Transient commands
   	(keymap-set toggle-map "?" '("Transient help" . my/toggle-transient)))
 #+end_src
 ***** transient-posframe
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Using posframe to show transient
 #+end_quote
@@ -362,9 +318,6 @@ Using posframe to show transient
   ;; 	(transient-posframe-mode 1))
 #+end_src
 **** woman
-:PROPERTIES:
-:END:
-
 #+begin_quote
 browse UN*X manual pages `wo (without) man'
 #+end_quote
@@ -381,9 +334,6 @@ browse UN*X manual pages `wo (without) man'
 :CUSTOM_ID: window-management
 :END:
 **** ace-window
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Quickly switch windows in Emacs
 #+end_quote
@@ -416,9 +366,6 @@ Quickly switch windows in Emacs
   					(?? aw-show-dispatch-help))))
 #+end_src
 **** popper
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs minor-mode to summon and dismiss buffers easily.
 #+end_quote
@@ -460,9 +407,6 @@ Emacs minor-mode to summon and dismiss buffers easily.
   								("~" . popper-toggle-type))))
 #+end_src
 **** tab-bar
-:PROPERTIES:
-:END:
-
 #+begin_quote
 frame-local tabs with named persistent window configurations
 #+end_quote
@@ -479,10 +423,6 @@ frame-local tabs with named persistent window configurations
   	:hook (after-init-hook . tab-bar-history-mode))
 #+end_src
 **** window
-:PROPERTIES:
-:CUSTOM_ID: window
-:END:
-
 #+begin_quote
 GNU Emacs window commands aside from those written in C
 #+end_quote
@@ -509,9 +449,6 @@ GNU Emacs window commands aside from those written in C
   			(pixel-scroll-down (scroll-half-window-height)))))
 #+end_src
 **** winner
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Restore old window configurations
 #+end_quote
@@ -534,9 +471,6 @@ Restore old window configurations
 :END:
 
 **** buffer.c
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Buffer manipulation primitives for GNU Emacs.
 #+end_quote
@@ -555,9 +489,6 @@ Buffer manipulation primitives for GNU Emacs.
   							)
 #+end_src
 **** frame.c
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Generic frame functions.
 #+end_quote
@@ -565,9 +496,6 @@ Generic frame functions.
   (cl-pushnew '(internal-border-width . 16) default-frame-alist :test #'equal)
 #+end_src
 **** xdisp.c
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Display generation from window structure and buffer text.
 #+end_quote
@@ -589,9 +517,6 @@ Display generation from window structure and buffer text.
   							scroll-conservatively 1)
 #+end_src
 **** fontaine
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Set Emacs font configurations using presets
 #+end_quote
@@ -619,9 +544,6 @@ Set Emacs font configurations using presets
   	(add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
 **** frame
-:PROPERTIES:
-:END:
-
 #+begin_quote
 multi-frame management independent of window systems
 #+end_quote
@@ -635,9 +557,6 @@ multi-frame management independent of window systems
   	(blink-cursor-mode -1))
 #+end_src
 **** modus-themes
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Highly accessible themes for GNU Emacs, conforming with the highest standard for colour contrast between background and foreground values (WCAG AAA).
 #+end_quote
@@ -697,9 +616,6 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
   	(modus-themes-load-theme 'modus-vivendi-tinted))
 #+end_src
 **** nerd-icons
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs Nerd Font Icons Library
 #+end_quote
@@ -709,9 +625,6 @@ Emacs Nerd Font Icons Library
 (use-package nerd-icons	:ensure t)
 #+end_src
 ***** nerd-icons-completion
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Icons for completion via nerd-icons
 #+end_quote
@@ -723,9 +636,6 @@ Icons for completion via nerd-icons
   	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 #+end_src
 ***** nerd-icons-corfu
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Icons for corfu via nerd-icons
 #+end_quote
@@ -737,9 +647,6 @@ Icons for corfu via nerd-icons
   	(add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
 ***** nerd-icons-dired
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Icons for dired via nerd-icons
 #+end_quote
@@ -750,9 +657,6 @@ Icons for dired via nerd-icons
   	(dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 **** olivetti
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs minor mode to automatically balance window margins
 #+end_quote
@@ -766,9 +670,6 @@ Emacs minor mode to automatically balance window margins
   		org-mode) . olivetti-mode))
 #+end_src
 **** page-break-lines
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs: display ugly ^L page breaks as tidy horizontal lines
 #+end_quote
@@ -791,9 +692,6 @@ Emacs: display ugly ^L page breaks as tidy horizontal lines
 :CUSTOM_ID: lines
 :END:
 **** buffer.c
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Buffer manipulation primitives for GNU Emacs.
 #+end_quote
@@ -826,9 +724,6 @@ Buffer manipulation primitives for GNU Emacs.
   								mode-line-end-spaces))
 #+end_src
 **** breadcrumb
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs headerline indication of where you are in a large project
 #+end_quote
@@ -840,9 +735,6 @@ Emacs headerline indication of where you are in a large project
   	:hook (after-init-hook . breadcrumb-mode))
 #+end_src
 **** hide-mode-line
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An Emacs plugin that hides (or masks) the current buffer's mode-line
 #+end_quote
@@ -855,9 +747,6 @@ An Emacs plugin that hides (or masks) the current buffer's mode-line
   	 ‎turn-off-hide-mode-line-mode‎))
 #+end_src
 **** minions
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A minor-mode menu for the mode line
 #+end_quote
@@ -871,9 +760,6 @@ A minor-mode menu for the mode line
   	:hook (after-init-hook . minions-mode))
 #+end_src
 **** mlscroll
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Lightweight scrollbar for the Emacs mode line
 #+end_quote
@@ -890,9 +776,6 @@ Lightweight scrollbar for the Emacs mode line
   		(mlscroll-mode 1)))
 #+end_src
 **** moody
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Tabs and ribbons for the mode-line
 #+end_quote
@@ -910,9 +793,6 @@ Tabs and ribbons for the mode-line
   											 (moody-replace-vc-mode))))
 #+end_src
 **** which-func
-:PROPERTIES:
-:END:
-
 #+begin_quote
 print current function in mode line
 #+end_quote
@@ -935,9 +815,6 @@ print current function in mode line
 :CUSTOM_ID: completion
 :END:
 **** cape
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🦸cape.el - Completion At Point Extensions
 #+end_quote
@@ -1000,9 +877,6 @@ print current function in mode line
   		(keymap-set cape-capf-prefix-map "?" #'my/cape-capf-transient)))
 #+end_src
 **** completion-preview
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Preview completion with inline overlay
 #+end_quote
@@ -1016,9 +890,6 @@ Preview completion with inline overlay
   				("C-e" . completions-preview-insert)))
 #+end_src
 **** consult
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🔍 consult.el - Consulting completing-read
 #+end_quote
@@ -1058,9 +929,6 @@ Preview completion with inline overlay
   	:hook (completion-list-mode-hook . consult-preview-at-point-mode))
 #+end_src
 ***** consult-dir
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Insert paths into the minibuffer prompt in Emacs
 #+end_quote
@@ -1078,9 +946,6 @@ Insert paths into the minibuffer prompt in Emacs
   	((add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)))
 #+end_src
 ***** consult-gh
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
 #+end_quote
@@ -1106,9 +971,6 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
   	 (consult-gh-enable-default-keybindings)))
 #+end_src
 ***** consult-gh-embark
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Embark Actions for consult-gh
 #+end_quote
@@ -1120,8 +982,7 @@ Embark Actions for consult-gh
   	(consult-gh-embark-mode 1))
 #+end_src
 ***** consult-gh-transient
-
-#+begin_quote
+#+begin_quo
 Transient Menu for consult-gh
 #+end_quote
 #+begin_src emacs-lisp
@@ -1132,9 +993,6 @@ Transient Menu for consult-gh
   	(consult-gh-default-interactive-command #'consult-gh-transient))
 #+end_src
 ***** consult-imenu
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Consult commands for imenu
 #+end_quote
@@ -1147,9 +1005,6 @@ Consult commands for imenu
   				("I" . consult-imenu-multi)))
 #+end_src
 ***** consult-xref
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Xref integration for Consult
 #+end_quote
@@ -1163,9 +1018,6 @@ Xref integration for Consult
   	(setq xref-show-definitions-function #'consult-xref))
 #+end_src
 **** corfu
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🏝️ corfu.el - COmpletion in Region FUnction
 #+end_quote
@@ -1199,9 +1051,6 @@ Xref integration for Consult
   			(corfu-mode 1))))
 #+end_src
 ***** corfu-history
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Sorting by history for Corfu
 #+end_quote
@@ -1214,9 +1063,6 @@ Sorting by history for Corfu
   		(add-to-list 'savehist-additional-variables 'corfu-history)))
 #+end_src
 ***** corfu-popupinfo
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Candidate information popup for Corfu
 #+end_quote
@@ -1229,9 +1075,6 @@ Candidate information popup for Corfu
   	:hook (corfu-mode-hook . corfu-popupinfo-mode))
 #+end_src
 **** embark
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs Mini-Buffer Actions Rooted in Keymaps
 #+end_quote
@@ -1256,9 +1099,6 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
   				 ("b" . embark-bindings))))
 #+end_src
 ***** emburk-consult
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Consult integration for Embark
 #+end_quote
@@ -1268,9 +1108,6 @@ Consult integration for Embark
   	:hook (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 ***** emburk-org
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Embark targets and actions for Org Mode
 #+end_quote
@@ -1283,9 +1120,6 @@ Embark targets and actions for Org Mode
   				 ("e" . org-edit-special))))
 #+end_src
 **** indent
-:PROPERTIES:
-:END:
-
 #+begin_quote
 indentation commands for Emacs
 #+end_quote
@@ -1295,9 +1129,6 @@ indentation commands for Emacs
   	(tab-always-indent 'complete))
 #+end_src
 **** marginalia
-:PROPERTIES:
-:END:
-
 #+begin_quote
 📜 marginalia.el - Marginalia in the minibuffer
 #+end_quote
@@ -1307,9 +1138,6 @@ indentation commands for Emacs
   	:hook (after-init-hook . marginalia-mode))
 #+end_src
 **** minibuffer
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Minibuffer and completion functions
 #+end_quote
@@ -1319,9 +1147,6 @@ Minibuffer and completion functions
   	(completion-cycle-threshold 3))
 #+end_src
 **** orderless
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs completion style that matches multiple regexps in any order
 #+end_quote
@@ -1334,9 +1159,6 @@ Emacs completion style that matches multiple regexps in any order
   	(completion-category-overrides nil))
 #+end_src
 **** vertico
-:PROPERTIES:
-:END:
-
 #+begin_quote
 💫 vertico.el - VERTical Interactive COmpletion
 #+end_quote
@@ -1349,9 +1171,6 @@ Emacs completion style that matches multiple regexps in any order
   	:hook (after-init-hook . vertico-mode))
 #+end_src
 ***** vertico-directory
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Ido-like directory navigation for Vertico
 #+end_quote
@@ -1366,9 +1185,6 @@ Ido-like directory navigation for Vertico
   	:hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 #+end_src
 ***** vertico-multiform
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Configure Vertico in different forms per command
 #+end_quote
@@ -1388,9 +1204,6 @@ Configure Vertico in different forms per command
   	(vertico-multiform-mode 1))
 #+end_src
 ***** vertico-posframe
-:PROPERTIES:
-:END:
-
 #+begin_quote
 vertico-posframe is an vertico extension, which lets vertico use posframe to show its candidate menu.
 #+end_quote
@@ -1412,9 +1225,6 @@ vertico-posframe is an vertico extension, which lets vertico use posframe to sho
 :CUSTOM_ID: editing
 :END:
 **** abbrev
-:PROPERTIES:
-:END:
-
 #+begin_quote
 abbrev mode commands for Emacs
 #+end_quote
@@ -1439,9 +1249,6 @@ abbrev mode commands for Emacs
   			("imho" "In my humble opinion"))))
 #+end_src
 **** avy
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Jump to things in Emacs tree-style
 #+end_quote
@@ -1500,9 +1307,6 @@ Jump to things in Emacs tree-style
   		(setf (alist-get ?. avy-dispatch-alist) #'my/avy-action-embark)))
 #+end_src
 **** deadgrep
-:PROPERTIES:
-:END:
-
 #+begin_quote
 fast, friendly searching with ripgrep and Emacs
 #+end_quote
@@ -1522,9 +1326,6 @@ fast, friendly searching with ripgrep and Emacs
   				 ("d" . deadgrep))))
 #+end_src
 **** delsel
-:PROPERTIES:
-:END:
-
 #+begin_quote
 delete selection if you insert
 #+end_quote
@@ -1533,9 +1334,6 @@ delete selection if you insert
   	:hook (after-init-hook . delete-selection-mode))
 #+end_src
 **** elec-pair
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Automatically insert matching delimiters
 #+end_quote
@@ -1544,9 +1342,6 @@ Automatically insert matching delimiters
   	:hook (after-init-hook . electric-pair-mode))
 #+end_src
 **** grugru
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Rotate text at point in Emacs.
 #+end_quote
@@ -1586,9 +1381,6 @@ Rotate text at point in Emacs.
   		 (symbol "const" "let" "static"))))
 #+end_src
 **** hippie-exp
-:PROPERTIES:
-:END:
-
 #+begin_quote
 expand text trying various ways to find its expansion
 #+end_quote
@@ -1606,9 +1398,6 @@ expand text trying various ways to find its expansion
   	([remap dabbrev-expand] . hippie-expand))
 #+end_src
 **** isearch
-:PROPERTIES:
-:END:
-
 #+begin_quote
 incremental search minor mode
 #+end_quote
@@ -1619,9 +1408,6 @@ incremental search minor mode
   	(isearch-lazy-count t))
 #+end_src
 **** jinx
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🪄 Enchanted Spell Checker
 #+end_quote
@@ -1638,9 +1424,6 @@ incremental search minor mode
   	 ("C-M-$" . jinx-correct-nearest)))
 #+end_src
 **** link-hint
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Pentadactyl-like Link Hinting in Emacs with Avy
 #+end_quote
@@ -1653,9 +1436,6 @@ Pentadactyl-like Link Hinting in Emacs with Avy
   				 ("l c" . link-hint-copy-link))))
 #+end_src
 **** markdown-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs Markdown Mode
 #+end_quote
@@ -1678,9 +1458,6 @@ Emacs Markdown Mode
   				("'" . markdown-edit-code-block)))
 #+end_src
 **** move-dup
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
 #+end_quote
@@ -1695,9 +1472,6 @@ Emacs minor mode for Eclipse-like moving and duplications of lines or selections
   	:hook (after-init-hook . global-move-dup-mode))
 #+end_src
 **** pixel-scroll
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Scroll a line smoothly
 #+end_quote
@@ -1716,9 +1490,6 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
   	:hook (after-init-hook . pixel-scroll-precision-mode))
 #+end_src
 **** puni
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Structured editing (soft deletion, expression navigating & manipulating) that supports many major modes out of the box.
 #+end_quote
@@ -1744,9 +1515,6 @@ Structured editing (soft deletion, expression navigating & manipulating) that su
   				'("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
 #+end_src
 **** replace
-:PROPERTIES:
-:END:
-
 #+begin_quote
 replace commands for Emacs
 #+end_quote
@@ -1757,9 +1525,6 @@ replace commands for Emacs
   				("o" . occur)))
 #+end_src
 **** savehist
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Save minibuffer history
 #+end_quote
@@ -1768,9 +1533,6 @@ Save minibuffer history
   	:hook (after-init-hook . savehist-mode))
 #+end_src
 **** saveplace
-:PROPERTIES:
-:END:
-
 #+begin_quote
 automatically save place in files
 #+end_quote
@@ -1779,9 +1541,6 @@ automatically save place in files
   	:hook (after-init-hook . save-place-mode))
 #+end_src
 **** separedit
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Edit comment or string/docstring or code block inside them in separate buffer with your favorite mode
 #+end_quote
@@ -1795,9 +1554,6 @@ Edit comment or string/docstring or code block inside them in separate buffer wi
   				("'" . separedit)))
 #+end_src
 **** simple
-:PROPERTIES:
-:END:
-
 #+begin_quote
 basic editing commands for Emacs
 #+end_quote
@@ -1809,9 +1565,6 @@ basic editing commands for Emacs
   	(line-number-mode nil))
 #+end_src
 **** string-inflection
-:PROPERTIES:
-:END:
-
 #+begin_quote
 underscore -> UPCASE -> CamelCase conversion of names
 #+end_quote
@@ -1825,9 +1578,6 @@ underscore -> UPCASE -> CamelCase conversion of names
   								("-" . string-inflection-all-cycle))))
 #+end_src
 **** text-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 text mode, and its idiosyncratic commands
 #+end_quote
@@ -1837,9 +1587,6 @@ text mode, and its idiosyncratic commands
   	(text-mode-ispell-word-completion nil)) ; recommended for cape
 #+end_src
 **** tempel
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🏛️ TempEl - Simple templates for Emacs
 #+end_quote
@@ -1859,9 +1606,6 @@ text mode, and its idiosyncratic commands
   				 ("M-RET". tempel-done))))
 #+end_src
 **** visual-replace
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A nicer interface for query-replace on Emacs
 #+end_quote
@@ -1900,9 +1644,6 @@ A nicer interface for query-replace on Emacs
   		(keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
 #+end_src
 **** vundo
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Visualize the undo tree.
 #+end_quote
@@ -1924,9 +1665,6 @@ Visualize the undo tree.
 :CUSTOM_ID: visual-aid
 :END:
 **** colorful-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🎨Preview any color in your buffer
 #+end_quote
@@ -1951,9 +1689,6 @@ By default, the following major modes are included in `global-colorful-modes`:
   	(add-to-list 'global-colorful-modes 'helpful-mode))
 #+end_src
 **** display-fill-column-indicator
-:PROPERTIES:
-:END:
-
 #+begin_quote
 interface for display-fill-column-indicator
 #+end_quote
@@ -1965,9 +1700,6 @@ interface for display-fill-column-indicator
   		text-mode-hook) . display-fill-column-indicator-mode))
 #+end_src
 **** display-line-numbers
-:PROPERTIES:
-:END:
-
 #+begin_quote
 interface for display-line-numbers
 #+end_quote
@@ -1998,9 +1730,6 @@ interface for display-line-numbers
   		(add-hook mode (lambda () (display-line-numbers-mode 0)))))
 #+end_src
 **** goggles
-:PROPERTIES:
-:END:
-
 #+begin_quote
 goggles.el - Pulse modified region
 #+end_quote
@@ -2016,9 +1745,6 @@ goggles.el - Pulse modified region
   		text-mode-hook) . goggles-mode))
 #+end_src
 **** hl-line
-:PROPERTIES:
-:END:
-
 #+begin_quote
 highlight the current line
 #+end_quote
@@ -2034,9 +1760,6 @@ highlight the current line
   		dired-mode-hook) . hl-line-mode))
 #+end_src
 **** hl-todo
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Highlight TODO keywords
 #+end_quote
@@ -2064,9 +1787,6 @@ Highlight TODO keywords
   								("<" . hl-todo-previous))))
 #+end_src
 **** paren
-:PROPERTIES:
-:END:
-
 #+begin_quote
 highlight matching paren
 #+end_quote
@@ -2078,9 +1798,6 @@ highlight matching paren
   	:hook (after-init-hook . show-paren-mode))
 #+end_src
 **** rainbow-delimiters
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs rainbow delimiters mode
 #+end_quote
@@ -2095,9 +1812,6 @@ Emacs rainbow delimiters mode
   		lisp-mode-hook) . rainbow-delimiters-mode))
 #+end_src
 **** valign
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Pixel-perfect visual alignment for Org and Markdown tables.
 #+end_quote
@@ -2110,9 +1824,6 @@ Pixel-perfect visual alignment for Org and Markdown tables.
   	:hook ((markdown-mode-hook org-mode-hook) . valign-mode))
 #+end_src
 **** visual-fill-column
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs mode for wrapping visual-line-mode buffers at fill-column.
 #+end_quote
@@ -2126,9 +1837,6 @@ Emacs mode for wrapping visual-line-mode buffers at fill-column.
   	(visual-fill-column-width 100))
 #+end_src
 **** whitespace
-:PROPERTIES:
-:END:
-
 #+begin_quote
 minor mode to visualize TAB, (HARD) SPACE, NEWLINE
 #+end_quote
@@ -2157,9 +1865,6 @@ minor mode to visualize TAB, (HARD) SPACE, NEWLINE
 :CUSTOM_ID: file-and-directory
 :END:
 **** filelock.c
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Lock files for editing.
 #+end_quote
@@ -2168,9 +1873,6 @@ Lock files for editing.
   (setq create-lockfiles nil)
 #+end_src
 **** activities
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their windows, buffers)
 #+end_quote
@@ -2214,9 +1916,6 @@ Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their 
   		(add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
 #+end_src
 **** dashboard
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An extensible emacs dashboard
 #+end_quote
@@ -2277,9 +1976,6 @@ An extensible emacs dashboard
   	(dashboard-setup-startup-hook))
 #+end_src
 **** dired
-:PROPERTIES:
-:END:
-
 #+begin_quote
 directory-browsing commands
 #+end_quote
@@ -2297,9 +1993,6 @@ directory-browsing commands
   	(dired-mode-hook . dired-hide-details-mode))
 #+end_src
 ***** dired-collapse
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Collapse unique nested paths in dired listing
 #+end_quote
@@ -2312,9 +2005,6 @@ Collapse unique nested paths in dired listing
   	(dired-mode-hook . dired-collapse-mode))
 #+end_src
 ***** dired-filter
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Ibuffer-like filtering for dired
 #+end_quote
@@ -2366,9 +2056,6 @@ Ibuffer-like filtering for dired
   	 (dired-mode-hook . dired-filter-group-mode)))
 #+end_src
 ***** dired-hacks-utils
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Utilities and helpers for dired-hacks collection
 #+end_quote
@@ -2383,9 +2070,6 @@ Utilities and helpers for dired-hacks collection
   				("p" . dired-hacks-previous-file)))
 #+end_src
 ***** dired-open-with
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An 'Open with' dialog for opening files in external applications from Dired.
 #+end_quote
@@ -2399,9 +2083,6 @@ An 'Open with' dialog for opening files in external applications from Dired.
   				 ("M-RET" . dired-open-with))))
 #+end_src
 ***** dired-ranger
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Implementation of useful ranger features for dired
 #+end_quote
@@ -2419,9 +2100,6 @@ Implementation of useful ranger features for dired
   				 ("y" . dired-ranger-paste))))
 #+end_src
 ***** dired-subtree
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Insert subdirectories in a tree-like fashion
 #+end_quote
@@ -2439,9 +2117,6 @@ Insert subdirectories in a tree-like fashion
   				("b" . dired-subtree-remove)))
 #+end_src
 **** envrc
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs support for direnv which operates buffer-locally
 #+end_quote
@@ -2453,9 +2128,6 @@ Emacs support for direnv which operates buffer-locally
   	:hook (after-init-hook . envrc-global-mode))
 #+end_src
 **** files
-:PROPERTIES:
-:END:
-
 #+begin_quote
 file input and output commands
 #+end_quote
@@ -2480,9 +2152,6 @@ file input and output commands
   		(keymap-set embark-file-map "M-RET" #'my/find-file-vertically)))
 #+end_src
 **** project
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Operations on the current project
 #+end_quote
@@ -2500,9 +2169,6 @@ Operations on the current project
   		(cadr project)))
 #+end_src
 **** recentf
-:PROPERTIES:
-:END:
-
 #+begin_quote
 keep track of recently opened files
 #+end_quote
@@ -2519,9 +2185,6 @@ keep track of recently opened files
   	(after-init-hook . recentf-mode))
 #+end_src
 **** startup
-:PROPERTIES:
-:END:
-
 #+begin_quote
 process Emacs shell arguments
 #+end_quote
@@ -2542,9 +2205,6 @@ process Emacs shell arguments
 :CUSTOM_ID: development
 :END:
 **** aggressive-indent-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs minor mode that keeps your code always indented. More reliable than electric-indent-mode.
 #+end_quote
@@ -2555,9 +2215,6 @@ Emacs minor mode that keeps your code always indented. More reliable than electr
   	:hook (emacs-lisp-mode-hook . aggressive-indent-mode))
 #+end_src
 **** compile
-:PROPERTIES:
-:END:
-
 #+begin_quote
 run compiler as inferior of Emacs, parse error messages
 #+end_quote
@@ -2575,9 +2232,6 @@ run compiler as inferior of Emacs, parse error messages
   	(add-hook 'compilation-filter-hook #'my/colorize-compilation-buffer))
 #+end_src
 **** dumb-jump
-:PROPERTIES:
-:END:
-
 #+begin_quote
 an Emacs "jump to definition" package for 50+ languages
 #+end_quote
@@ -2591,9 +2245,6 @@ an Emacs "jump to definition" package for 50+ languages
   	(xref-backend-functions . dumb-jump-xref-activate))
 #+end_src
 **** eglot
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A client for Language Server Protocol servers
 #+end_quote
@@ -2630,9 +2281,6 @@ A client for Language Server Protocol servers
   		(cl-pushnew entry eglot-server-programs :test #'equal)))
 #+end_src
 ***** eglot-booster
-:PROPERTIES:
-:END:
-
 #+begin_quote
 boost eglot using emacs-lsp-booster
 #+end_quote
@@ -2644,9 +2292,6 @@ boost eglot using emacs-lsp-booster
   	:hook (eglot-managed-mode-hook . eglot-booster-mode))
 #+end_src
 ***** eglot-tempel
-:PROPERTIES:
-:END:
-
 #+begin_quote
 bridge for tempel templates with eglot
 #+end_quote
@@ -2658,9 +2303,6 @@ bridge for tempel templates with eglot
   	:hook (eglot-managed-mode-hook . eglot-tempel-mode))
 #+end_src
 **** eldoc
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Show function arglist or variable docstring in echo area
 #+end_quote
@@ -2672,9 +2314,6 @@ Show function arglist or variable docstring in echo area
   	:hook (after-init-hook . global-eldoc-mode))
 #+end_src
 **** elysium
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Automatically apply AI-generated code changes in Emacs
 #+end_quote
@@ -2690,9 +2329,6 @@ Automatically apply AI-generated code changes in Emacs
   			 ("q" "Elysium query" elysium-query)])))
 #+end_src
 **** flymake
-:PROPERTIES:
-:END:
-
 #+begin_quote
 a universal on-the-fly syntax checker
 #+end_quote
@@ -2709,9 +2345,6 @@ a universal on-the-fly syntax checker
   								("p" . flymake-goto-prev-error))))
 #+end_src
 **** reformatter
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Define commands which run reformatters on the current Emacs buffer
 #+end_quote
@@ -2734,9 +2367,6 @@ Define commands which run reformatters on the current Emacs buffer
   		:args (list "-")))
 #+end_src
 **** repl-toggle
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Switch to/from repl buffer for current major-mode
 #+end_quote
@@ -2748,9 +2378,6 @@ Switch to/from repl buffer for current major-mode
   	(rtog/goto-buffer-fun #'pop-to-buffer))
 #+end_src
 **** treesit
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree-sitter utilities
 #+end_quote
@@ -2762,9 +2389,6 @@ tree-sitter utilities
 #+end_src
 **** Language-specific modes
 ***** astro-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs major mode for Astro templates
 #+end_quote
@@ -2776,9 +2400,6 @@ Emacs major mode for Astro templates
   	:hook (astro-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** dockerfile-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree-sitter support for Dockerfiles
 #+end_quote
@@ -2793,9 +2414,6 @@ tree-sitter support for Dockerfiles
   	(dockerfile-ts-mode-hook . dprint-on-save-mode))
 #+end_src
 ***** just-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs mode for justfiles
 #+end_quote
@@ -2806,9 +2424,6 @@ Emacs mode for justfiles
   	:mode "/justfile\\'")
 #+end_src
 ***** lua-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Major mode for editing Lua files
 #+end_quote
@@ -2821,9 +2436,6 @@ Major mode for editing Lua files
   	(lua-ts-mode-hook . stylua-on-save-mode))
 #+end_src
 ***** nix-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An Emacs major mode for editing Nix expressions, powered by tree-sitter
 #+end_quote
@@ -2837,9 +2449,6 @@ An Emacs major mode for editing Nix expressions, powered by tree-sitter
   	(nix-ts-mode-hook . nixfmt-on-save-mode))
 #+end_src
 ***** nix-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 An Emacs major mode for editing Nix expressions.
 #+end_quote
@@ -2850,9 +2459,6 @@ An Emacs major mode for editing Nix expressions.
   	:commands nix-repl)
 #+end_src
 ***** rust-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree-sitter support for Rust
 #+end_quote
@@ -2865,9 +2471,6 @@ tree-sitter support for Rust
   	(rust-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** toml-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree-sitter support for TOML
 #+end_quote
@@ -2880,9 +2483,6 @@ tree-sitter support for TOML
   	(toml-ts-mode-hook . dprint-on-save-mode))
 #+end_src
 ***** typescript-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree sitter support for TypeScript
 #+end_quote
@@ -2893,9 +2493,6 @@ tree sitter support for TypeScript
   	:hook (typescript-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** web-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 web template editing mode for emacs
 #+end_quote
@@ -2913,9 +2510,6 @@ web template editing mode for emacs
   	(web-mode-hook . eglot-ensure))
 #+end_src
 ***** yaml-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 tree-sitter support for YAML
 #+end_quote
@@ -2928,9 +2522,6 @@ tree-sitter support for YAML
   	(yaml-ts-mode-hook . yamlfmt-on-save-mode))
 #+end_src
 ***** zig-ts-mode
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs Zig Tree Sitter Mode
 #+end_quote
@@ -2947,9 +2538,6 @@ Emacs Zig Tree Sitter Mode
 :CUSTOM_ID: version-control-system
 :END:
 **** blamer
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+end_quote
@@ -2974,9 +2562,6 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
   	(global-blamer-mode 1))
 #+end_src
 **** diff-hl
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs package for highlighting uncommitted changes
 #+end_quote
@@ -2996,9 +2581,6 @@ Emacs package for highlighting uncommitted changes
   		(add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)))
 #+end_src
 **** forge
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Work with Git forges from the comfort of Magit
 #+end_quote
@@ -3013,9 +2595,6 @@ Work with Git forges from the comfort of Magit
   	(forge-add-pullreq-refspec 'ask))
 #+end_src
 **** magit
-:PROPERTIES:
-:END:
-
 #+begin_quote
 It's Magit! A Git Porcelain inside Emacs.
 #+end_quote
@@ -3035,9 +2614,6 @@ It's Magit! A Git Porcelain inside Emacs.
   				 ("f" . magit-file-dispatch))))
 #+end_src
 ***** magit-delta
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Use Delta when displaying diffs in Magit
 #+end_quote
@@ -3050,9 +2626,6 @@ Use Delta when displaying diffs in Magit
   	:hook (magit-mode . magit-delta-mode))
 #+end_src
 ***** magit-todos
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 #+end_quote
@@ -3069,9 +2642,6 @@ Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 :CUSTOM_ID: terminal
 :END:
 **** eat
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emulate A Terminal, in a region, in a buffer and in Eshell
 #+end_quote
@@ -3087,9 +2657,6 @@ Emulate A Terminal, in a region, in a buffer and in Eshell
   				 ("t" . eat-preject))))
 #+end_src
 **** exec-path-from-shell
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Make Emacs use the $PATH set up by the user's shell
 #+end_quote
@@ -3108,9 +2675,6 @@ Make Emacs use the $PATH set up by the user's shell
 :CUSTOM_ID: org-mode
 :END:
 **** org
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Outline-based notes management and organizer
 #+end_quote
@@ -3152,9 +2716,6 @@ Outline-based notes management and organizer
   		(setq-local tab-width 8)))
 #+end_src
 **** dslide
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Present anything Emacs can do with programmable, extensible, configurable slides & presentation steps made from org mode headings
 #+end_quote
@@ -3173,9 +2734,6 @@ Present anything Emacs can do with programmable, extensible, configurable slides
   	(dslide-start-hook . hide-mode-line-mode))
 #+end_src
 **** org-agenda
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Dynamic task and appointment lists for Org
 #+end_quote
@@ -3201,9 +2759,6 @@ Dynamic task and appointment lists for Org
   	:hook (org-agenda-finalize-hook . hl-line-mode))
 #+end_src
 ***** org-super-agenda
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Supercharge your Org daily/weekly agenda by grouping items
 #+end_quote
@@ -3220,9 +2775,6 @@ Supercharge your Org daily/weekly agenda by grouping items
   	(org-super-agenda-mode 1))
 #+end_src
 **** org-anki
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Sync org notes to Anki via AnkiConnect
 #+end_quote
@@ -3246,9 +2798,6 @@ Sync org notes to Anki via AnkiConnect
   				("U" . org-anki-update-dir)))
 #+end_src
 **** org-appear
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Toggle visibility of hidden Org mode element parts upon entering and leaving an element
 #+end_quote
@@ -3259,9 +2808,6 @@ Toggle visibility of hidden Org mode element parts upon entering and leaving an 
   	:hook (org-mode-hook . org-appear-mode))
 #+end_src
 **** org-autolist
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Making it even easier to edit lists in org-mode!
 #+end_quote
@@ -3272,9 +2818,6 @@ Making it even easier to edit lists in org-mode!
   	:hook (org-mode-hook . org-autolist-mode))
 #+end_src
 **** org-babel(ob)
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Working with Code Blocks in Org
 #+end_quote
@@ -3298,9 +2841,6 @@ Working with Code Blocks in Org
   		 (sqlite . t))))
 #+end_src
 **** org-bookmark-heading
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs bookmark support for Org-mode
 #+end_quote
@@ -3313,9 +2853,6 @@ Emacs bookmark support for Org-mode
   	(org-bookmark-heading-make-ids t))
 #+end_src
 **** org-capture
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Fast note taking in Org
 #+end_quote
@@ -3333,9 +2870,6 @@ Fast note taking in Org
   				("c" . org-capture)))
 #+end_src
 **** org-clock
-:PROPERTIES:
-:END:
-
 #+begin_quote
 The time clocking code for Org mode
 #+end_quote
@@ -3354,9 +2888,6 @@ The time clocking code for Org mode
   	(org-clock-persist-query-save t))
 #+end_src
 **** org-clock-convenience
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Convenience functions to work with emacs org mode clocking from the agenda view
 #+end_quote
@@ -3370,9 +2901,6 @@ Convenience functions to work with emacs org mode clocking from the agenda view
   				("M-[" . org-clock-convenience-timestamp-down)))
 #+end_src
 **** org-crypt
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Public Key Encryption for Org Entries
 #+end_quote
@@ -3387,9 +2915,6 @@ Public Key Encryption for Org Entries
   		(add-hook 'before-save-hook #'org-encrypt-entries nil t)))
 #+end_src
 **** org-download
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Drag and drop images to Emacs org-mode
 #+end_quote
@@ -3406,9 +2931,6 @@ Drag and drop images to Emacs org-mode
   	:hook (dired-mode-hook . org-download-enable))
 #+end_src
 **** org-element
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Parser for Org Syntax
 #+end_quote
@@ -3420,9 +2942,6 @@ Parser for Org Syntax
   	(setq org-element-cache-persistent nil))
 #+end_src
 **** org-habit
-:PROPERTIES:
-:END:
-
 #+begin_quote
 The habit tracking code for Org
 #+end_quote
@@ -3437,9 +2956,6 @@ The habit tracking code for Org
   	(org-habit-show-done-always-green t))
 #+end_src
 **** org-id
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Global identifiers for Org entries
 #+end_quote
@@ -3452,9 +2968,6 @@ Global identifiers for Org entries
   	(org-id-search-archives nil))
 #+end_src
 **** org-journal
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A simple org-mode based journaling mode
 #+end_quote
@@ -3485,9 +2998,6 @@ A simple org-mode based journaling mode
   				 ("s" . org-journal-search))))
 #+end_src
 **** org-link(ol)
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Org links library
 #+end_quote
@@ -3501,9 +3011,6 @@ Org links library
   				("l" . org-store-link)))
 #+end_src
 **** org-make-toc
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Automatic tables of contents for Org-mode files
 #+end_quote
@@ -3516,9 +3023,6 @@ Automatic tables of contents for Org-mode files
   	:hook (org-mode-hook . org-make-toc-mode))
 #+end_src
 **** org-modern
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🦄 Modern Org Style
 #+end_quote
@@ -3534,9 +3038,6 @@ Automatic tables of contents for Org-mode files
   	(org-agenda-finalize . org-modern-agenda))
 #+end_src
 **** org-nix-shell
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Use buffer-local nix-shell environments in org-mode.
 #+end_quote
@@ -3547,9 +3048,6 @@ Use buffer-local nix-shell environments in org-mode.
   	:hook (org-mode-hook . org-nix-shell-mode))
 #+end_src
 **** org-pomodoro
-:PROPERTIES:
-:END:
-
 #+begin_quote
 pomodoro technique for org-mode
 #+end_quote
@@ -3565,9 +3063,6 @@ pomodoro technique for org-mode
   	(org-pomodoro-long-break-length 20))
 #+end_src
 **** org-ql
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A searching tool for Org-mode, including custom query languages, commands, saved searches and agenda-like views, etc.
 #+end_quote
@@ -3581,9 +3076,6 @@ A searching tool for Org-mode, including custom query languages, commands, saved
   				("C-c C-x /" . org-ql-sparse-tree)))
 #+end_src
 **** org-recur
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Simple recurring org-mode tasks.
 #+end_quote
@@ -3596,9 +3088,6 @@ Simple recurring org-mode tasks.
   	 (org-agenda-mode-hook . org-recur-agenda-mode)))
 #+end_src
 **** org-refile
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Refile Org Subtrees
 #+end_quote
@@ -3616,9 +3105,6 @@ Refile Org Subtrees
   	(org-refile-use-outline-path 'file))
 #+end_src
 **** org-src
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Source code examples in Org
 #+end_quote
@@ -3630,9 +3116,6 @@ Source code examples in Org
   	(org-src-window-setup 'split-window-below))
 #+end_src
 **** org-super-links
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Package to create links with auto backlinks
 #+end_quote
@@ -3649,9 +3132,6 @@ Package to create links with auto backlinks
   				 ("s" . org-super-links-store-link))))
 #+end_src
 **** org-transclusion
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs package to enable transclusion with Org Mode
 #+end_quote
@@ -3665,9 +3145,6 @@ Emacs package to enable transclusion with Org Mode
   	:hook (org-mode-hook . org-transclusion-mode))
 #+end_src
 **** org-web-tools
-:PROPERTIES:
-:END:
-
 #+begin_quote
 View, capture, and archive Web pages in Org-mode
 #+end_quote
@@ -3688,9 +3165,6 @@ View, capture, and archive Web pages in Org-mode
 :CUSTOM_ID: miscellaneous
 :END:
 **** calc
-:PROPERTIES:
-:END:
-
 #+begin_quote
 the GNU Emacs calculator
 #+end_quote
@@ -3701,9 +3175,6 @@ the GNU Emacs calculator
   	(calc-kill-line-numbering nil))
 #+end_src
 **** calendar
-:PROPERTIES:
-:END:
-
 #+begin_quote
 calendar functions
 #+end_quote
@@ -3715,9 +3186,6 @@ calendar functions
   	(calendar-date-style 'european))
 #+end_src
 **** calibredb
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs calibre client - A Document Management Solution in Emacs. 
 #+end_quote
@@ -3737,9 +3205,6 @@ Emacs calibre client - A Document Management Solution in Emacs.
   	(calibredb-virtual-library-alist nil))
 #+end_src
 **** epkg
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Browse the Emacsmirror package database
 #+end_quote
@@ -3750,9 +3215,6 @@ Browse the Emacsmirror package database
   	(epkg-repository (concat (emacs-data-home) "epkgs/")))
 #+end_src
 ***** epkg-marginalia
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Show Epkg information in completion annotations
 #+end_quote
@@ -3766,9 +3228,6 @@ Show Epkg information in completion annotations
   							(alist-get 'package marginalia-annotator-registry)))
 #+end_src
 **** go-translate
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Translator on Emacs.  Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
 #+end_quote
@@ -3795,9 +3254,6 @@ Translator on Emacs.  Supports multiple engines such as Google, Bing, deepL, Cha
   				 ("q" . gt-do-translate))))
 #+end_src
 **** gptel
-:PROPERTIES:
-:END:
-
 #+begin_quote
 A simple LLM client for Emacs
 #+end_quote
@@ -3825,9 +3281,6 @@ A simple LLM client for Emacs
   																	qwen3:4b))))
 #+end_src
 ***** gptel-org
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Org functions for gptel
 #+end_quote
@@ -3841,9 +3294,6 @@ Org functions for gptel
   				("C-c C-x =" . gptel-org-set-properties)))
 #+end_src
 ***** gptel-quick
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Quick LLM lookups in Emacs
 #+end_quote
@@ -3857,9 +3307,6 @@ Quick LLM lookups in Emacs
   		(keymap-set embark-general-map "?" #'gptel-quick)))
 #+end_src
 ***** gptel-rewrite
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Refactoring functions for gptel
 #+end_quote
@@ -3874,9 +3321,6 @@ Refactoring functions for gptel
   		(keymap-set embark-region-map "!" #'gptel-rewrite)))
 #+end_src
 **** mastodon
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs client for fediverse servers that implement the Mastodon API.
 #+end_quote
@@ -3886,9 +3330,6 @@ Emacs client for fediverse servers that implement the Mastodon API.
   	:ensure t)
 #+end_src
 **** nov
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Major mode for reading EPUBs in Emacs
 #+end_quote
@@ -3913,9 +3354,6 @@ Major mode for reading EPUBs in Emacs
   								nil t))))
 #+end_src
 **** osm
-:PROPERTIES:
-:END:
-
 #+begin_quote
 🌍 osm.el - OpenStreetMap viewer for Emacs
 #+end_quote
@@ -3943,9 +3381,6 @@ Major mode for reading EPUBs in Emacs
   				 ("X" . osm-gpx-hide))))
 #+end_src
 **** pdf-tools
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Emacs support library for PDF files.
 #+end_quote
@@ -3956,9 +3391,6 @@ Emacs support library for PDF files.
   	:magic ("%PDF" . pdf-view-mode))
 #+end_src
 **** prodigy
-:PROPERTIES:
-:END:
-
 #+begin_quote
 Manage external services from within Emacs
 #+end_quote
