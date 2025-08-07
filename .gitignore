@@ -1,0 +1,13 @@
+# Nix-related
+.direnv
+.pre-commit-config.yaml
+result
+result-*
+
+# Byte-compiled elisp
+*.elc
+
+# Archives
+*.zstd
+*.nar
+*.tar.gz
