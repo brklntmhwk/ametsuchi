@@ -1,4 +1,4 @@
-* Ametsuchi
+* Ametsuchi (天地)
 :PROPERTIES:
 :TOC:      :include descendants :depth 2
 :END:
@@ -7,11 +7,12 @@
 # SPDX-License-Identifier: MIT
 
 #+BEGIN_VERSE
-Ametsuchi (天地) is the universe ── It encompasses everything that forms my ideal workstation.
+Ametsuchi is the universe ── It encompasses (almost) everything that forms my ideal workstation.
 #+END_VERSE
 
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows.
 
+Table of Contents:
 :CONTENTS:
 - [[#setup][Setup]]
 - [[#initialization][Initialization]]
@@ -35,6 +36,7 @@ This repository is my Emacs configuration suite built using [[https://github.com
   - [[#org-mode][Org Mode]]
   - [[#miscellaneous][Miscellaneous]]
 - [[#license][License]]
+- [[#acknowledgements][Acknowledgements]]
 :END:
 
 ** Setup
@@ -49,6 +51,10 @@ NOTE: This section is still a work in progress.
 :CUSTOM_ID: initialization
 :END:
 
+#+begin_src emacs-lisp
+  ;;; init.el -*- lexical-binding: t; -*-
+#+end_src
+
 Emacs packages and built-in features are hereafter categorized according to the realms in which they operate. That said, the categorization is *not* mutually exclusive; some items may belong to multiple categories. In the event of duplication, the following rules apply:
 
 For simplicity, assume that there are only two sets, 𝐀 and 𝐁, where 𝐀 ≠ 𝐁. For every package 𝓧, 𝓧 is an element of at least one of them. Now, let package 𝓨 be an element of 𝐀. With that in mind, 𝓨 shall be considered a member of 𝐀 if any of the following propositions hold:
@@ -57,19 +63,14 @@ For simplicity, assume that there are only two sets, 𝐀 and 𝐁, where 𝐀 �
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), and 𝓨 is not in the intersection of 𝐀 and 𝐁"
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), 𝓨 is in the intersection of 𝐀 and 𝐁, and you feel that 𝓨 is relatively closer to 𝐀"
 
-#+begin_src emacs-lisp
-  ;;; init.el -*- lexical-binding: t; -*-
-#+end_src
 *** Package Manager
 :PROPERTIES:
 :CUSTOM_ID: package-manager
 :END:
-
 **** twist
 #+begin_quote
 Hot-reload Emacs Lisp packages configured with twist.nix
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package twist
   	:ensure t
@@ -81,7 +82,6 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 :PROPERTIES:
 :CUSTOM_ID: configuration-macro
 :END:
-
 **** use-package
 #+begin_quote
 A configuration macro for simplifying your .emacs
@@ -108,7 +108,6 @@ A configuration macro for simplifying your .emacs
 :PROPERTIES:
 :CUSTOM_ID: data-management
 :END:
-
 **** Directory
 #+begin_src emacs-lisp
   (require 'xdg)
@@ -157,7 +156,6 @@ Help keeping ~/.config/emacs clean
 :PROPERTIES:
 :CUSTOM_ID: performance-enhancement
 :END:
-
 **** edebug
 #+begin_quote
 a source-level debugger for Emacs Lisp
@@ -186,7 +184,6 @@ The Garbage Collector Magic Hack
 :PROPERTIES:
 :CUSTOM_ID: custom-keymaps
 :END:
-
 **** toggle-map
 Eight looks like going back and forth between two states as in its shape,"8".
 #+begin_src emacs-lisp
@@ -222,7 +219,6 @@ convenient way to repeat the previous command
 :PROPERTIES:
 :CUSTOM_ID: library
 :END:
-
 **** cl-lib
 #+begin_quote
 Common Lisp extensions for Emacs
@@ -248,11 +244,11 @@ Transient user interfaces for various modes
   	(require 'casual-image)
   	:bind
   	((:map calc-mode-map
-  				 ("M-?" . casual-calc-tmenu))
+  				 ("M-h" . casual-calc-tmenu))
   	 (:map dired-mode-map
-  				 ("M-?" . casual-dired-tmenu))
+  				 ("M-h" . casual-dired-tmenu))
   	 (:map image-mode-map
-  				 ("M-?" . casual-image-tmenu))))
+  				 ("M-h" . casual-image-tmenu))))
 #+end_src
 **** help
 #+begin_quote
@@ -278,7 +274,7 @@ A better Emacs *help* buffer
   	 ([remap describe-variable] . helpful-variable)
   	 ([remap Info-goto-emacs-command-node] . helpful-function)
   	 :map mode-specific-map
-  	 ("C-d" .  helpful-at-point)))
+  	 ("h" .  helpful-at-point)))
 #+end_src
 **** transient
 #+begin_quote
@@ -287,9 +283,9 @@ Transient commands
 #+begin_src emacs-lisp
   (use-package transient
   	:custom
-  	(transient-history-file (concat (xdg-emacs-state-home) "transient/history.el"))
-  	(transient-values-file (concat (xdg-emacs-data-home) "transient/values.el"))
-  	(transient-levels-file (concat (xdg-emacs-data-home) "transient/levels.el"))
+  	(transient-history-file (concat (emacs-state-home) "transient/history.el"))
+  	(transient-values-file (concat (emacs-data-home) "transient/values.el"))
+  	(transient-levels-file (concat (emacs-data-home) "transient/levels.el"))
   	:config
   	(transient-define-prefix my/toggle-transient ()
   		"Prefix for `toggle-map'"
@@ -469,7 +465,6 @@ Restore old window configurations
 :PROPERTIES:
 :CUSTOM_ID: appearance
 :END:
-
 **** buffer.c
 #+begin_quote
 Buffer manipulation primitives for GNU Emacs.
@@ -982,7 +977,7 @@ Embark Actions for consult-gh
   	(consult-gh-embark-mode 1))
 #+end_src
 ***** consult-gh-transient
-#+begin_quo
+#+begin_quote
 Transient Menu for consult-gh
 #+end_quote
 #+begin_src emacs-lisp
@@ -1692,7 +1687,6 @@ By default, the following major modes are included in `global-colorful-modes`:
 #+begin_quote
 interface for display-fill-column-indicator
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package display-fill-column-indicator
   	:hook
@@ -1703,7 +1697,6 @@ interface for display-fill-column-indicator
 #+begin_quote
 interface for display-line-numbers
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package display-line-numbers
   	:custom
@@ -1733,7 +1726,6 @@ interface for display-line-numbers
 #+begin_quote
 goggles.el - Pulse modified region
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package goggles
   	:ensure t
@@ -1748,7 +1740,6 @@ goggles.el - Pulse modified region
 #+begin_quote
 highlight the current line
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package hl-line
   	:custom
@@ -1763,7 +1754,6 @@ highlight the current line
 #+begin_quote
 Highlight TODO keywords
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package hl-todo
   	:ensure t
@@ -1790,7 +1780,6 @@ Highlight TODO keywords
 #+begin_quote
 highlight matching paren
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package paren
   	:custom
@@ -1801,7 +1790,6 @@ highlight matching paren
 #+begin_quote
 Emacs rainbow delimiters mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
   	:ensure t
@@ -1815,7 +1803,6 @@ Emacs rainbow delimiters mode
 #+begin_quote
 Pixel-perfect visual alignment for Org and Markdown tables.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package valign
   	:ensure t
@@ -1827,7 +1814,6 @@ Pixel-perfect visual alignment for Org and Markdown tables.
 #+begin_quote
 Emacs mode for wrapping visual-line-mode buffers at fill-column.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package visual-fill-column
   	:ensure t
@@ -1840,7 +1826,6 @@ Emacs mode for wrapping visual-line-mode buffers at fill-column.
 #+begin_quote
 minor mode to visualize TAB, (HARD) SPACE, NEWLINE
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package whitespace
   	:custom
@@ -1868,7 +1853,6 @@ minor mode to visualize TAB, (HARD) SPACE, NEWLINE
 #+begin_quote
 Lock files for editing.
 #+end_quote
-
 #+begin_src emacs-lisp
   (setq create-lockfiles nil)
 #+end_src
@@ -1876,7 +1860,6 @@ Lock files for editing.
 #+begin_quote
 Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their windows, buffers)
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package activities
   	:ensure t
@@ -1919,7 +1902,6 @@ Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their 
 #+begin_quote
 An extensible emacs dashboard
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dashboard
   	:ensure t
@@ -1979,7 +1961,6 @@ An extensible emacs dashboard
 #+begin_quote
 directory-browsing commands
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired
   	:commands dired
@@ -1996,7 +1977,6 @@ directory-browsing commands
 #+begin_quote
 Collapse unique nested paths in dired listing
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-collapse
   	:ensure t
@@ -2008,7 +1988,6 @@ Collapse unique nested paths in dired listing
 #+begin_quote
 Ibuffer-like filtering for dired
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-filter
   	:ensure t
@@ -2059,7 +2038,6 @@ Ibuffer-like filtering for dired
 #+begin_quote
 Utilities and helpers for dired-hacks collection
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-hacks-utils
   	:ensure t
@@ -2073,7 +2051,6 @@ Utilities and helpers for dired-hacks collection
 #+begin_quote
 An 'Open with' dialog for opening files in external applications from Dired.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-open-with
   	:ensure t
@@ -2086,7 +2063,6 @@ An 'Open with' dialog for opening files in external applications from Dired.
 #+begin_quote
 Implementation of useful ranger features for dired
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-ranger
   	:ensure t
@@ -2103,7 +2079,6 @@ Implementation of useful ranger features for dired
 #+begin_quote
 Insert subdirectories in a tree-like fashion
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dired-subtree
   	:ensure t
@@ -2120,7 +2095,6 @@ Insert subdirectories in a tree-like fashion
 #+begin_quote
 Emacs support for direnv which operates buffer-locally
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package envrc
   	:ensure t
@@ -2131,7 +2105,6 @@ Emacs support for direnv which operates buffer-locally
 #+begin_quote
 file input and output commands
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package files
   	:custom
@@ -2155,7 +2128,6 @@ file input and output commands
 #+begin_quote
 Operations on the current project
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package project
   	:config
@@ -2172,7 +2144,6 @@ Operations on the current project
 #+begin_quote
 keep track of recently opened files
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package recentf
   	:custom
@@ -2188,7 +2159,6 @@ keep track of recently opened files
 #+begin_quote
 process Emacs shell arguments
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package startup
   	:custom
@@ -2208,7 +2178,6 @@ process Emacs shell arguments
 #+begin_quote
 Emacs minor mode that keeps your code always indented. More reliable than electric-indent-mode.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package aggressive-indent
   	:ensure t
@@ -2218,7 +2187,6 @@ Emacs minor mode that keeps your code always indented. More reliable than electr
 #+begin_quote
 run compiler as inferior of Emacs, parse error messages
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package compile
   	:custom
@@ -2235,7 +2203,6 @@ run compiler as inferior of Emacs, parse error messages
 #+begin_quote
 an Emacs "jump to definition" package for 50+ languages
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dumb-jump
   	:ensure t
@@ -2248,7 +2215,6 @@ an Emacs "jump to definition" package for 50+ languages
 #+begin_quote
 A client for Language Server Protocol servers
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package eglot
   	:defer 3
@@ -2284,7 +2250,6 @@ A client for Language Server Protocol servers
 #+begin_quote
 boost eglot using emacs-lsp-booster
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package eglot-booster
   	:ensure t
@@ -2295,7 +2260,6 @@ boost eglot using emacs-lsp-booster
 #+begin_quote
 bridge for tempel templates with eglot
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package eglot-tempel
   	:ensure t
@@ -2306,7 +2270,6 @@ bridge for tempel templates with eglot
 #+begin_quote
 Show function arglist or variable docstring in echo area
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package eldoc
   	:custom
@@ -2317,7 +2280,6 @@ Show function arglist or variable docstring in echo area
 #+begin_quote
 Automatically apply AI-generated code changes in Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package elysium
   	:ensure t
@@ -2332,7 +2294,6 @@ Automatically apply AI-generated code changes in Emacs
 #+begin_quote
 a universal on-the-fly syntax checker
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package flymake
   	:bind
@@ -2348,7 +2309,6 @@ a universal on-the-fly syntax checker
 #+begin_quote
 Define commands which run reformatters on the current Emacs buffer
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package reformatter
   	:ensure t
@@ -2370,7 +2330,6 @@ Define commands which run reformatters on the current Emacs buffer
 #+begin_quote
 Switch to/from repl buffer for current major-mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package repl-toggle
   	:ensure t
@@ -2381,7 +2340,6 @@ Switch to/from repl buffer for current major-mode
 #+begin_quote
 tree-sitter utilities
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package treesit
   	:custom
@@ -2392,7 +2350,6 @@ tree-sitter utilities
 #+begin_quote
 Emacs major mode for Astro templates
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package astro-ts-mode
   	:ensure t
@@ -2403,7 +2360,6 @@ Emacs major mode for Astro templates
 #+begin_quote
 tree-sitter support for Dockerfiles
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dockerfile-ts-mode
   	:mode
@@ -2417,7 +2373,6 @@ tree-sitter support for Dockerfiles
 #+begin_quote
 Emacs mode for justfiles
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package just-mode
   	:ensure t
@@ -2427,7 +2382,6 @@ Emacs mode for justfiles
 #+begin_quote
 Major mode for editing Lua files
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package lua-ts-mode
   	:mode "\\.lua\\'"
@@ -2439,7 +2393,6 @@ Major mode for editing Lua files
 #+begin_quote
 An Emacs major mode for editing Nix expressions, powered by tree-sitter
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package nix-ts-mode
   	:ensure t
@@ -2452,7 +2405,6 @@ An Emacs major mode for editing Nix expressions, powered by tree-sitter
 #+begin_quote
 An Emacs major mode for editing Nix expressions.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package nix-mode
   	:ensure t
@@ -2462,7 +2414,6 @@ An Emacs major mode for editing Nix expressions.
 #+begin_quote
 tree-sitter support for Rust
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package rust-ts-mode
   	:ensure t
@@ -2474,7 +2425,6 @@ tree-sitter support for Rust
 #+begin_quote
 tree-sitter support for TOML
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package toml-ts-mode
   	:mode "\\.toml\\'"
@@ -2486,7 +2436,6 @@ tree-sitter support for TOML
 #+begin_quote
 tree sitter support for TypeScript
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package typescript-ts-mode
   	:mode "\\.ts$" "\\.mts\\'"
@@ -2496,7 +2445,6 @@ tree sitter support for TypeScript
 #+begin_quote
 web template editing mode for emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package web-mode
   	:ensure t
@@ -2513,7 +2461,6 @@ web template editing mode for emacs
 #+begin_quote
 tree-sitter support for YAML
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package yaml-ts-mode
   	:mode "\\.ya?ml\\'"
@@ -2525,7 +2472,6 @@ tree-sitter support for YAML
 #+begin_quote
 Emacs Zig Tree Sitter Mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package zig-ts-mode
   	:ensure t
@@ -2541,7 +2487,6 @@ Emacs Zig Tree Sitter Mode
 #+begin_quote
 A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package blamer
   	:ensure t
@@ -2565,7 +2510,6 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+begin_quote
 Emacs package for highlighting uncommitted changes
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package diff-hl
   	:ensure t
@@ -2584,7 +2528,6 @@ Emacs package for highlighting uncommitted changes
 #+begin_quote
 Work with Git forges from the comfort of Magit
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package forge
   	:ensure t
@@ -2598,7 +2541,6 @@ Work with Git forges from the comfort of Magit
 #+begin_quote
 It's Magit! A Git Porcelain inside Emacs.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package magit
   	:ensure t
@@ -2617,7 +2559,6 @@ It's Magit! A Git Porcelain inside Emacs.
 #+begin_quote
 Use Delta when displaying diffs in Magit
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package magit-delta
   	:ensure t
@@ -2629,7 +2570,6 @@ Use Delta when displaying diffs in Magit
 #+begin_quote
 Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package magit-delta
   	:ensure t
@@ -2645,7 +2585,6 @@ Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 #+begin_quote
 Emulate A Terminal, in a region, in a buffer and in Eshell
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package eat
   	:ensure t
@@ -2660,7 +2599,6 @@ Emulate A Terminal, in a region, in a buffer and in Eshell
 #+begin_quote
 Make Emacs use the $PATH set up by the user's shell
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
   	:ensure t
@@ -2719,7 +2657,6 @@ Outline-based notes management and organizer
 #+begin_quote
 Present anything Emacs can do with programmable, extensible, configurable slides & presentation steps made from org mode headings
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package dslide
   	:ensure t
@@ -2737,7 +2674,6 @@ Present anything Emacs can do with programmable, extensible, configurable slides
 #+begin_quote
 Dynamic task and appointment lists for Org
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-agenda
   	:after org
@@ -2762,7 +2698,6 @@ Dynamic task and appointment lists for Org
 #+begin_quote
 Supercharge your Org daily/weekly agenda by grouping items
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-super-agenda
   	:ensure t
@@ -2778,7 +2713,6 @@ Supercharge your Org daily/weekly agenda by grouping items
 #+begin_quote
 Sync org notes to Anki via AnkiConnect
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-anki
   	:ensure t
@@ -2801,7 +2735,6 @@ Sync org notes to Anki via AnkiConnect
 #+begin_quote
 Toggle visibility of hidden Org mode element parts upon entering and leaving an element
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-appear
   	:ensure t
@@ -2811,7 +2744,6 @@ Toggle visibility of hidden Org mode element parts upon entering and leaving an 
 #+begin_quote
 Making it even easier to edit lists in org-mode!
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-autolist
   	:ensure t
@@ -2821,7 +2753,6 @@ Making it even easier to edit lists in org-mode!
 #+begin_quote
 Working with Code Blocks in Org
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package ob
   	:after org
@@ -2844,7 +2775,6 @@ Working with Code Blocks in Org
 #+begin_quote
 Emacs bookmark support for Org-mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-bookmark-heading
   	:ensure t
@@ -2856,7 +2786,6 @@ Emacs bookmark support for Org-mode
 #+begin_quote
 Fast note taking in Org
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-capture
   	:after org
@@ -2873,7 +2802,6 @@ Fast note taking in Org
 #+begin_quote
 The time clocking code for Org mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-clock
   	:after org
@@ -2891,7 +2819,6 @@ The time clocking code for Org mode
 #+begin_quote
 Convenience functions to work with emacs org mode clocking from the agenda view
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-clock-convenience
   	:ensure t
@@ -2904,7 +2831,6 @@ Convenience functions to work with emacs org mode clocking from the agenda view
 #+begin_quote
 Public Key Encryption for Org Entries
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-crypt
   	:custom
@@ -2918,7 +2844,6 @@ Public Key Encryption for Org Entries
 #+begin_quote
 Drag and drop images to Emacs org-mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-download
   	:ensure t
@@ -2934,7 +2859,6 @@ Drag and drop images to Emacs org-mode
 #+begin_quote
 Parser for Org Syntax
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-element
   	:after org
@@ -2945,7 +2869,6 @@ Parser for Org Syntax
 #+begin_quote
 The habit tracking code for Org
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-habit
   	:after org-agenda
@@ -2959,7 +2882,6 @@ The habit tracking code for Org
 #+begin_quote
 Global identifiers for Org entries
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-id
   	:after org
@@ -2971,7 +2893,6 @@ Global identifiers for Org entries
 #+begin_quote
 A simple org-mode based journaling mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-journal
   	:ensure t
@@ -3001,7 +2922,6 @@ A simple org-mode based journaling mode
 #+begin_quote
 Org links library
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package ol
   	:custom
@@ -3014,7 +2934,6 @@ Org links library
 #+begin_quote
 Automatic tables of contents for Org-mode files
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-make-toc
   	:ensure t
@@ -3026,7 +2945,6 @@ Automatic tables of contents for Org-mode files
 #+begin_quote
 🦄 Modern Org Style
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-modern
   	:ensure t
@@ -3041,7 +2959,6 @@ Automatic tables of contents for Org-mode files
 #+begin_quote
 Use buffer-local nix-shell environments in org-mode.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-nix-shell
   	:ensure t
@@ -3051,7 +2968,6 @@ Use buffer-local nix-shell environments in org-mode.
 #+begin_quote
 pomodoro technique for org-mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-pomodoro
   	:ensure t
@@ -3066,7 +2982,6 @@ pomodoro technique for org-mode
 #+begin_quote
 A searching tool for Org-mode, including custom query languages, commands, saved searches and agenda-like views, etc.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-ql
   	:ensure t
@@ -3079,7 +2994,6 @@ A searching tool for Org-mode, including custom query languages, commands, saved
 #+begin_quote
 Simple recurring org-mode tasks.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-recur
   	:ensure t
@@ -3091,7 +3005,6 @@ Simple recurring org-mode tasks.
 #+begin_quote
 Refile Org Subtrees
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-refile
   	:after org
@@ -3108,7 +3021,6 @@ Refile Org Subtrees
 #+begin_quote
 Source code examples in Org
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-src
   	:custom
@@ -3119,7 +3031,6 @@ Source code examples in Org
 #+begin_quote
 Package to create links with auto backlinks
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-super-links
   	:ensure t
@@ -3135,7 +3046,6 @@ Package to create links with auto backlinks
 #+begin_quote
 Emacs package to enable transclusion with Org Mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-transclusion
   	:ensure t
@@ -3148,7 +3058,6 @@ Emacs package to enable transclusion with Org Mode
 #+begin_quote
 View, capture, and archive Web pages in Org-mode
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package org-web-tools
   	:ensure t
@@ -3168,7 +3077,6 @@ View, capture, and archive Web pages in Org-mode
 #+begin_quote
 the GNU Emacs calculator
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package calc
   	:custom
@@ -3178,7 +3086,6 @@ the GNU Emacs calculator
 #+begin_quote
 calendar functions
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package calendar
   	:custom
@@ -3189,7 +3096,6 @@ calendar functions
 #+begin_quote
 Emacs calibre client - A Document Management Solution in Emacs. 
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package calibredb
   	:ensure t
@@ -3208,7 +3114,6 @@ Emacs calibre client - A Document Management Solution in Emacs.
 #+begin_quote
 Browse the Emacsmirror package database
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package epkg
   	:custom
@@ -3218,7 +3123,6 @@ Browse the Emacsmirror package database
 #+begin_quote
 Show Epkg information in completion annotations
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package epkg-marginalia
   	:ensure t
@@ -3231,7 +3135,6 @@ Show Epkg information in completion annotations
 #+begin_quote
 Translator on Emacs.  Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package go-translate
   	:ensure t
@@ -3257,7 +3160,6 @@ Translator on Emacs.  Supports multiple engines such as Google, Bing, deepL, Cha
 #+begin_quote
 A simple LLM client for Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package gptel
   	:ensure t
@@ -3284,7 +3186,6 @@ A simple LLM client for Emacs
 #+begin_quote
 Org functions for gptel
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package gptel-org
   	:after gptel
@@ -3297,7 +3198,6 @@ Org functions for gptel
 #+begin_quote
 Quick LLM lookups in Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package gptel-quick
   	:ensure t
@@ -3310,7 +3210,6 @@ Quick LLM lookups in Emacs
 #+begin_quote
 Refactoring functions for gptel
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package gptel-rewrite
   	:after gptel
@@ -3324,7 +3223,6 @@ Refactoring functions for gptel
 #+begin_quote
 Emacs client for fediverse servers that implement the Mastodon API.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package mastodon
   	:ensure t)
@@ -3333,7 +3231,6 @@ Emacs client for fediverse servers that implement the Mastodon API.
 #+begin_quote
 Major mode for reading EPUBs in Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package nov
   	:ensure t
@@ -3357,9 +3254,7 @@ Major mode for reading EPUBs in Emacs
 #+begin_quote
 🌍 osm.el - OpenStreetMap viewer for Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
-
   (use-package osm
   	:ensure t
   	:custom
@@ -3384,7 +3279,6 @@ Major mode for reading EPUBs in Emacs
 #+begin_quote
 Emacs support library for PDF files.
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package pdf-tools
   	:ensure t
@@ -3394,7 +3288,6 @@ Emacs support library for PDF files.
 #+begin_quote
 Manage external services from within Emacs
 #+end_quote
-
 #+begin_src emacs-lisp
   (use-package prodigy
   	:ensure t)
@@ -3406,4 +3299,16 @@ Manage external services from within Emacs
 
 This project is licensed under the terms of the MIT license.
 It adopts and follows the [[https://reuse.software/][REUSE Specification Version 3.3]]; therefore the license files are stored under [[file:LICENSES/][LICENSES]] directory, and each file contains an SPDX license identifier.
+** Acknowledgements
+:PROPERTIES:
+:CUSTOM_ID: acknowledgements
+:END:
 
+This project stands on the shoulders of great pioneers from all walks of life. Heartfelt thanks to all the developers involved in the Nix and Emacs communities, package development, and beyond.
+
+Below are some of the resources I frequently consulted:
+
+- [[https://github.com/akirak/emacs-config][Akirak's Emacs Config]]
+- [[https://github.com/terlar/emacs-config][Terlar's Emacs Config]]
+- [[https://github.com/jwiegley/dot-emacs][Jwiegley's Dot Emacs]]
+- [[https://karthinks.com/][Karthinks.com]]

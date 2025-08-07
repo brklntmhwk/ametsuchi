@@ -3,22 +3,28 @@
 
 { inputs, ... }:
 {
-	imports = [ inputs.git-hooks-nix.flakeModules ];
+  imports = [ inputs.git-hooks-nix.flakeModule ];
 
-	perSystem = { pkgs, system, config, ... }:
-	{
-		pre-commit = {
-			check.enable = true;
-			settings.hooks = {
-				nixfmt-rfc-style = {
-					enable = true;
-					excludes = [ "lock/flake\\.nix" ];
-				};
-			};
-		};
+  perSystem =
+    {
+      pkgs,
+      system,
+      config,
+      ...
+    }:
+    {
+      pre-commit = {
+        check.enable = true;
+        settings.hooks = {
+          nixfmt-rfc-style = {
+            enable = true;
+            excludes = [ "lock/flake\\.nix" ];
+          };
+        };
+      };
 
-		devShells = {
-			default = config.pre-commit.devShell;
-		};
-	};
+      devShells = {
+        default = config.pre-commit.devShell;
+      };
+    };
 }
