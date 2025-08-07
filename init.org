@@ -73,6 +73,7 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 #+end_quote
 #+begin_src emacs-lisp
   (use-package twist
+  	:disabled
   	:ensure t
   	:hook (emacs-startup-hook . twist-watch-mode)
   	:bind
