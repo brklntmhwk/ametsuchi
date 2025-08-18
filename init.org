@@ -2416,7 +2416,6 @@ tree-sitter support for Rust
 #+end_quote
 #+begin_src emacs-lisp
   (use-package rust-ts-mode
-  	:ensure t
   	:mode "\\.rs\\'"
   	:hook
   	(rust-ts-mode-hook . eglot-ensure))
@@ -3025,7 +3024,9 @@ Source code examples in Org
   (use-package org-src
   	:custom
   	(org-src-tab-acts-natively t)
-  	(org-src-window-setup 'split-window-below))
+  	(org-src-window-setup 'split-window-below)
+  	(org-src-preserve-indentation nil)
+  	(org-edit-src-content-indentation 0))
 #+end_src
 **** org-super-links
 #+begin_quote
@@ -3115,46 +3116,46 @@ Emacs calibre client - A Document Management Solution in Emacs.
 Browse the Emacsmirror package database
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package epkg
-  	:custom
-  	(epkg-repository (concat (emacs-data-home) "epkgs/")))
+  ;; (use-package epkg
+  ;; 	:custom
+  ;; 	(epkg-repository (concat (emacs-data-home) "epkgs/")))
 #+end_src
 ***** epkg-marginalia
 #+begin_quote
 Show Epkg information in completion annotations
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package epkg-marginalia
-  	:ensure t
-  	:after (epkg marginalia)
-  	:config
-  	(cl-pushnew 'epkg-marginalia-annotate-package
-  							(alist-get 'package marginalia-annotator-registry)))
+  ;; (use-package epkg-marginalia
+  ;; 	:ensure t
+  ;; 	:after (epkg marginalia)
+  ;; 	:config
+  ;; 	(cl-pushnew 'epkg-marginalia-annotate-package
+  ;; 							(alist-get 'package marginalia-annotator-registry)))
 #+end_src
 **** go-translate
 #+begin_quote
-Translator on Emacs.  Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
+Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package go-translate
-  	:ensure t
-  	:custom
-  	(gt-langs '(en es ja))
-  	(gt-polyglot-p t)
-  	(gt-default-translator
-  	 (gt-translator
-  		:taker (list
-  						(gt-taker :pick nil :if 'selection)
-  						;; (gt-taker :text 'buffer :pick 'paragraph)
-  						(gt-taker :text 'word))
-  		:engines (gt-google-engine)
-  		;; :engines (list
-  		;; 					(gt-google-engine :if 'word)
-  		;; 					(gt-deepl-engine :if 'not-word))
-  		:render (gt-buffer-render)))
-  	:bind
-  	((:map mode-specific-map
-  				 ("q" . gt-do-translate))))
+  ;; (use-package go-translate
+  ;; 	:ensure t
+  ;; 	:custom
+  ;; 	(gt-langs '(en es ja))
+  ;; 	(gt-polyglot-p t)
+  ;; 	(gt-default-translator
+  ;; 	 (gt-translator
+  ;; 		:taker (list
+  ;; 						(gt-taker :pick nil :if 'selection)
+  ;; 						;; (gt-taker :text 'buffer :pick 'paragraph)
+  ;; 						(gt-taker :text 'word))
+  ;; 		:engines (gt-google-engine)
+  ;; 		;; :engines (list
+  ;; 		;; 					(gt-google-engine :if 'word)
+  ;; 		;; 					(gt-deepl-engine :if 'not-word))
+  ;; 		:render (gt-buffer-render)))
+  ;; 	:bind
+  ;; 	((:map mode-specific-map
+  ;; 				 ("q" . gt-do-translate))))
 #+end_src
 **** gptel
 #+begin_quote
@@ -3199,12 +3200,12 @@ Org functions for gptel
 Quick LLM lookups in Emacs
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package gptel-quick
-  	:ensure t
-  	:after (gptel)
-  	:config
-  	(with-eval-after-load 'embark
-  		(keymap-set embark-general-map "?" #'gptel-quick)))
+  ;; (use-package gptel-quick
+  ;; 	:ensure t
+  ;; 	:after (gptel)
+  ;; 	:config
+  ;; 	(with-eval-after-load 'embark
+  ;; 		(keymap-set embark-general-map "?" #'gptel-quick)))
 #+end_src
 ***** gptel-rewrite
 #+begin_quote
