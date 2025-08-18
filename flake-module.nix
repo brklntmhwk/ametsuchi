@@ -38,8 +38,6 @@ in
       ...
     }:
     let
-      # TODO: Fix "Package twist is not found" error when executing `nix run .#lock --impure --show-trace`
-      # Due to the error above, the `lock` directory has not been created yet.
       emacsPackage = pkgs.emacs-git-pgtk.overrideAttrs (old: {
         src = pkgs.fetchFromGitHub {
           owner = "emacs-mirror";
@@ -66,9 +64,8 @@ in
       packages = {
         inherit emacsConfig;
 
-        # TODO: Fix "attribute 'legacyPackages' missing" error when executing `nix flake show`
         emacsclient =
-          inputs.legacyPackages.${system}.runCommandLocal "emacsclient"
+          inputs.nixpkgs.legacyPackages.${system}.runCommandLocal "emacsclient"
             { propagateBuildInputs = [ emacsConfig.emacs ]; }
             ''
               							mkdir -p $out/bin

@@ -6,13 +6,13 @@
 # Copyright (C) 2025 Ohma Togaki
 # SPDX-License-Identifier: MIT
 
-#+BEGIN_VERSE
+#+begin_quote
 Ametsuchi is the universe ── It encompasses (almost) everything that forms my ideal workstation.
-#+END_VERSE
+#+end_quote
 
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows.
 
-Table of Contents:
+Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
 :CONTENTS:
 - [[#setup][Setup]]
 - [[#initialization][Initialization]]
@@ -73,7 +73,6 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 #+end_quote
 #+begin_src emacs-lisp
   (use-package twist
-  	:disabled
   	:ensure t
   	:hook (emacs-startup-hook . twist-watch-mode)
   	:bind

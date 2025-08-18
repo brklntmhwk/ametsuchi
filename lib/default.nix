@@ -34,7 +34,13 @@
         inputOverrides = import ../twist/inputs.nix;
         lockDir = ../lock;
         nativeCompileAheadDefault = true;
-        registries = import ../twist/registries.nix { inherit inputs; };
+        registries = [
+          {
+            type = "melpa";
+            path = ../recipes;
+          }
+        ]
+        ++ (import ../twist/registries.nix { inherit inputs; });
       };
     in
     (inputs.twist.lib.makeEnv (
