@@ -44,5 +44,3 @@ jobs:
             echo "No changes detected."
           fi
       - run: git push --force origin HEAD
-          
-        
