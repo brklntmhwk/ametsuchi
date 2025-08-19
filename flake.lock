@@ -92,7 +92,7 @@
     "gnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-lfGOlOloaCow5I3B8z9NgmhbA2fKi0SsUPw/1zMIEQM=",
+        "narHash": "sha256-hEuTcfz0IfcpS9j1kCDvqRfVupCb2Mrq1MWHh6xSjqM=",
         "type": "file",
         "url": "https://elpa.gnu.org/packages/archive-contents"
       },
@@ -198,7 +198,7 @@
     "nongnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-v2NiIHyDpA5X+/+kUF7u37Zo459ba6aB3UbOLGvAOtw=",
+        "narHash": "sha256-RMe3mavviYj5s7kh5iV0YYf/t8nhY2KL0nhonX1GpLA=",
         "type": "file",
         "url": "https://elpa.nongnu.org/nongnu/archive-contents"
       },
