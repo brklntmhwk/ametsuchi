@@ -1,0 +1,48 @@
+name: Update Emacs packages
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    # 9:00 p.m. UTC (6:00 a.m. JST) on the 10th and 24th of every month
+    - cron: '0 21 10,24 * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          ref: dev
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
+        with:
+          cachix-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - name: Setup Git config for GitHub Actions bot
+        run: |
+          git config set --append user.name 'github-actions[bot]'
+          git config set --append user.email '86272619+github-actions[bot]@users.noreply.github.com'
+      - name: Update deps of registries
+        run: |
+          for input in melpa gnu-elpa nongnu-elpa; do
+              nix flake update $input
+          done
+      - name: Update lock entries
+        run: |
+          nix run .#lock --impure
+          if ! git diff-tree --exit-code HEAD; then
+            git commit -am 'chore(deps): update lock entries'
+          else
+            echo "No changes detected."
+          fi
+      - name: Update ELPA packages
+        run: |
+          nix run .#update --impure
+          if ! git diff-tree --exit-code HEAD; then
+            git commit -am 'chore(deps): update ELPA packages'
+          else
+            echo "No changes detected."
+          fi
+      - run: git push --force origin HEAD
+          
+        

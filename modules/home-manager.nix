@@ -6,49 +6,54 @@
 # Take mkEmacsConfig as an arg to make additional configs based on user customization.
 mkEmacsConfig:
 {
-	config,
-	lib,
-	pkgs,
-	...
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
-	inherit (lib) mkDefault mkIf mkOption types;
-	cfg = config.programs.emacs-twist;
+  inherit (lib)
+    mkDefault
+    mkIf
+    mkOption
+    types
+    ;
+  cfg = config.programs.emacs-twist;
 in
-	{
-		options = {
-			programs.emacs-twist = {
-				settings = {
-					extraFeatures = mkOption {
-						type = types.listOf types.str;
-						description = "Add extra features";
-						default = [];
-					};
-				};
-			};
-		};
+{
+  options = {
+    programs.emacs-twist = {
+      settings = {
+        extraFeatures = mkOption {
+          type = types.listOf types.str;
+          description = "Add extra features";
+          default = [ ];
+        };
+      };
+    };
+  };
 
-		config = mkIf cfg.enable {
-			programs.emacs-twist = {
-				emacsclient.enable = true;
-				serviceIntegration.enable = mkDefault true;
-				createInitFile = true;
-				createManifestFile = true;
-				directory = ".local/share/emacs"; # Consider it more of a datum than a config.
-				earlyInitFile = ../early-init.el;
-				config = mkEmacsConfig {
-					inherit pkgs;
-					features = cfg.settings.extraFeatures;
-				};
-			};
+  config = mkIf cfg.enable {
+    programs.emacs-twist = {
+      emacsclient.enable = true;
+      serviceIntegration.enable = mkDefault true;
+      createInitFile = true;
+      createManifestFile = true;
+      directory = ".local/share/emacs"; # Consider it more of a datum than a config.
+      earlyInitFile = ../early-init.el;
+      config = mkEmacsConfig {
+        inherit pkgs;
+        features = cfg.settings.extraFeatures;
+      };
+    };
 
-			home.packages = with pkgs; [
-				# Add font packages that will be used in your Emacs config.
-				hackgen-font
-				hackgen-nf-font
-			];
+    home.packages = with pkgs; [
+      # Add font packages that will be used in your Emacs config.
+      hackgen-font
+      hackgen-nf-font
+    ];
 
-			# Generate a desktop file for emacsclient.
-			services.emacs.client.enable = cfg.serviceIntegration.enable;
-		};
+    # Generate a desktop file for emacsclient.
+    services.emacs.client.enable = cfg.serviceIntegration.enable;
+  };
 }
