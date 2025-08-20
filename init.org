@@ -2552,7 +2552,9 @@ It's Magit! A Git Porcelain inside Emacs.
 				 :prefix "g"
 				 ("s" . magit-status)
 				 ("d" . magit-dispatch)
-				 ("f" . magit-file-dispatch))))
+				 ("f" . magit-file-dispatch)))
+	:config
+	(add-hook 'git-commit-post-finish-hook #'magit))
 #+end_src
 ***** magit-delta
 #+begin_quote
