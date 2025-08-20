@@ -3074,6 +3074,13 @@ View, capture, and archive Web pages in Org-mode
 :PROPERTIES:
 :CUSTOM_ID: miscellaneous
 :END:
+**** terminal.c
+#+begin_quote
+Functions related to terminal devices.
+#+end_quote
+#+begin_src emacs-lisp
+(setq ring-bell-function 'ignore)
+#+end_src
 **** calc
 #+begin_quote
 the GNU Emacs calculator
