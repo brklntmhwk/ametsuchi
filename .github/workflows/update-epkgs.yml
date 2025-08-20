@@ -32,7 +32,7 @@ jobs:
       - name: Update ELPA packages
         run: nix run .#update --impure
       - name: Create PR
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           base: dev
           branch: bot/update/epkgs
