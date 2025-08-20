@@ -32,13 +32,15 @@ jobs:
       - name: Update ELPA packages
         run: nix run .#update --impure
       - name: Create PR
+        id: cpr
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           base: dev
           branch: bot/update/epkgs
           committer: github-actions[bot] <86272619+github-actions[bot]@users.noreply.github.com>
-          labels: |
-            automated
-            update
+          labels: automated,update
           title: 'chore(deps): update lock entries and ELPA packages'
           token: ${{ secrets.PAT_FOR_PR }}
+      - name: Check PR status
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        run: echo "A new PR was created. See ${{ steps.cpr.outputs.pull-request-url }}"
