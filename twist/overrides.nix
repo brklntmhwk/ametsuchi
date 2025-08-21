@@ -8,10 +8,10 @@ builtins.intersectAttrs prev {
     buildInputs = old.buildInputs ++ [ pkgs.sqlite ];
 
     postBuild = ''
-      			cd sqlite
+      cd sqlite
       make
       cd ..
-      		'';
+    '';
   });
 
   jinx = prev.jinx.overrideAttrs (
@@ -23,9 +23,9 @@ builtins.intersectAttrs prev {
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.pkg-config ];
       buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.enchant2 ];
       preBuild = ''
-        			NIX_CFLAGS_COMPILE="$($PKG_CONFIG --cflags enchant-2) $NIX_CFLAGS_COMPILE"
+        NIX_CFLAGS_COMPILE="$($PKG_CONFIG --cflags enchant-2) $NIX_CFLAGS_COMPILE"
         $CC -I. -O2 -fPIC -shared -o jinx-mod${moduleSuffix} jinx-mod.c -lenchant-2
-        		'';
+      '';
     }
   );
 }
