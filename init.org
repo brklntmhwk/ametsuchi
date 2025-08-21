@@ -392,7 +392,7 @@ Emacs minor-mode to summon and dismiss buffers easily.
 	(popper-mode-hook . popper-echo-mode)
 	:bind
 	((:map window-prefix-map
-				 :prefix-map popper-prefix-map 
+				 :prefix-map popper-prefix-map
 				 :prefix "p"
 				 ("t" . popper-toggle)
 				 ("@" . popper-cycle)
@@ -2890,6 +2890,15 @@ Global identifiers for Org entries
 	(org-id-link-to-org-use-id t)
 	(org-id-search-archives nil))
 #+end_src
+**** org-indent
+#+begin_quote
+Dynamic indentation for Org
+#+end_quote
+#+begin_src emacs-lisp
+(use-package org-indent
+	:custom
+	(org-indent-mode-turns-on-hiding-stars t))
+#+end_src
 **** org-journal
 #+begin_quote
 A simple org-mode based journaling mode
@@ -3125,21 +3134,21 @@ Emacs calibre client - A Document Management Solution in Emacs.
 Browse the Emacsmirror package database
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package epkg
-;; 	:custom
-;; 	(epkg-repository (concat (emacs-data-home) "epkgs/")))
+(use-package epkg
+	:custom
+	(epkg-repository (concat (emacs-data-home) "epkgs/")))
 #+end_src
 ***** epkg-marginalia
 #+begin_quote
 Show Epkg information in completion annotations
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package epkg-marginalia
-;; 	:ensure t
-;; 	:after (epkg marginalia)
-;; 	:config
-;; 	(cl-pushnew 'epkg-marginalia-annotate-package
-;; 							(alist-get 'package marginalia-annotator-registry)))
+(use-package epkg-marginalia
+	:ensure t
+	:after (epkg marginalia)
+	:config
+	(cl-pushnew 'epkg-marginalia-annotate-package
+							(alist-get 'package marginalia-annotator-registry)))
 #+end_src
 **** go-translate
 #+begin_quote
