@@ -68,9 +68,9 @@ in
           inputs.nixpkgs.legacyPackages.${system}.runCommandLocal "emacsclient"
             { propagateBuildInputs = [ emacsConfig.emacs ]; }
             ''
-              							mkdir -p $out/bin
+              mkdir -p $out/bin
               ln -t $out/bin -s ${emacsConfig.emacs}/bin/emacsclient
-              						'';
+            '';
       };
 
       apps = emacsConfig.makeApps { lockDirName = "lock"; };
