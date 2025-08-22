@@ -2942,6 +2942,7 @@ Global identifiers for Org entries
 (use-package org-id
 	:after org
 	:custom
+	(org-id-locations-file (concat (emacs-cache-home) "org-id-locations"))
 	(org-id-link-to-org-use-id t)
 	(org-id-search-archives nil))
 #+end_src
