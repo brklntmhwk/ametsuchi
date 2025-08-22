@@ -1271,9 +1271,9 @@ Jump to things in Emacs tree-style
 	(("M-j" . avy-goto-char-timer)
 	 ("M-J" . avy-goto-char-in-line)
 	 (:map goto-map
+				 ("e" . avy-goto-end-of-line)
 				 ("j" . avy-goto-char-timer)
 				 ("J" . avy-goto-char-in-line)
-				 ("l" . avy-goto-end-of-line)
 				 ("w" . avy-goto-whitespace-end))
 	 (:map isearch-mode-map
 				 ("M-j" . avy-isearch)))
@@ -1426,11 +1426,14 @@ Pentadactyl-like Link Hinting in Emacs with Avy
 (use-package link-hint
 	:ensure t
 	:bind
-	((:map mode-specific-map
-				 ("l o" . link-hint-open-link)
-				 ("l c" . link-hint-copy-link))))
+	((:map goto-map
+				 ("l" . link-hint-open-link)
+				 ("L" . link-hint-copy-link))))
 #+end_src
 **** markdown-mode
+:PROPERTIES:
+:CUSTOM_ID: markdown-mode
+:END:
 #+begin_quote
 Emacs Markdown Mode
 #+end_quote
@@ -1453,6 +1456,9 @@ Emacs Markdown Mode
 				("'" . markdown-edit-code-block)))
 #+end_src
 **** move-dup
+:PROPERTIES:
+:CUSTOM_ID: move-dup
+:END:
 #+begin_quote
 Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
 #+end_quote
@@ -1467,6 +1473,9 @@ Emacs minor mode for Eclipse-like moving and duplications of lines or selections
 	:hook (after-init-hook . global-move-dup-mode))
 #+end_src
 **** pixel-scroll
+:PROPERTIES:
+:CUSTOM_ID: pixel-scroll
+:END:
 #+begin_quote
 Scroll a line smoothly
 #+end_quote
@@ -1485,6 +1494,9 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
 	:hook (after-init-hook . pixel-scroll-precision-mode))
 #+end_src
 **** puni
+:PROPERTIES:
+:CUSTOM_ID: puni
+:END:
 #+begin_quote
 Structured editing (soft deletion, expression navigating & manipulating) that supports many major modes out of the box.
 #+end_quote
@@ -1510,6 +1522,9 @@ Structured editing (soft deletion, expression navigating & manipulating) that su
 				'("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
 #+end_src
 **** replace
+:PROPERTIES:
+:CUSTOM_ID: replace
+:END:
 #+begin_quote
 replace commands for Emacs
 #+end_quote
@@ -1520,6 +1535,9 @@ replace commands for Emacs
 				("o" . occur)))
 #+end_src
 **** savehist
+:PROPERTIES:
+:CUSTOM_ID: savehist
+:END:
 #+begin_quote
 Save minibuffer history
 #+end_quote
@@ -1528,6 +1546,9 @@ Save minibuffer history
 	:hook (after-init-hook . savehist-mode))
 #+end_src
 **** saveplace
+:PROPERTIES:
+:CUSTOM_ID: saveplace
+:END:
 #+begin_quote
 automatically save place in files
 #+end_quote
@@ -1536,6 +1557,9 @@ automatically save place in files
 	:hook (after-init-hook . save-place-mode))
 #+end_src
 **** separedit
+:PROPERTIES:
+:CUSTOM_ID: separedit
+:END:
 #+begin_quote
 Edit comment or string/docstring or code block inside them in separate buffer with your favorite mode
 #+end_quote
@@ -1549,6 +1573,9 @@ Edit comment or string/docstring or code block inside them in separate buffer wi
 				("'" . separedit)))
 #+end_src
 **** simple
+:PROPERTIES:
+:CUSTOM_ID: simple
+:END:
 #+begin_quote
 basic editing commands for Emacs
 #+end_quote
@@ -1560,6 +1587,9 @@ basic editing commands for Emacs
 	(line-number-mode nil))
 #+end_src
 **** string-inflection
+:PROPERTIES:
+:CUSTOM_ID: string-inflection
+:END:
 #+begin_quote
 underscore -> UPCASE -> CamelCase conversion of names
 #+end_quote
@@ -1573,6 +1603,9 @@ underscore -> UPCASE -> CamelCase conversion of names
 								("-" . string-inflection-all-cycle))))
 #+end_src
 **** text-mode
+:PROPERTIES:
+:CUSTOM_ID: text-mode
+:END:
 #+begin_quote
 text mode, and its idiosyncratic commands
 #+end_quote
@@ -1582,6 +1615,9 @@ text mode, and its idiosyncratic commands
 	(text-mode-ispell-word-completion nil)) ; recommended for cape
 #+end_src
 **** tempel
+:PROPERTIES:
+:CUSTOM_ID: tempel
+:END:
 #+begin_quote
 🏛️ TempEl - Simple templates for Emacs
 #+end_quote
@@ -1601,6 +1637,9 @@ text mode, and its idiosyncratic commands
 				 ("M-RET". tempel-done))))
 #+end_src
 **** visual-replace
+:PROPERTIES:
+:CUSTOM_ID: visual-replace
+:END:
 #+begin_quote
 A nicer interface for query-replace on Emacs
 #+end_quote
@@ -1639,6 +1678,9 @@ A nicer interface for query-replace on Emacs
 		(keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
 #+end_src
 **** vundo
+:PROPERTIES:
+:CUSTOM_ID: vundo
+:END:
 #+begin_quote
 Visualize the undo tree.
 #+end_quote
@@ -2960,7 +3002,7 @@ Automatic tables of contents for Org-mode files
 	:ensure t
 	:after org
 	:custom
-	(org-modern-hide-stars t)
+	(org-modern-hide-stars nil)
 	:hook
 	(org-mode-hook . org-modern-mode)
 	(org-agenda-finalize . org-modern-agenda))
