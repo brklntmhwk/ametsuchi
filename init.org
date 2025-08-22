@@ -616,9 +616,7 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
 Emacs Nerd Font Icons Library
 #+end_quote
 #+begin_src emacs-lisp
-;; Remember to do M-x and run `nerd-icons-install-fonts' to get the
-;; font files.  Then restart Emacs to see the effect.
-(use-package nerd-icons	:ensure t)
+(use-package nerd-icons :ensure t)
 #+end_src
 ***** nerd-icons-completion
 #+begin_quote
@@ -682,6 +680,14 @@ Emacs: display ugly ^L page breaks as tidy horizontal lines
 									help-mode-hook
 									magit-mode-hook))
 		(add-to-list 'page-break-lines-modes mode)))
+#+end_src
+**** show-font
+#+begin_quote
+ Show font features in an Emacs buffer
+#+end_quote
+#+begin_src emacs-lisp
+(use-package show-font
+	:ensure t)
 #+end_src
 *** Lines
 :PROPERTIES:
@@ -2577,6 +2583,23 @@ Work with Git forges from the comfort of Magit
 	(forge-database-file (concat (emacs-data-home) "forge/database.sqlite"))
 	(forge-owned-accounts '(("brklntmhwk")))
 	(forge-add-pullreq-refspec 'ask))
+#+end_src
+**** git-auto-commit-mode
+#+begin_quote
+Automatically commit to git after each save
+#+end_quote
+#+begin_src emacs-lisp
+(use-package git-auto-commit-mode
+	:ensure t)
+#+end_src
+**** git-commit
+#+begin_quote
+Edit Git commit messages 
+#+end_quote
+#+begin_src emacs-lisp
+(use-package git-commit
+	:ensure t
+	:after magit)
 #+end_src
 **** magit
 #+begin_quote
