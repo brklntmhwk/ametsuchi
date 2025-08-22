@@ -33,6 +33,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#development][Development]]
   - [[#version-control-system][Version Control System]]
   - [[#terminal][Terminal]]
+  - [[#email][Email]]
   - [[#org-mode][Org Mode]]
   - [[#miscellaneous][Miscellaneous]]
 - [[#license][License]]
@@ -1758,7 +1759,7 @@ interface for display-line-numbers
 									dired-mode-hook
 									eat-mode-hook
 									eshell-mode-hook
-									;; org-mode-hook
+									org-mode-hook
 									shell-mode-hook
 									term-mode-hook
 									vterm-mode-hook))
@@ -1993,7 +1994,7 @@ An extensible emacs dashboard
 			"Prefix for dashboard launch menu."
 			[("m" "Mastodon" mastodon)
 			 ("o" "OpenStreetMap" osm)
-			 ;; ("g" "GitHub CLI" consult-gh)
+			 ("g" "GitHub CLI" consult-gh)
 			 ;; ("c" "Calibre" calibredb)
 			 ("?" "Gptel" gptel-menu)
 			 ("e" "Mu4e" mu4e)]))
@@ -2650,6 +2651,18 @@ Make Emacs use the $PATH set up by the user's shell
 	(when (or window-system
 						(daemonp))
 		(exec-path-from-shell-initialize)))
+#+end_src
+*** Email
+:PROPERTIES:
+:CUSTOM_ID: email
+:END:
+**** mu4e
+#+begin_quote
+Mu-based mua for emacs
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mu4e
+	:ensure t)
 #+end_src
 *** Org Mode
 :PROPERTIES:
