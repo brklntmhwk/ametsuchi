@@ -1084,10 +1084,9 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
 		 embark-highlight-indicator
 		 embark-isearch-highlight-indicator))
 	:bind
-	((:map mode-specific-map
-				 ("." . embark-act)
-				 ("," . embark-dwim)
-				 ("*" . embark-act-all))
+	((("C-," . embark-act)
+		("C-." . embark-dwim)
+		("C-*" . embark-act-all))
 	 (:map minibuffer-mode-map
 				 ("C-<" . embark-become)
 				 ("C-SPC" . embark-select))
@@ -3211,25 +3210,25 @@ Show Epkg information in completion annotations
 Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package go-translate
-;; 	:ensure t
-;; 	:custom
-;; 	(gt-langs '(en es ja))
-;; 	(gt-polyglot-p t)
-;; 	(gt-default-translator
-;; 	 (gt-translator
-;; 		:taker (list
-;; 						(gt-taker :pick nil :if 'selection)
-;; 						;; (gt-taker :text 'buffer :pick 'paragraph)
-;; 						(gt-taker :text 'word))
-;; 		:engines (gt-google-engine)
-;; 		;; :engines (list
-;; 		;; 					(gt-google-engine :if 'word)
-;; 		;; 					(gt-deepl-engine :if 'not-word))
-;; 		:render (gt-buffer-render)))
-;; 	:bind
-;; 	((:map mode-specific-map
-;; 				 ("q" . gt-do-translate))))
+(use-package gt
+	:ensure t
+	:custom
+	(gt-langs '(en es ja))
+	(gt-polyglot-p t)
+	(gt-default-translator
+	 (gt-translator
+		:taker (list
+						(gt-taker :pick nil :if 'selection)
+						;; (gt-taker :text 'buffer :pick 'paragraph)
+						(gt-taker :text 'word))
+		:engines (gt-google-engine)
+		;; :engines (list
+		;; 					(gt-google-engine :if 'word)
+		;; 					(gt-deepl-engine :if 'not-word))
+		:render (gt-buffer-render)))
+	:bind
+	((:map mode-specific-map
+				 ("q" . gt-do-translate))))
 #+end_src
 **** gptel
 #+begin_quote
