@@ -33,6 +33,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#development][Development]]
   - [[#version-control-system][Version Control System]]
   - [[#terminal][Terminal]]
+  - [[#email][Email]]
   - [[#org-mode][Org Mode]]
   - [[#miscellaneous][Miscellaneous]]
 - [[#license][License]]
@@ -615,9 +616,7 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
 Emacs Nerd Font Icons Library
 #+end_quote
 #+begin_src emacs-lisp
-;; Remember to do M-x and run `nerd-icons-install-fonts' to get the
-;; font files.  Then restart Emacs to see the effect.
-(use-package nerd-icons	:ensure t)
+(use-package nerd-icons :ensure t)
 #+end_src
 ***** nerd-icons-completion
 #+begin_quote
@@ -681,6 +680,14 @@ Emacs: display ugly ^L page breaks as tidy horizontal lines
 									help-mode-hook
 									magit-mode-hook))
 		(add-to-list 'page-break-lines-modes mode)))
+#+end_src
+**** show-font
+#+begin_quote
+ Show font features in an Emacs buffer
+#+end_quote
+#+begin_src emacs-lisp
+(use-package show-font
+	:ensure t)
 #+end_src
 *** Lines
 :PROPERTIES:
@@ -1083,10 +1090,9 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
 		 embark-highlight-indicator
 		 embark-isearch-highlight-indicator))
 	:bind
-	((:map mode-specific-map
-				 ("." . embark-act)
-				 ("," . embark-dwim)
-				 ("*" . embark-act-all))
+	((("C-," . embark-act)
+		("C-." . embark-dwim)
+		("C-*" . embark-act-all))
 	 (:map minibuffer-mode-map
 				 ("C-<" . embark-become)
 				 ("C-SPC" . embark-select))
@@ -1271,9 +1277,9 @@ Jump to things in Emacs tree-style
 	(("M-j" . avy-goto-char-timer)
 	 ("M-J" . avy-goto-char-in-line)
 	 (:map goto-map
+				 ("e" . avy-goto-end-of-line)
 				 ("j" . avy-goto-char-timer)
 				 ("J" . avy-goto-char-in-line)
-				 ("l" . avy-goto-end-of-line)
 				 ("w" . avy-goto-whitespace-end))
 	 (:map isearch-mode-map
 				 ("M-j" . avy-isearch)))
@@ -1426,11 +1432,14 @@ Pentadactyl-like Link Hinting in Emacs with Avy
 (use-package link-hint
 	:ensure t
 	:bind
-	((:map mode-specific-map
-				 ("l o" . link-hint-open-link)
-				 ("l c" . link-hint-copy-link))))
+	((:map goto-map
+				 ("l" . link-hint-open-link)
+				 ("L" . link-hint-copy-link))))
 #+end_src
 **** markdown-mode
+:PROPERTIES:
+:CUSTOM_ID: markdown-mode
+:END:
 #+begin_quote
 Emacs Markdown Mode
 #+end_quote
@@ -1453,6 +1462,9 @@ Emacs Markdown Mode
 				("'" . markdown-edit-code-block)))
 #+end_src
 **** move-dup
+:PROPERTIES:
+:CUSTOM_ID: move-dup
+:END:
 #+begin_quote
 Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
 #+end_quote
@@ -1467,6 +1479,9 @@ Emacs minor mode for Eclipse-like moving and duplications of lines or selections
 	:hook (after-init-hook . global-move-dup-mode))
 #+end_src
 **** pixel-scroll
+:PROPERTIES:
+:CUSTOM_ID: pixel-scroll
+:END:
 #+begin_quote
 Scroll a line smoothly
 #+end_quote
@@ -1485,6 +1500,9 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
 	:hook (after-init-hook . pixel-scroll-precision-mode))
 #+end_src
 **** puni
+:PROPERTIES:
+:CUSTOM_ID: puni
+:END:
 #+begin_quote
 Structured editing (soft deletion, expression navigating & manipulating) that supports many major modes out of the box.
 #+end_quote
@@ -1510,6 +1528,9 @@ Structured editing (soft deletion, expression navigating & manipulating) that su
 				'("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
 #+end_src
 **** replace
+:PROPERTIES:
+:CUSTOM_ID: replace
+:END:
 #+begin_quote
 replace commands for Emacs
 #+end_quote
@@ -1520,6 +1541,9 @@ replace commands for Emacs
 				("o" . occur)))
 #+end_src
 **** savehist
+:PROPERTIES:
+:CUSTOM_ID: savehist
+:END:
 #+begin_quote
 Save minibuffer history
 #+end_quote
@@ -1528,6 +1552,9 @@ Save minibuffer history
 	:hook (after-init-hook . savehist-mode))
 #+end_src
 **** saveplace
+:PROPERTIES:
+:CUSTOM_ID: saveplace
+:END:
 #+begin_quote
 automatically save place in files
 #+end_quote
@@ -1536,6 +1563,9 @@ automatically save place in files
 	:hook (after-init-hook . save-place-mode))
 #+end_src
 **** separedit
+:PROPERTIES:
+:CUSTOM_ID: separedit
+:END:
 #+begin_quote
 Edit comment or string/docstring or code block inside them in separate buffer with your favorite mode
 #+end_quote
@@ -1549,6 +1579,9 @@ Edit comment or string/docstring or code block inside them in separate buffer wi
 				("'" . separedit)))
 #+end_src
 **** simple
+:PROPERTIES:
+:CUSTOM_ID: simple
+:END:
 #+begin_quote
 basic editing commands for Emacs
 #+end_quote
@@ -1560,6 +1593,9 @@ basic editing commands for Emacs
 	(line-number-mode nil))
 #+end_src
 **** string-inflection
+:PROPERTIES:
+:CUSTOM_ID: string-inflection
+:END:
 #+begin_quote
 underscore -> UPCASE -> CamelCase conversion of names
 #+end_quote
@@ -1573,6 +1609,9 @@ underscore -> UPCASE -> CamelCase conversion of names
 								("-" . string-inflection-all-cycle))))
 #+end_src
 **** text-mode
+:PROPERTIES:
+:CUSTOM_ID: text-mode
+:END:
 #+begin_quote
 text mode, and its idiosyncratic commands
 #+end_quote
@@ -1582,6 +1621,9 @@ text mode, and its idiosyncratic commands
 	(text-mode-ispell-word-completion nil)) ; recommended for cape
 #+end_src
 **** tempel
+:PROPERTIES:
+:CUSTOM_ID: tempel
+:END:
 #+begin_quote
 🏛️ TempEl - Simple templates for Emacs
 #+end_quote
@@ -1601,6 +1643,9 @@ text mode, and its idiosyncratic commands
 				 ("M-RET". tempel-done))))
 #+end_src
 **** visual-replace
+:PROPERTIES:
+:CUSTOM_ID: visual-replace
+:END:
 #+begin_quote
 A nicer interface for query-replace on Emacs
 #+end_quote
@@ -1639,6 +1684,9 @@ A nicer interface for query-replace on Emacs
 		(keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
 #+end_src
 **** vundo
+:PROPERTIES:
+:CUSTOM_ID: vundo
+:END:
 #+begin_quote
 Visualize the undo tree.
 #+end_quote
@@ -1716,7 +1764,7 @@ interface for display-line-numbers
 									dired-mode-hook
 									eat-mode-hook
 									eshell-mode-hook
-									;; org-mode-hook
+									org-mode-hook
 									shell-mode-hook
 									term-mode-hook
 									vterm-mode-hook))
@@ -1951,7 +1999,7 @@ An extensible emacs dashboard
 			"Prefix for dashboard launch menu."
 			[("m" "Mastodon" mastodon)
 			 ("o" "OpenStreetMap" osm)
-			 ;; ("g" "GitHub CLI" consult-gh)
+			 ("g" "GitHub CLI" consult-gh)
 			 ;; ("c" "Calibre" calibredb)
 			 ("?" "Gptel" gptel-menu)
 			 ("e" "Mu4e" mu4e)]))
@@ -2536,6 +2584,23 @@ Work with Git forges from the comfort of Magit
 	(forge-owned-accounts '(("brklntmhwk")))
 	(forge-add-pullreq-refspec 'ask))
 #+end_src
+**** git-auto-commit-mode
+#+begin_quote
+Automatically commit to git after each save
+#+end_quote
+#+begin_src emacs-lisp
+(use-package git-auto-commit-mode
+	:ensure t)
+#+end_src
+**** git-commit
+#+begin_quote
+Edit Git commit messages 
+#+end_quote
+#+begin_src emacs-lisp
+(use-package git-commit
+	:ensure t
+	:after magit)
+#+end_src
 **** magit
 #+begin_quote
 It's Magit! A Git Porcelain inside Emacs.
@@ -2608,6 +2673,18 @@ Make Emacs use the $PATH set up by the user's shell
 	(when (or window-system
 						(daemonp))
 		(exec-path-from-shell-initialize)))
+#+end_src
+*** Email
+:PROPERTIES:
+:CUSTOM_ID: email
+:END:
+**** mu4e
+#+begin_quote
+Mu-based mua for emacs
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mu4e
+	:ensure t)
 #+end_src
 *** Org Mode
 :PROPERTIES:
@@ -2887,6 +2964,7 @@ Global identifiers for Org entries
 (use-package org-id
 	:after org
 	:custom
+	(org-id-locations-file (concat (emacs-cache-home) "org-id-locations"))
 	(org-id-link-to-org-use-id t)
 	(org-id-search-archives nil))
 #+end_src
@@ -2960,7 +3038,7 @@ Automatic tables of contents for Org-mode files
 	:ensure t
 	:after org
 	:custom
-	(org-modern-hide-stars t)
+	(org-modern-hide-stars nil)
 	:hook
 	(org-mode-hook . org-modern-mode)
 	(org-agenda-finalize . org-modern-agenda))
@@ -3155,25 +3233,25 @@ Show Epkg information in completion annotations
 Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package go-translate
-;; 	:ensure t
-;; 	:custom
-;; 	(gt-langs '(en es ja))
-;; 	(gt-polyglot-p t)
-;; 	(gt-default-translator
-;; 	 (gt-translator
-;; 		:taker (list
-;; 						(gt-taker :pick nil :if 'selection)
-;; 						;; (gt-taker :text 'buffer :pick 'paragraph)
-;; 						(gt-taker :text 'word))
-;; 		:engines (gt-google-engine)
-;; 		;; :engines (list
-;; 		;; 					(gt-google-engine :if 'word)
-;; 		;; 					(gt-deepl-engine :if 'not-word))
-;; 		:render (gt-buffer-render)))
-;; 	:bind
-;; 	((:map mode-specific-map
-;; 				 ("q" . gt-do-translate))))
+(use-package gt
+	:ensure t
+	:custom
+	(gt-langs '(en es ja))
+	(gt-polyglot-p t)
+	(gt-default-translator
+	 (gt-translator
+		:taker (list
+						(gt-taker :pick nil :if 'selection)
+						;; (gt-taker :text 'buffer :pick 'paragraph)
+						(gt-taker :text 'word))
+		:engines (gt-google-engine)
+		;; :engines (list
+		;; 					(gt-google-engine :if 'word)
+		;; 					(gt-deepl-engine :if 'not-word))
+		:render (gt-buffer-render)))
+	:bind
+	((:map mode-specific-map
+				 ("q" . gt-do-translate))))
 #+end_src
 **** gptel
 #+begin_quote
