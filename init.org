@@ -908,7 +908,14 @@ Preview completion with inline overlay
 		 (?f "File" bookmark-default-handler)
 		 (?h "Help" help-bookmark-jump)
 		 (?i "Info" Info-bookmark-jump)
-		 (?o "Org headings" org-bookmark-heading-jump)))
+		 (?o "Org headings" org-bookmark-heading-jump)
+		 (?w "Woman" woman-bookmark-jump)))
+	(consult-buffer-sources
+	 `(consult--source-project-buffer
+		 consult--source-project-recent-file
+		 consult--source-buffer
+		 consult--source-recent-file))
+	(consult-narrow-key "<")
 	:bind
 	(([remap bookmark-jump] . consult-bookmark)
 	 ([remap goto-line] . consult-goto-line)
