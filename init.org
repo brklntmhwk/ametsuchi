@@ -1110,7 +1110,7 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
 	 (:map help-map
 				 ("b" . embark-bindings))))
 #+end_src
-***** emburk-consult
+***** embark-consult
 #+begin_quote
 Consult integration for Embark
 #+end_quote
