@@ -1229,6 +1229,13 @@ vertico-posframe is an vertico extension, which lets vertico use posframe to sho
 :PROPERTIES:
 :CUSTOM_ID: editing
 :END:
+**** fns.c
+#+begin_quote
+Random utility Lisp functions.
+#+end_quote
+#+begin_src emacs-lisp
+(setq use-short-answers t)
+#+end_src
 **** abbrev
 #+begin_quote
 abbrev mode commands for Emacs
