@@ -413,7 +413,9 @@ frame-local tabs with named persistent window configurations
 	(tab-bar-auto-width-max '(320 25))
 	(tab-bar-new-tab-choice "*scratch*")
 	:bind
-	((:map tab-bar-history-mode-map
+	((:map tab-prefix-map
+				 ("=" . tab-bar-move-window-to-tab))
+	 (:map tab-bar-history-mode-map
 				 :map tab-prefix-map
 				 (">" . tab-bar-history-forward)
 				 ("<" . tab-bar-history-back)))
