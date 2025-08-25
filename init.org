@@ -417,7 +417,9 @@ frame-local tabs with named persistent window configurations
 				 :map tab-prefix-map
 				 (">" . tab-bar-history-forward)
 				 ("<" . tab-bar-history-back)))
-	:hook (after-init-hook . tab-bar-history-mode))
+	:hook (after-init-hook . tab-bar-history-mode)
+	:config
+	(advice-add 'tab-new :after #'find-file))
 #+end_src
 **** window
 #+begin_quote
