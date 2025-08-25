@@ -1101,8 +1101,8 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
 		 embark-highlight-indicator
 		 embark-isearch-highlight-indicator))
 	:bind
-	((("C-," . embark-act)
-		("C-." . embark-dwim)
+	((("C-." . embark-act)
+		("C->" . embark-dwim)
 		("C-*" . embark-act-all))
 	 (:map minibuffer-mode-map
 				 ("C-<" . embark-become)
