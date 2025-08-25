@@ -2542,8 +2542,8 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
 	:defer 7
 	:custom
 	(blamer-idle-time 0.5)
-	(blamer-max-commit-message-length 30)
-	(blamer-max-lines 30)
+	(blamer-max-commit-message-length 50)
+	(blamer-max-lines 40)
 	(blamer-min-offset 60)
 	(blamer-author-formatter "%s ")
 	(blamer-commit-formatter "● \'%s\' ● ")
