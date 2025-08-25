@@ -1117,7 +1117,7 @@ Consult integration for Embark
 #+begin_src emacs-lisp
 (use-package embark-consult
 	:after (consult embark)
-	:hook (embark-collect-mode . consult-preview-at-point-mode))
+	:hook (embark-collect-mode-hook . consult-preview-at-point-mode))
 #+end_src
 ***** emburk-org
 #+begin_quote
