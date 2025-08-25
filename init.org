@@ -2616,7 +2616,6 @@ Edit Git commit messages
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-commit
-	:ensure t
 	:after magit)
 #+end_src
 **** magit
