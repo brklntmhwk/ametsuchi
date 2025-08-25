@@ -3411,3 +3411,4 @@ Below are some of the resources I frequently consulted:
 - [[https://github.com/terlar/emacs-config][Terlar's Emacs Config]]
 - [[https://github.com/jwiegley/dot-emacs][Jwiegley's Dot Emacs]]
 - [[https://karthinks.com/][Karthinks.com]]
+- [[https://www.masteringemacs.org/][Mastering Emacs]]
