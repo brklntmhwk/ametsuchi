@@ -1119,7 +1119,7 @@ Consult integration for Embark
 	:after (consult embark)
 	:hook (embark-collect-mode-hook . consult-preview-at-point-mode))
 #+end_src
-***** emburk-org
+***** embark-org
 #+begin_quote
 Embark targets and actions for Org Mode
 #+end_quote
