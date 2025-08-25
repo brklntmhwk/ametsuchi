@@ -968,9 +968,9 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
 	(:map ctl-x-map
 				("M-g" . consult-gh))
 	:config
-	((add-to-list 'savehist-additional-variables 'consult-gh--known-orgs-list)
-	 (add-to-list 'savehist-additional-variables 'consult-gh--known-repos-list)
-	 (consult-gh-enable-default-keybindings)))
+	(add-to-list 'savehist-additional-variables 'consult-gh--known-orgs-list)
+	(add-to-list 'savehist-additional-variables 'consult-gh--known-repos-list)
+	(consult-gh-enable-default-keybindings))
 #+end_src
 ***** consult-gh-embark
 #+begin_quote
