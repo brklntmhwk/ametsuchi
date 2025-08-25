@@ -2596,7 +2596,7 @@ Automatically commit to git after each save
 #+end_src
 **** git-commit
 #+begin_quote
-Edit Git commit messages 
+Edit Git commit messages
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-commit
