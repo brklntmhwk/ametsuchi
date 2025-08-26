@@ -192,6 +192,15 @@ Help keeping ~/.config/emacs clean
 :PROPERTIES:
 :CUSTOM_ID: performance-enhancement
 :END:
+**** banchmark-init
+#+begin_quote
+Benchmarks for require and load calls
+#+end_quote
+#+begin_src emacs-lisp
+(use-package benchmark-init
+	:ensure t
+	:hook (after-init-hook . benchmark-init/deactivate))
+#+end_src
 **** edebug
 #+begin_quote
 a source-level debugger for Emacs Lisp
