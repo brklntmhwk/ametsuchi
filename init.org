@@ -10,11 +10,12 @@
 Ametsuchi is the universe ── It encompasses (almost) everything that forms my ideal workstation.
 #+end_quote
 
-This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows.
-
 Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
 :CONTENTS:
-- [[#setup][Setup]]
+- [[#overview][Overview]]
+- [[#cosmological-principle][Cosmological Principle]]
+  - [[#reproducibility][Reproducibility]]
+- [[#big-bang][Big Bang!]]
 - [[#initialization][Initialization]]
   - [[#package-manager][Package Manager]]
   - [[#configuration-macro][Configuration Macro]]
@@ -38,11 +39,45 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#miscellaneous][Miscellaneous]]
 - [[#license][License]]
 - [[#acknowledgements][Acknowledgements]]
+- [[#footnotes][Footnotes]]
 :END:
 
-** Setup
+** Overview
 :PROPERTIES:
-:CUSTOM_ID: setup
+:CUSTOM_ID: overview
+:END:
+This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
+
+|                     | Name          | alternatives                          |
+|---------------------+---------------+---------------------------------------|
+| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                 |
+| Package build       | twist.nix    | package-build                        |
+| Package manager     | twist.el     | package.el, straight.el, elpaca, etc. |
+| Configuration Macro | use-package  | leaf.el, setup.el, etc.             |
+| Project's framework | flake-parts  | flake-utils, snowfall, denix, etc. |
+
+** Cosmological Principle
+:PROPERTIES:
+:CUSTOM_ID: cosmological-principle
+:END:
+*** Reproducibility
+:PROPERTIES:
+:CUSTOM_ID: reproducibility
+:END:
+#+begin_quote
+Reproducibility is a software design concept, where an operation for the same inputs yields the same output. [fn:1]
+#+end_quote
+Unlike the conventional approach where Emacs users install pre-built Emacs Lisp packages from package archive repositories (e.g., ELPA, MELPA, etc.), Ametsuchi builds packages directly from upstream sources and manages their versions via a lockfile machanism provided by twist.nix, which in turn leverages the reproducibility of Nix builds.
+
+This Nix-based approach achieves:
+
+- More secure package installation
+- Greater stability in Emacs
+- More consistent and deliberate version management
+
+** Big Bang!
+:PROPERTIES:
+:CUSTOM_ID: big-bang
 :END:
 
 NOTE: This section is still a work in progress.
@@ -3427,3 +3462,10 @@ Below are some of the resources I frequently consulted:
 - [[https://github.com/jwiegley/dot-emacs][Jwiegley's Dot Emacs]]
 - [[https://karthinks.com/][Karthinks.com]]
 - [[https://www.masteringemacs.org/][Mastering Emacs]]
+
+** Footnotes
+:PROPERTIES:
+:CUSTOM_ID: footnotes
+:END:
+
+[fn:1] https://zero-to-nix.com/concepts/reproducibility/
