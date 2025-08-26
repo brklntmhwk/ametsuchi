@@ -2707,11 +2707,12 @@ Use Delta when displaying diffs in Magit
 Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 #+end_quote
 #+begin_src emacs-lisp
-(use-package magit-delta
+(use-package magit-todos
 	:ensure t
-	:if (executable-find "delta")
 	:after magit
-	:hook (magit-mode . magit-delta-mode))
+	:custom
+	(magit-todos-exclude-globs '(".git/"))
+	:hook (magit-mode-hook . magit-todos-mode))
 #+end_src
 *** Terminal
 :PROPERTIES:
