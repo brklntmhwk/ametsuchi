@@ -280,11 +280,11 @@ Transient user interfaces for various modes
 	(require 'casual-image)
 	:bind
 	((:map calc-mode-map
-				 ("M-h" . casual-calc-tmenu))
+				 ("C-:" . casual-calc-tmenu))
 	 (:map dired-mode-map
-				 ("M-h" . casual-dired-tmenu))
+				 ("C-:" . casual-dired-tmenu))
 	 (:map image-mode-map
-				 ("M-h" . casual-image-tmenu))))
+				 ("C-:" . casual-image-tmenu))))
 #+end_src
 **** help
 #+begin_quote
