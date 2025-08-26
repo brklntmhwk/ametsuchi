@@ -1763,6 +1763,17 @@ Visualize the undo tree.
 				 ("C-e" . vundo-confirm)))
 	:hook (after-init-hook . vundo-popup-mode))
 #+end_src
+**** ws-butler
+#+begin_quote
+Unobtrusively trim extraneous white-space *ONLY* in lines edited.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package ws-butler
+	:ensure t
+	:hook
+	((prog-mode-hook
+		text-mode-hook) . ws-butler-mode))
+#+end_src
 *** Visual Aid
 :PROPERTIES:
 :CUSTOM_ID: visual-aid
