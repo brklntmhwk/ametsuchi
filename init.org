@@ -3366,12 +3366,11 @@ Org functions for gptel
 Quick LLM lookups in Emacs
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package gptel-quick
-;; 	:ensure t
-;; 	:after (gptel)
-;; 	:config
-;; 	(with-eval-after-load 'embark
-;; 		(keymap-set embark-general-map "?" #'gptel-quick)))
+(use-package gptel-quick
+	:after (gptel)
+	:config
+	(with-eval-after-load 'embark
+		(keymap-set embark-general-map "?" #'gptel-quick)))
 #+end_src
 ***** gptel-rewrite
 #+begin_quote
