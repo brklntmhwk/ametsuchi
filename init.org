@@ -1721,8 +1721,6 @@ A nicer interface for query-replace on Emacs
 	(after-init-hook . visual-replace-global-mode)
 	:bind
 	([remap query-replace] . visual-replace)
-	(:map mode-specific-map
-				("r" . visual-replace))
 	:config
 	(with-eval-after-load 'transient
 		(transient-define-prefix my/visual-replace-mode-transient ()
