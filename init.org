@@ -2501,6 +2501,31 @@ tree-sitter support for Dockerfiles
 	(dockerfile-ts-mode-hook . eglot-ensure)
 	(dockerfile-ts-mode-hook . dprint-on-save-mode))
 #+end_src
+***** elisp-mode
+#+begin_quote
+Emacs Lisp mode
+#+end_quote
+#+begin_src emacs-lisp
+(use-package elisp-mode
+	:config
+	(add-to-list 'auto-mode-alist
+               '("/recipes/[-a-z0-9]+\\'" . lisp-data-mode))
+	(define-skeleton elisp-skeleton
+		"Insert a header for Emacs Lisp files."
+		> ";;; "
+		(file-name-nondirectory (or buffer-file-name (buffer-name)))
+		" --- " _
+		" -*- lexical-binding: t -*-\n"
+		"\n\n\n"
+		";;; "
+		(file-name-nondirectory (or buffer-file-name (buffer-name)))
+		" ends here")
+	(with-eval-after-load 'autoinsert
+		(dolist (entry (reverse
+										'(("\\.dir-locals\\(?:-2\\)?\\.el\\'" . "dir-locals-insert.el")
+											("\\.el\\'" . elisp-skeleton))))
+			(add-to-list 'auto-insert-alist entry))))
+#+end_src
 ***** just-mode
 #+begin_quote
 Emacs mode for justfiles
