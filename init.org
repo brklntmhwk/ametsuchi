@@ -2713,7 +2713,10 @@ Automatically commit to git after each save
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-auto-commit-mode
-	:ensure t)
+	:ensure t
+	:custom
+	;; (gac-default-message "xxx")
+	(gac-silent-message-p t))
 #+end_src
 **** git-commit
 #+begin_quote
