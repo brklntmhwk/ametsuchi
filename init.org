@@ -1311,6 +1311,19 @@ abbrev mode commands for Emacs
 			("imo" "In my opinion")
 			("imho" "In my humble opinion"))))
 #+end_src
+**** autoinsert
+#+begin_quote
+automatic mode-dependent insertion of text into new files
+#+end_quote
+#+begin_src emacs-lisp
+(use-package autoinsert
+	:custom
+	(auto-insert 'other)
+	(auto-insert-directory (concat (emacs-data-home) "templates/autoinsert/"))
+	(auto-insert-query nil)
+	:hook
+	(after-init-hook . auto-insert-mode))
+#+end_src
 **** avy
 #+begin_quote
 Jump to things in Emacs tree-style
