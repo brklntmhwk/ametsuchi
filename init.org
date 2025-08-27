@@ -1868,6 +1868,19 @@ goggles.el - Pulse modified region
 	((prog-mode-hook
 		text-mode-hook) . goggles-mode))
 #+end_src
+**** highlight-indent-guides
+#+begin_quote
+Emacs minor mode to highlight indentation
+#+end_quote
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+	:ensure t
+	:custom
+	(highlight-indent-guides-method 'character)
+	:hook
+	((python-mode-hook
+		yaml-mode-hook) . highlight-indent-guides-mode))
+#+end_src
 **** hl-line
 #+begin_quote
 highlight the current line
