@@ -2745,7 +2745,7 @@ It's Magit! A Git Porcelain inside Emacs.
 				 ("f" . magit-file-dispatch)))
 	:config
 	;; https://www.reddit.com/r/emacs/comments/11auxod/magit_quits_after_a_commit_happen/
-	;; Explicitly set this to prevent the Dashboard buffer from appearing after commits.
+	;; Explicitly set this to prevent the Dashboard buffer from appearing after every commit.
 	(add-hook 'git-commit-post-finish-hook #'magit))
 #+end_src
 ***** magit-delta
