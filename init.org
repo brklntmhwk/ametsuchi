@@ -1706,7 +1706,8 @@ text mode, and its idiosyncratic commands
 (use-package tempel
 	:ensure t
 	:custom
-	(tempel-path (list (expand-file-name "templates/*.eld" user-emacs-directory)))
+	;; (tempel-path (concat (emacs-data-home) "templates/*.eld"))
+	(tempel-path (expand-file-name "templates/*.eld" emacs-data-home))
 	:bind
 	(("M-+" . tempel-complete)
 	 ("M-*" . tempel-insert)
