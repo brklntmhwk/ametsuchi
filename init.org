@@ -2787,7 +2787,10 @@ Emulate A Terminal, in a region, in a buffer and in Eshell
 	(eat-kill-buffer-on-exit t)
 	:bind
 	((:map project-prefix-map
-				 ("t" . eat-preject))))
+				 ("t" . eat-preject)))
+	:config
+	(mapc (lambda (k) (keymap-unset eat-semi-char-mode-map k))
+				'("M-g" "M-o" "M-s")))
 #+end_src
 **** exec-path-from-shell
 #+begin_quote
