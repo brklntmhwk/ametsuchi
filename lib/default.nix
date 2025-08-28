@@ -17,7 +17,7 @@
     {
       pkgs,
       emacsPackage ? inputs.emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk,
-      initFile ? mkInitFile,
+      initFile ? mkInitFile { },
       features ? [ ],
       prependToInitFile ? null,
     }:
