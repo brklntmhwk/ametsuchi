@@ -3,11 +3,23 @@
 
 { inputs, lib, ... }:
 {
+  mkInitFile =
+    {
+      initPath ? "../init.org",
+    }:
+    lib.pipe initPath [
+      builtins.readFile
+      (inputs.org-babel.lib.tangleOrgBabel { })
+      (builtins.toFile "init.el")
+    ];
+
   mkEmacsConfig =
     {
       pkgs,
       emacsPackage ? inputs.emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk,
-      initFile,
+      initFile ? mkInitFile,
+      features ? [ ],
+      prependToInitFile ? null,
     }:
     let
       twistArgs = {
