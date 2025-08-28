@@ -7,14 +7,6 @@ let
     inherit inputs lib;
   };
 
-  ob = inputs.org-babel.lib;
-  initPath = ./init.org;
-  initFile = lib.pipe initPath [
-    builtins.readFile
-    (ob.tangleOrgBabel { })
-    (builtins.toFile "init.el")
-  ];
-
   overlays = [
     inputs.emacs-overlay.overlays.emacs
   ];
@@ -32,21 +24,11 @@ in
   perSystem =
     {
       config,
-      emacsConfig,
+      emacs-config,
       pkgs,
       system,
       ...
     }:
-    let
-      emacsPackage = pkgs.emacs-git-pgtk.overrideAttrs (old: {
-        src = pkgs.fetchFromGitHub {
-          owner = "emacs-mirror";
-          repo = "emacs";
-          inherit (old.src) rev;
-          sha256 = old.src.outputHash;
-        };
-      });
-    in
     {
       _module.args.pkgs = import inputs.nixpkgs {
         inherit system overlays;
