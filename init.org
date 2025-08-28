@@ -2814,8 +2814,8 @@ Make Emacs use the $PATH set up by the user's shell
 Mu-based mua for emacs
 #+end_quote
 #+begin_src emacs-lisp
-(use-package mu4e
-	:ensure t)
+;; (use-package mu4e
+;; 	:ensure t)
 #+end_src
 *** Org Mode
 :PROPERTIES:
