@@ -5,7 +5,7 @@
 let
   mkInitFile =
     {
-      initPath ? "../init.org",
+      initPath ? (../. + "/init.org"),
     }:
     lib.pipe initPath [
       builtins.readFile
