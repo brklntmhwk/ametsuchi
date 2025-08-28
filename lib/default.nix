@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 { inputs, lib, ... }:
-{
+let
   mkInitFile =
     {
       initPath ? "../init.org",
@@ -12,6 +12,9 @@
       (inputs.org-babel.lib.tangleOrgBabel { })
       (builtins.toFile "init.el")
     ];
+in
+{
+  inherit mkInitFile;
 
   mkEmacsConfig =
     {
