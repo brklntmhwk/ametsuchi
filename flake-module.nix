@@ -54,25 +54,28 @@ in
         config.allowUnfreePredicate =
           pkg:
           builtins.elem (lib.getName pkg) [
-            # Add unfree package names that should be allowed to install here.
+            # Add unfree packages that should be allowed to install here.
           ];
       };
-      _module.args.emacsConfig = lib'.mkEmacsConfig {
-        inherit pkgs emacsPackage initFile;
+      _module.args.emacs-config = lib'.mkEmacsConfig {
+        inherit pkgs;
       };
 
       packages = {
-        inherit emacsConfig;
+        inherit emacs-config;
 
+        # https://github.com/akirak/emacs-config/commit/cd81f077e64e836bb8b42cfa7f4228a48c189826
         emacsclient =
           inputs.nixpkgs.legacyPackages.${system}.runCommandLocal "emacsclient"
-            { propagateBuildInputs = [ emacsConfig.emacs ]; }
+            { propagateBuildInputs = [ emacs-config.emacs ]; }
             ''
               mkdir -p $out/bin
-              ln -t $out/bin -s ${emacsConfig.emacs}/bin/emacsclient
+              ln -t $out/bin -s ${emacs-config.emacs}/bin/emacsclient
             '';
+
+        # TODO: add emacs envs with various emacs build versions
       };
 
-      apps = emacsConfig.makeApps { lockDirName = "lock"; };
+      apps = emacs-config.makeApps { lockDirName = "lock"; };
     };
 }
