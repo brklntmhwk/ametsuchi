@@ -56,4 +56,7 @@
           }
         )
       );
+  # TODO: implement a wrapper lib function for making tentative emacs env
+  # NOTE: Consider refactoring this and move to another file (e.g., pkgs.nix)
+  # mkTmpEmacsEnvWrapper = { ... }: { };
 }
