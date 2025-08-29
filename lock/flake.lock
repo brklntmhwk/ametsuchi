@@ -92,8 +92,10 @@
         "type": "github"
       },
       "original": {
+        "lastModified": 1451290400,
         "owner": "jwiegley",
         "repo": "emacs-async",
+        "rev": "1794ea4955c6eeb62471b232a2d4fd6a6925a2c9",
         "type": "github"
       }
     },
@@ -1217,6 +1219,22 @@
         "type": "github"
       }
     },
+    "mastodon": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1754044356,
+        "narHash": "sha256-dRm5nDzpGZicUnNjOUAJlm3ZilfG9BvuuGBkPkcWPY8=",
+        "ref": "refs/heads/main",
+        "rev": "3e05dc0952c9d34d918e629a80492462adb7aa15",
+        "revCount": 3064,
+        "type": "git",
+        "url": "https://codeberg.org/martianh/mastodon.el.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/martianh/mastodon.el.git"
+      }
+    },
     "minions": {
       "flake": false,
       "locked": {
@@ -2122,6 +2140,7 @@
         "magit-todos": "magit-todos",
         "marginalia": "marginalia",
         "markdown-mode": "markdown-mode",
+        "mastodon": "mastodon",
         "minions": "minions",
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
@@ -2181,6 +2200,7 @@
         "string-inflection": "string-inflection",
         "tablist": "tablist",
         "tempel": "tempel",
+        "tp": "tp",
         "treepy": "treepy",
         "ts": "ts",
         "twist": "twist",
@@ -2308,6 +2328,22 @@
         "owner": "minad",
         "repo": "tempel",
         "type": "github"
+      }
+    },
+    "tp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1738829549,
+        "narHash": "sha256-us0DE7dFQT0z7UvTsg8ZI+BaApFDhHKfqLAq/huRYMM=",
+        "ref": "refs/heads/main",
+        "rev": "cce2dfe0ec2b5c070cb13a7bdf95695eeb6e3caf",
+        "revCount": 75,
+        "type": "git",
+        "url": "https://codeberg.org/martianh/tp.el.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/martianh/tp.el.git"
       }
     },
     "treepy": {

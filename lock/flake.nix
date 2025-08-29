@@ -33,8 +33,10 @@
     };
     async = {
       flake = false;
+      lastModified = 1451290400;
       owner = "jwiegley";
       repo = "emacs-async";
+      rev = "1794ea4955c6eeb62471b232a2d4fd6a6925a2c9";
       type = "github";
     };
     avy = {
@@ -456,6 +458,11 @@
       repo = "markdown-mode";
       type = "github";
     };
+    mastodon = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/martianh/mastodon.el.git";
+    };
     minions = {
       flake = false;
       owner = "tarsius";
@@ -809,6 +816,11 @@
       owner = "minad";
       repo = "tempel";
       type = "github";
+    };
+    tp = {
+      flake = false;
+      type = "git";
+      url = "https://codeberg.org/martianh/tp.el.git";
     };
     treepy = {
       flake = false;
