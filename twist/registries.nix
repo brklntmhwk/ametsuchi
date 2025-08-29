@@ -6,9 +6,7 @@
   {
     type = "melpa";
     path = inputs.melpa.outPath + "/recipes";
-    exclude = [
-			"async"
-    ];
+    exclude = [ "async" ];
   }
   {
     type = "elpa";
