@@ -31,9 +31,9 @@
     // prev.packageRequires;
   };
 
-	# https://github.com/akirak/emacs-config/commit/46b304366598e63f3c9fd2b894b8a9c61d2c001a
-	magit-delta = _: super: {
-    packageRequires = super.packageRequires // {
+  # https://github.com/akirak/emacs-config/commit/46b304366598e63f3c9fd2b894b8a9c61d2c001a
+  magit-delta = _: prev: {
+    packageRequires = prev.packageRequires // {
       dash = "0";
       # Override the snapshot version dependency.
       magit = "3";
