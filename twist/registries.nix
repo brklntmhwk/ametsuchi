@@ -6,13 +6,19 @@
   {
     type = "melpa";
     path = inputs.melpa.outPath + "/recipes";
-    exclude = [ ];
+    exclude = [
+			"async"
+    ];
   }
   {
     type = "elpa";
     path = inputs.gnu-elpa.outPath + "/elpa-packages";
     auto-sync-only = true;
-    exclude = [ "org-transclusion" ];
+    exclude = [
+      "async"
+      "org-transclusion"
+      "persist"
+    ];
   }
   {
     type = "archive-contents";
