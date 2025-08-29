@@ -31,6 +31,15 @@
     // prev.packageRequires;
   };
 
+	# https://github.com/akirak/emacs-config/commit/46b304366598e63f3c9fd2b894b8a9c61d2c001a
+	magit-delta = _: super: {
+    packageRequires = super.packageRequires // {
+      dash = "0";
+      # Override the snapshot version dependency.
+      magit = "3";
+    };
+  };
+
   # https://github.com/akirak/emacs-config/commit/f34db5f4ed71e79788c879973840fd549ffe65a2
   persist = _: prev: {
     files = builtins.removeAttrs prev.files [ "persist.texi" ];
