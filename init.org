@@ -328,9 +328,9 @@ Transient commands
 #+begin_src emacs-lisp
 (use-package transient
 	:custom
-	(transient-history-file (concat (emacs-state-home) "transient/history.el"))
-	(transient-values-file (concat (emacs-data-home) "transient/values.el"))
-	(transient-levels-file (concat (emacs-data-home) "transient/levels.el"))
+	(transient-history-file (concat emacs-state-home "transient/history.el"))
+	(transient-values-file (concat emacs-data-home "transient/values.el"))
+	(transient-levels-file (concat emacs-data-home "transient/levels.el"))
 	:config
 	(transient-define-prefix my/toggle-transient ()
 		"Prefix for `toggle-map'"
@@ -366,7 +366,7 @@ browse UN*X manual pages `wo (without) man'
 (use-package woman
 	:custom
 	(woman-fill-column 82)
-	(woman-cache-filename (concat (emacs-cache-home) ".wmncach.el"))
+	(woman-cache-filename (concat emacs-cache-home ".wmncach.el"))
 	:bind
 	(("<f1> M-m" . woman)))
 #+end_src
@@ -873,7 +873,7 @@ print current function in mode line
 	:ensure t
 	:custom
 	(cape-dict-file
-	 (concat (xdg-data-home) "cape/dict"))
+	 (concat emacs-data-home "cape/dict"))
 	:functions
 	(cape-capf-buster
 	 cape-capf-super)
@@ -1012,7 +1012,7 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
 	:if (executable-find "gh")
 	:after consult
 	:custom
-	(consult-gh-default-clone-directory (concat (emacs-documents-dir) "projects/"))
+	(consult-gh-default-clone-directory (concat emacs-documents-dir "projects/"))
 	(consult-gh-issue-maxnum 50)
 	(consult-gh-repo-maxnum 50)
 	(consult-gh-show-preview t)
@@ -1319,7 +1319,7 @@ automatic mode-dependent insertion of text into new files
 (use-package autoinsert
 	:custom
 	(auto-insert 'other)
-	(auto-insert-directory (concat (emacs-data-home) "templates/autoinsert/"))
+	(auto-insert-directory (concat emacs-data-home "templates/autoinsert/"))
 	(auto-insert-query nil)
 	:hook
 	(after-init-hook . auto-insert-mode))
@@ -1706,7 +1706,7 @@ text mode, and its idiosyncratic commands
 (use-package tempel
 	:ensure t
 	:custom
-	;; (tempel-path (concat (emacs-data-home) "templates/*.eld"))
+	;; (tempel-path (concat emacs-data-home "templates/*.eld"))
 	(tempel-path (expand-file-name "templates/*.eld" emacs-data-home))
 	:bind
 	(("M-+" . tempel-complete)
@@ -2052,7 +2052,7 @@ An extensible emacs dashboard
 (use-package dashboard
 	:ensure t
 	:custom
-	(dashboard-startup-banner (concat (emacs-pictures-dir) "dashboard-banner.png"))
+	(dashboard-startup-banner (concat emacs-pictures-dir "dashboard-banner.png"))
 	(dashboard-banner-logo-title "Welcome to Ametsuchi.")
 	;; (dashboard-init-info nil)
 	(dashboard-center-content t)
@@ -2703,7 +2703,7 @@ Work with Git forges from the comfort of Magit
 	:ensure t
 	:after magit
 	:custom
-	(forge-database-file (concat (emacs-data-home) "forge/database.sqlite"))
+	(forge-database-file (concat emacs-data-home "forge/database.sqlite"))
 	(forge-owned-accounts '(("brklntmhwk")))
 	(forge-add-pullreq-refspec 'ask))
 #+end_src
@@ -2830,7 +2830,7 @@ Outline-based notes management and organizer
 	:defer 5
 	:custom
 	;; Org files management
-	(org-default-notes-file (concat (emacs-documents-dir) "inbox.org"))
+	(org-default-notes-file (concat emacs-documents-dir "inbox.org"))
 	;; Agenda-related stuff
 	(org-enforce-todo-dependencies t)
 	(org-extend-today-until 4)
@@ -3095,7 +3095,7 @@ Global identifiers for Org entries
 (use-package org-id
 	:after org
 	:custom
-	(org-id-locations-file (concat (emacs-cache-home) "org-id-locations"))
+	(org-id-locations-file (concat emacs-cache-home "org-id-locations"))
 	(org-id-link-to-org-use-id t)
 	(org-id-search-archives nil))
 #+end_src
@@ -3117,7 +3117,7 @@ A simple org-mode based journaling mode
 	:ensure t
 	:after org
 	:custom
-	(org-journal-dir (concat (emacs-documents-dir) "journal/"))
+	(org-journal-dir (concat emacs-documents-dir "journal/"))
 	(org-journal-prefix-key nil)
 	(org-journal-date-format "%a, %d %b")
 	(org-journal-time-format "")
@@ -3328,7 +3328,7 @@ Emacs calibre client - A Document Management Solution in Emacs.
 (use-package calibredb
 	:ensure t
 	:custom
-	(calibredb-root-dir (concat (emacs-documents-dir) "calibre/"))
+	(calibredb-root-dir (concat emacs-documents-dir "calibre/"))
 	(calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 	;; (calibredb-device-dir "/TODO")
 	(calibredb-download-dir nil)
@@ -3345,7 +3345,7 @@ Browse the Emacsmirror package database
 #+begin_src emacs-lisp
 (use-package epkg
 	:custom
-	(epkg-repository (concat (emacs-data-home) "epkgs/")))
+	(epkg-repository (concat emacs-data-home "epkgs/")))
 #+end_src
 ***** epkg-marginalia
 #+begin_quote
@@ -3465,7 +3465,7 @@ Major mode for reading EPUBs in Emacs
 	:custom
 	(nov-text-width 82)
 	;; File name where last reading places are saved to and restored from.
-	(nov-save-place-file (concat (emacs-cache-home) "nov-places"))
+	(nov-save-place-file (concat emacs-cache-home "nov-places"))
 	:hook (nov-mode-hook . my/nov-mode-setup)
 	:config
 	;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
