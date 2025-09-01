@@ -760,9 +760,7 @@ Buffer manipulation primitives for GNU Emacs.
 								mode-line-buffer-identification
 								(vc-mode vc-mode)
 								"  "
-								(:eval (if minions-mode
-													 minions-mode-line-modes
-												 mode-line-modes))
+								mode-line-modes
 								"  "
 								(mode-line-process ("  " mode-line-process))
 								(current-input-method-title
