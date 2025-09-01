@@ -572,7 +572,7 @@ Set Emacs font configurations using presets
 	(fontaine-presets
 	 '((regular
 			:default-family "HackGen35 Console NF"
-			:default-height 140
+			:default-height 150
 			:fixed-pitch-family "HackGen35 Console NF"
 			:fixed-pitch-height 1.0
 			:variable-pitch-family "Noto Sans"
@@ -580,10 +580,10 @@ Set Emacs font configurations using presets
 			:line-spacing 1)
 		 (medium
 			:inherit regular
-			:default-height 150)
+			:default-height 160)
 		 (large
 			:inherit regular
-			:default-height 175)))
+			:default-height 170)))
 	:config
 	(fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 	(add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
