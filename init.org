@@ -571,19 +571,19 @@ Set Emacs font configurations using presets
 	:custom
 	(fontaine-presets
 	 '((regular
-			:default-family "HackGen35 Console NF"
-			:default-height 150
-			:fixed-pitch-family "HackGen35 Console NF"
+			:default-family "HackGen Console NF"
+			:default-height 130
+			:fixed-pitch-family "HackGen Console NF"
 			:fixed-pitch-height 1.0
 			:variable-pitch-family "Noto Sans"
 			:variable-pitch-height 1.0
 			:line-spacing 1)
 		 (medium
 			:inherit regular
-			:default-height 160)
+			:default-height 140)
 		 (large
 			:inherit regular
-			:default-height 170)))
+			:default-height 150)))
 	:config
 	(fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 	(add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
@@ -612,8 +612,8 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
 	:custom
 	(modus-themes-headings
 	 '((1 . (variable-pitch bold 1.5))
-		 (2 . (variable-pitch rainbow semibold 1.4))
-		 (3 . (variable-pitch rainbow medium 1.3))
+		 (2 . (variable-pitch rainbow bold 1.4))
+		 (3 . (variable-pitch rainbow semibold 1.3))
 		 (4 . (variable-pitch rainbow medium 1.2))
 		 (t . (1.1))))
 	(modus-themes-common-palette-overrides
