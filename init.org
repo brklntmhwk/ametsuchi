@@ -13,33 +13,34 @@ Ametsuchi is the universe ── It encompasses (almost) everything that forms m
 Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
 :CONTENTS:
 - [[#overview][Overview]]
-- [[#cosmological-principle][Cosmological Principle]]
-  - [[#reproducibility][Reproducibility]]
-- [[#big-bang][Big Bang!]]
-- [[#initialization][Initialization]]
-  - [[#package-manager][Package Manager]]
-  - [[#configuration-macro][Configuration Macro]]
-  - [[#data-management][Data Management]]
-  - [[#performance-enhancement][Performance Enhancement]]
-  - [[#custom-keymaps][Custom Keymaps]]
-  - [[#library][Library]]
-  - [[#help][Help]]
-  - [[#window-management][Window Management]]
-  - [[#appearance][Appearance]]
-  - [[#lines][Lines]]
-  - [[#completion][Completion]]
-  - [[#editing][Editing]]
-  - [[#visual-aid][Visual Aid]]
-  - [[#file-and-directory][File and Directory]]
-  - [[#development][Development]]
-  - [[#version-control-system][Version Control System]]
-  - [[#terminal][Terminal]]
-  - [[#email][Email]]
-  - [[#org-mode][Org Mode]]
-  - [[#miscellaneous][Miscellaneous]]
-- [[#license][License]]
-- [[#acknowledgements][Acknowledgements]]
-- [[#footnotes][Footnotes]]
+  - [[#org-super-agenda][org-super-agenda]]
+- [[#org-anki][org-anki]]
+- [[#org-appear][org-appear]]
+- [[#org-autolist][org-autolist]]
+- [[#org-babelob][org-babel(ob)]]
+- [[#org-bookmark-heading][org-bookmark-heading]]
+- [[#org-capture][org-capture]]
+- [[#org-clock][org-clock]]
+- [[#org-clock-convenience][org-clock-convenience]]
+- [[#org-crypt][org-crypt]]
+- [[#org-download][org-download]]
+- [[#org-element][org-element]]
+- [[#org-habit][org-habit]]
+- [[#org-id][org-id]]
+- [[#org-indent][org-indent]]
+- [[#org-journal][org-journal]]
+- [[#org-linkol][org-link(ol)]]
+- [[#org-make-toc][org-make-toc]]
+- [[#org-modern][org-modern]]
+- [[#org-nix-shell][org-nix-shell]]
+- [[#org-pomodoro][org-pomodoro]]
+- [[#org-ql][org-ql]]
+- [[#org-recur][org-recur]]
+- [[#org-refile][org-refile]]
+- [[#org-src][org-src]]
+- [[#org-super-links][org-super-links]]
+- [[#org-transclusion][org-transclusion]]
+- [[#org-web-tools][org-web-tools]]
 :END:
 
 ** Overview
@@ -2891,9 +2892,8 @@ Dynamic task and appointment lists for Org
 	;; (org-agenda-custom-commands
 	;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
 	;; (org-agenda-dim-blocked-tasks nil)
-	(org-agenda-files (lambda ()
-											(directory-files-recursively
-											 emacs-documents-dir "\\.org\\'")))
+	(org-agenda-files (directory-files-recursively
+											emacs-documents-dir "\\.org\\'"))
 	(org-agenda-inhibit-startup t)
 	(org-agenda-restore-windows-after-quit t)
 	;; (org-agenda-use-tag-inheritance '(todo search agenda))
@@ -2904,6 +2904,9 @@ Dynamic task and appointment lists for Org
 	:hook (org-agenda-finalize-hook . hl-line-mode))
 #+end_src
 ***** org-super-agenda
+:PROPERTIES:
+:CUSTOM_ID: org-super-agenda
+:END:
 #+begin_quote
 Supercharge your Org daily/weekly agenda by grouping items
 #+end_quote
@@ -2919,6 +2922,9 @@ Supercharge your Org daily/weekly agenda by grouping items
 	(org-super-agenda-mode 1))
 #+end_src
 **** org-anki
+:PROPERTIES:
+:CUSTOM_ID: org-anki
+:END:
 #+begin_quote
 Sync org notes to Anki via AnkiConnect
 #+end_quote
@@ -2941,6 +2947,9 @@ Sync org notes to Anki via AnkiConnect
 				("U" . org-anki-update-dir)))
 #+end_src
 **** org-appear
+:PROPERTIES:
+:CUSTOM_ID: org-appear
+:END:
 #+begin_quote
 Toggle visibility of hidden Org mode element parts upon entering and leaving an element
 #+end_quote
@@ -2950,6 +2959,9 @@ Toggle visibility of hidden Org mode element parts upon entering and leaving an 
 	:hook (org-mode-hook . org-appear-mode))
 #+end_src
 **** org-autolist
+:PROPERTIES:
+:CUSTOM_ID: org-autolist
+:END:
 #+begin_quote
 Making it even easier to edit lists in org-mode!
 #+end_quote
@@ -2959,6 +2971,9 @@ Making it even easier to edit lists in org-mode!
 	:hook (org-mode-hook . org-autolist-mode))
 #+end_src
 **** org-babel(ob)
+:PROPERTIES:
+:CUSTOM_ID: org-babelob
+:END:
 #+begin_quote
 Working with Code Blocks in Org
 #+end_quote
@@ -2981,6 +2996,9 @@ Working with Code Blocks in Org
 		 (sqlite . t))))
 #+end_src
 **** org-bookmark-heading
+:PROPERTIES:
+:CUSTOM_ID: org-bookmark-heading
+:END:
 #+begin_quote
 Emacs bookmark support for Org-mode
 #+end_quote
@@ -2992,6 +3010,9 @@ Emacs bookmark support for Org-mode
 	(org-bookmark-heading-make-ids t))
 #+end_src
 **** org-capture
+:PROPERTIES:
+:CUSTOM_ID: org-capture
+:END:
 #+begin_quote
 Fast note taking in Org
 #+end_quote
@@ -3008,6 +3029,9 @@ Fast note taking in Org
 				("c" . org-capture)))
 #+end_src
 **** org-clock
+:PROPERTIES:
+:CUSTOM_ID: org-clock
+:END:
 #+begin_quote
 The time clocking code for Org mode
 #+end_quote
@@ -3025,6 +3049,9 @@ The time clocking code for Org mode
 	(org-clock-persist-query-save t))
 #+end_src
 **** org-clock-convenience
+:PROPERTIES:
+:CUSTOM_ID: org-clock-convenience
+:END:
 #+begin_quote
 Convenience functions to work with emacs org mode clocking from the agenda view
 #+end_quote
@@ -3037,6 +3064,9 @@ Convenience functions to work with emacs org mode clocking from the agenda view
 				("M-[" . org-clock-convenience-timestamp-down)))
 #+end_src
 **** org-crypt
+:PROPERTIES:
+:CUSTOM_ID: org-crypt
+:END:
 #+begin_quote
 Public Key Encryption for Org Entries
 #+end_quote
@@ -3050,6 +3080,9 @@ Public Key Encryption for Org Entries
 		(add-hook 'before-save-hook #'org-encrypt-entries nil t)))
 #+end_src
 **** org-download
+:PROPERTIES:
+:CUSTOM_ID: org-download
+:END:
 #+begin_quote
 Drag and drop images to Emacs org-mode
 #+end_quote
@@ -3065,6 +3098,9 @@ Drag and drop images to Emacs org-mode
 	:hook (dired-mode-hook . org-download-enable))
 #+end_src
 **** org-element
+:PROPERTIES:
+:CUSTOM_ID: org-element
+:END:
 #+begin_quote
 Parser for Org Syntax
 #+end_quote
@@ -3075,6 +3111,9 @@ Parser for Org Syntax
 	(setq org-element-cache-persistent nil))
 #+end_src
 **** org-habit
+:PROPERTIES:
+:CUSTOM_ID: org-habit
+:END:
 #+begin_quote
 The habit tracking code for Org
 #+end_quote
@@ -3088,6 +3127,9 @@ The habit tracking code for Org
 	(org-habit-show-done-always-green t))
 #+end_src
 **** org-id
+:PROPERTIES:
+:CUSTOM_ID: org-id
+:END:
 #+begin_quote
 Global identifiers for Org entries
 #+end_quote
@@ -3100,6 +3142,9 @@ Global identifiers for Org entries
 	(org-id-search-archives nil))
 #+end_src
 **** org-indent
+:PROPERTIES:
+:CUSTOM_ID: org-indent
+:END:
 #+begin_quote
 Dynamic indentation for Org
 #+end_quote
@@ -3109,6 +3154,9 @@ Dynamic indentation for Org
 	(org-indent-mode-turns-on-hiding-stars t))
 #+end_src
 **** org-journal
+:PROPERTIES:
+:CUSTOM_ID: org-journal
+:END:
 #+begin_quote
 A simple org-mode based journaling mode
 #+end_quote
@@ -3138,6 +3186,9 @@ A simple org-mode based journaling mode
 				 ("s" . org-journal-search))))
 #+end_src
 **** org-link(ol)
+:PROPERTIES:
+:CUSTOM_ID: org-linkol
+:END:
 #+begin_quote
 Org links library
 #+end_quote
@@ -3150,6 +3201,9 @@ Org links library
 				("l" . org-store-link)))
 #+end_src
 **** org-make-toc
+:PROPERTIES:
+:CUSTOM_ID: org-make-toc
+:END:
 #+begin_quote
 Automatic tables of contents for Org-mode files
 #+end_quote
@@ -3161,6 +3215,9 @@ Automatic tables of contents for Org-mode files
 	:hook (org-mode-hook . org-make-toc-mode))
 #+end_src
 **** org-modern
+:PROPERTIES:
+:CUSTOM_ID: org-modern
+:END:
 #+begin_quote
 🦄 Modern Org Style
 #+end_quote
@@ -3175,6 +3232,9 @@ Automatic tables of contents for Org-mode files
 	(org-agenda-finalize . org-modern-agenda))
 #+end_src
 **** org-nix-shell
+:PROPERTIES:
+:CUSTOM_ID: org-nix-shell
+:END:
 #+begin_quote
 Use buffer-local nix-shell environments in org-mode.
 #+end_quote
@@ -3184,6 +3244,9 @@ Use buffer-local nix-shell environments in org-mode.
 	:hook (org-mode-hook . org-nix-shell-mode))
 #+end_src
 **** org-pomodoro
+:PROPERTIES:
+:CUSTOM_ID: org-pomodoro
+:END:
 #+begin_quote
 pomodoro technique for org-mode
 #+end_quote
@@ -3198,6 +3261,9 @@ pomodoro technique for org-mode
 	(org-pomodoro-long-break-length 20))
 #+end_src
 **** org-ql
+:PROPERTIES:
+:CUSTOM_ID: org-ql
+:END:
 #+begin_quote
 A searching tool for Org-mode, including custom query languages, commands, saved searches and agenda-like views, etc.
 #+end_quote
@@ -3210,6 +3276,9 @@ A searching tool for Org-mode, including custom query languages, commands, saved
 				("C-c C-x /" . org-ql-sparse-tree)))
 #+end_src
 **** org-recur
+:PROPERTIES:
+:CUSTOM_ID: org-recur
+:END:
 #+begin_quote
 Simple recurring org-mode tasks.
 #+end_quote
@@ -3221,6 +3290,9 @@ Simple recurring org-mode tasks.
 	 (org-agenda-mode-hook . org-recur-agenda-mode)))
 #+end_src
 **** org-refile
+:PROPERTIES:
+:CUSTOM_ID: org-refile
+:END:
 #+begin_quote
 Refile Org Subtrees
 #+end_quote
@@ -3237,6 +3309,9 @@ Refile Org Subtrees
 	(org-refile-use-outline-path 'file))
 #+end_src
 **** org-src
+:PROPERTIES:
+:CUSTOM_ID: org-src
+:END:
 #+begin_quote
 Source code examples in Org
 #+end_quote
@@ -3249,6 +3324,9 @@ Source code examples in Org
 	(org-edit-src-content-indentation 0))
 #+end_src
 **** org-super-links
+:PROPERTIES:
+:CUSTOM_ID: org-super-links
+:END:
 #+begin_quote
 Package to create links with auto backlinks
 #+end_quote
@@ -3264,6 +3342,9 @@ Package to create links with auto backlinks
 				 ("s" . org-super-links-store-link))))
 #+end_src
 **** org-transclusion
+:PROPERTIES:
+:CUSTOM_ID: org-transclusion
+:END:
 #+begin_quote
 Emacs package to enable transclusion with Org Mode
 #+end_quote
@@ -3276,6 +3357,9 @@ Emacs package to enable transclusion with Org Mode
 	:hook (org-mode-hook . org-transclusion-mode))
 #+end_src
 **** org-web-tools
+:PROPERTIES:
+:CUSTOM_ID: org-web-tools
+:END:
 #+begin_quote
 View, capture, and archive Web pages in Org-mode
 #+end_quote
