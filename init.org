@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: MIT
 
 #+begin_quote
-Ametsuchi is the universe  It encompasses (almost) everything that forms my ideal Emacs workstation, a living cosmos where creativity, logic, and intuition intertwine.
+Ametsuchi is the universe -- It encompasses (almost) everything that forms my ideal Emacs workstation, a living cosmos where creativity, logic, and intuition intertwine.
 #+end_quote
 
 Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
@@ -47,7 +47,6 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 :CUSTOM_ID: overview
 :END:
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
-
 
 |                     | Name          | Alternatives                         |
 |---------------------+---------------+---------------------------------------|
@@ -572,7 +571,7 @@ Set Emacs font configurations using presets
 	(fontaine-presets
 	 '((regular
 			:default-family "HackGen Console NF"
-			:default-height 120
+			:default-height 130
 			:fixed-pitch-family "HackGen Console NF"
 			:fixed-pitch-height 1.0
 			:variable-pitch-family "Noto Sans"
@@ -580,7 +579,7 @@ Set Emacs font configurations using presets
 			:line-spacing 1)
 		 (medium
 			:inherit regular
-			:default-height 135)
+			:default-height 140)
 		 (large
 			:inherit regular
 			:default-height 150)))
