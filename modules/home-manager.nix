@@ -51,6 +51,7 @@ in
       # Add font packages that will be used in your Emacs config.
       hackgen-font
       hackgen-nf-font
+      nerd-fonts.symbols-only # Nerd icons
     ];
 
     # Generate a desktop file for emacsclient.
