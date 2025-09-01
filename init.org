@@ -89,7 +89,7 @@ NOTE: This section is still a work in progress.
 :END:
 
 #+begin_src emacs-lisp
-  ;;; init.el -*- lexical-binding: t; -*-
+;;; init.el -*- lexical-binding: t; -*-
 #+end_src
 
 Emacs packages and built-in features are hereafter categorized according to the realms in which they operate. That said, the categorization is *not* mutually exclusive; some items may belong to multiple categories. In the event of duplication, the following rules apply:
