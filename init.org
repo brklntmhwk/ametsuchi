@@ -583,6 +583,8 @@ Set Emacs font configurations using presets
 		 (large
 			:inherit regular
 			:default-height 150)))
+	:hook
+	(after-init-hook . fontaine-mode)
 	:config
 	(fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 	(add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
