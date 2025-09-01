@@ -735,8 +735,7 @@ Emacs: display ugly ^L page breaks as tidy horizontal lines
  Show font features in an Emacs buffer
 #+end_quote
 #+begin_src emacs-lisp
-(use-package show-font
-	:ensure t)
+(use-package show-font :ensure t)
 #+end_src
 *** Lines
 :PROPERTIES:
