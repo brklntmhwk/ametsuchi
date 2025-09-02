@@ -642,6 +642,12 @@
       repo = "org-super-links";
       type = "github";
     };
+    org-superstar = {
+      flake = false;
+      owner = "integral-dw";
+      repo = "org-superstar-mode";
+      type = "github";
+    };
     org-transclusion = {
       flake = false;
       lastModified = 1716239161;

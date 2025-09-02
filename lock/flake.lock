@@ -1715,6 +1715,22 @@
         "type": "github"
       }
     },
+    "org-superstar": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756585266,
+        "narHash": "sha256-r+c3iJuM6pliLAHh8GUuW0tdAVdYh0/SsfNQ2sFeXnI=",
+        "owner": "integral-dw",
+        "repo": "org-superstar-mode",
+        "rev": "be423ca3670ecbb9904b923c7a487c56c21380a8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "integral-dw",
+        "repo": "org-superstar-mode",
+        "type": "github"
+      }
+    },
     "org-transclusion": {
       "flake": false,
       "locked": {
@@ -2171,6 +2187,7 @@
         "org-recur": "org-recur",
         "org-super-agenda": "org-super-agenda",
         "org-super-links": "org-super-links",
+        "org-superstar": "org-superstar",
         "org-transclusion": "org-transclusion",
         "org-web-tools": "org-web-tools",
         "osm": "osm",
