@@ -825,9 +825,11 @@ Lightweight scrollbar for the Emacs mode line
 	(mlscroll-right-align nil)
 	(mlscroll-alter-percent-position 'replace)
 	(mlscroll-minimum-current-width 5)
-	:hook
-	((after-init-hook
-		server-after-make-frame-hook) . mlscroll-mode))
+	:init
+	;; https://apribase.net/2024/06/20/emacs-as-daemon/
+	(if (daemonp)
+			(add-hook 'server-after-make-frame-hook #'mlscroll-mode)
+		(mlscroll-mode 1)))
 #+end_src
 **** moody
 #+begin_quote
