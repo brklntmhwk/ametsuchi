@@ -162,12 +162,12 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 
 (defvar emacs-documents-dir
 	(concat (or (xdg-user-dir "DOCUMENTS")
-							"~/Documents/")
+							"~/Documents")
 					"/emacs/"))
 
 (defvar emacs-pictures-dir
 	(concat (or (xdg-user-dir "PICTURES")
-							"~/Pictures/")
+							"~/Pictures")
 					"/emacs/"))
 #+end_src
 **** custom
