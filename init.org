@@ -160,17 +160,15 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 (defvar emacs-state-home
 	(concat (xdg-state-home) "/emacs/"))
 
-(defvar emacs-pictures-dir
-	(let ((pics-dir (xdg-user-dir "PICTURES")))
-		(if (string-empty-p pics-dir)
-				"~/Pictures/"
-			(concat pics-dir "/emacs/"))))
-
 (defvar emacs-documents-dir
-	(let ((docs-dir (xdg-user-dir "DOCUMENTS")))
-		(if (string-empty-p docs-dir)
-				"~/Documents/"
-			(concat docs-dir "/emacs/"))))
+	(concat (or (xdg-user-dir "DOCUMENTS")
+							"~/Documents/")
+					"/emacs/"))
+
+(defvar emacs-pictures-dir
+	(concat (or (xdg-user-dir "PICTURES")
+							"~/Pictures/")
+					"/emacs/"))
 #+end_src
 **** custom
 #+begin_quote
