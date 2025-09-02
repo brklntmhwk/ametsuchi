@@ -636,6 +636,8 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
 			 ;; ace-window
 			 `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
 			 `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
+			 ;; blamer
+			 `(blamer-face ((,c :inherit default :height 1.0)))
 			 ;; dired-filter
 			 `(‎dired-filter-group-header‎ ((,c :background ,bg-lavender :box(:line-width 2 :color ,bg-lavender))))
 			 ;; goggles
