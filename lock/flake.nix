@@ -33,14 +33,22 @@
     };
     async = {
       flake = false;
+      lastModified = 1451290400;
       owner = "jwiegley";
       repo = "emacs-async";
+      rev = "1794ea4955c6eeb62471b232a2d4fd6a6925a2c9";
       type = "github";
     };
     avy = {
       flake = false;
       owner = "abo-abo";
       repo = "avy";
+      type = "github";
+    };
+    benchmark-init = {
+      flake = false;
+      owner = "dholm";
+      repo = "benchmark-init-el";
       type = "github";
     };
     blamer = {
@@ -252,6 +260,18 @@
       repo = "envrc";
       type = "github";
     };
+    epkg = {
+      flake = false;
+      owner = "emacscollective";
+      repo = "epkg";
+      type = "github";
+    };
+    epkg-marginalia = {
+      flake = false;
+      owner = "emacscollective";
+      repo = "epkg-marginalia";
+      type = "github";
+    };
     esxml = {
       flake = false;
       owner = "tali713";
@@ -300,6 +320,12 @@
       repo = "ghub";
       type = "github";
     };
+    git-auto-commit-mode = {
+      flake = false;
+      owner = "ryuslash";
+      repo = "git-auto-commit-mode";
+      type = "github";
+    };
     gntp = {
       flake = false;
       owner = "tekai";
@@ -324,6 +350,12 @@
       repo = "grugru";
       type = "github";
     };
+    gt = {
+      flake = false;
+      owner = "lorniu";
+      repo = "gt.el";
+      type = "github";
+    };
     helpful = {
       flake = false;
       owner = "Wilfred";
@@ -334,6 +366,12 @@
       flake = false;
       owner = "hlissner";
       repo = "emacs-hide-mode-line";
+      type = "github";
+    };
+    highlight-indent-guides = {
+      flake = false;
+      owner = "DarthFennec";
+      repo = "highlight-indent-guides";
       type = "github";
     };
     hl-todo = {
@@ -400,6 +438,12 @@
       flake = false;
       owner = "magit";
       repo = "magit";
+      type = "github";
+    };
+    magit-todos = {
+      flake = false;
+      owner = "alphapapa";
+      repo = "magit-todos";
       type = "github";
     };
     marginalia = {
@@ -598,8 +642,15 @@
       repo = "org-super-links";
       type = "github";
     };
+    org-superstar = {
+      flake = false;
+      owner = "integral-dw";
+      repo = "org-superstar-mode";
+      type = "github";
+    };
     org-transclusion = {
       flake = false;
+      lastModified = 1716239161;
       type = "tarball";
       url = "https://elpa.gnu.org/packages/org-transclusion-1.4.0.tar";
     };
@@ -633,6 +684,18 @@
       repo = "page-break-lines";
       type = "github";
     };
+    pcre2el = {
+      flake = false;
+      owner = "joddie";
+      repo = "pcre2el";
+      type = "github";
+    };
+    pdd = {
+      flake = false;
+      owner = "lorniu";
+      repo = "pdd.el";
+      type = "github";
+    };
     pdf-tools = {
       flake = false;
       owner = "vedang";
@@ -641,11 +704,13 @@
     };
     peg = {
       flake = false;
+      lastModified = 1711878471;
       type = "tarball";
       url = "https://elpa.gnu.org/packages/peg-1.0.1.tar";
     };
     persist = {
       flake = false;
+      lastModified = 1718485631;
       type = "tarball";
       url = "https://elpa.gnu.org/packages/persist-0.6.1.tar";
     };
@@ -726,6 +791,12 @@
       flake = false;
       owner = "twlz0ne";
       repo = "separedit.el";
+      type = "github";
+    };
+    show-font = {
+      flake = false;
+      owner = "protesilaos";
+      repo = "show-font";
       type = "github";
     };
     spinner = {
@@ -821,6 +892,12 @@
       owner = "magit";
       repo = "with-editor";
       type = "github";
+    };
+    ws-butler = {
+      flake = false;
+      ref = "elpa/ws-butler";
+      type = "git";
+      url = "https://git.savannah.gnu.org/git/emacs/nongnu.git";
     };
     xterm-color = {
       flake = false;

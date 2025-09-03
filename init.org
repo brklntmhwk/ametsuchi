@@ -7,17 +7,18 @@
 # SPDX-License-Identifier: MIT
 
 #+begin_quote
-Ametsuchi is the universe ── It encompasses (almost) everything that forms my ideal workstation.
+Ametsuchi is the universe -- It encompasses (almost) everything that forms my ideal Emacs workstation, a living cosmos where creativity, logic, and intuition intertwine.
 #+end_quote
-
-This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows.
 
 Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
 :CONTENTS:
-- [[#setup][Setup]]
+- [[#overview][Overview]]
+- [[#cosmological-principle][Cosmological Principle]]
+  - [[#reproducibility][Reproducibility]]
+- [[#big-bang][Big Bang!]]
 - [[#initialization][Initialization]]
-  - [[#package-manager][Package Manager]]
   - [[#configuration-macro][Configuration Macro]]
+  - [[#package-manager][Package Manager]]
   - [[#data-management][Data Management]]
   - [[#performance-enhancement][Performance Enhancement]]
   - [[#custom-keymaps][Custom Keymaps]]
@@ -36,13 +37,48 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#email][Email]]
   - [[#org-mode][Org Mode]]
   - [[#miscellaneous][Miscellaneous]]
+  - [[#personal][Personal]]
 - [[#license][License]]
 - [[#acknowledgements][Acknowledgements]]
+- [[#footnotes][Footnotes]]
 :END:
 
-** Setup
+** Overview
 :PROPERTIES:
-:CUSTOM_ID: setup
+:CUSTOM_ID: overview
+:END:
+This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
+
+|                     | Name          | Alternatives                         |
+|---------------------+---------------+---------------------------------------|
+| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                 |
+| Package build       | twist.nix    | package-build                        |
+| Package manager     | twist.el     | package.el, straight.el, elpaca, etc. |
+| Configuration Macro | use-package  | leaf.el, setup.el, etc.             |
+| Project's framework | flake-parts  | flake-utils, snowfall, denix, etc. |
+
+** Cosmological Principle
+:PROPERTIES:
+:CUSTOM_ID: cosmological-principle
+:END:
+*** Reproducibility
+:PROPERTIES:
+:CUSTOM_ID: reproducibility
+:END:
+#+begin_quote
+Reproducibility is a software design concept, where an operation for the same inputs yields the same output. [fn:1]
+#+end_quote
+Unlike the conventional approach where Emacs users install pre-built Emacs Lisp packages from package archive repositories (e.g., ELPA, MELPA, etc.), Ametsuchi builds packages directly from upstream sources and manages their versions via a lockfile machanism provided by twist.nix, which in turn leverages the reproducibility of Nix builds.
+
+This Nix-based approach achieves:
+
+- More secure package installation
+- Greater stability in Emacs
+- More consistent and deliberate version management
+
+** Big Bang!
+:PROPERTIES:
+:CUSTOM_ID: big-bang
 :END:
 
 NOTE: This section is still a work in progress.
@@ -51,9 +87,8 @@ NOTE: This section is still a work in progress.
 :PROPERTIES:
 :CUSTOM_ID: initialization
 :END:
-
 #+begin_src emacs-lisp
-  ;;; init.el -*- lexical-binding: t; -*-
+;;; init.el -*- lexical-binding: t; -*-
 #+end_src
 
 Emacs packages and built-in features are hereafter categorized according to the realms in which they operate. That said, the categorization is *not* mutually exclusive; some items may belong to multiple categories. In the event of duplication, the following rules apply:
@@ -63,22 +98,6 @@ For simplicity, assume that there are only two sets, 𝐀 and 𝐁, where 𝐀 �
 - "𝐀 is a proper subset of 𝐁 (𝐀 ⊂ 𝐁)"
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), and 𝓨 is not in the intersection of 𝐀 and 𝐁"
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), 𝓨 is in the intersection of 𝐀 and 𝐁, and you feel that 𝓨 is relatively closer to 𝐀"
-
-*** Package Manager
-:PROPERTIES:
-:CUSTOM_ID: package-manager
-:END:
-**** twist
-#+begin_quote
-Hot-reload Emacs Lisp packages configured with twist.nix
-#+end_quote
-#+begin_src emacs-lisp
-(use-package twist
-	:ensure t
-	:hook (emacs-startup-hook . twist-watch-mode)
-	:bind
-	(("<f12>" . twist-update)))
-#+end_src
 *** Configuration Macro
 :PROPERTIES:
 :CUSTOM_ID: configuration-macro
@@ -89,21 +108,36 @@ A configuration macro for simplifying your .emacs
 #+end_quote
 #+begin_src emacs-lisp
 (eval-when-compile
-	(require 'use-package))
+  (require 'use-package))
 
 (eval-and-compile
-	(setq-default use-package-ensure-function #'(lambda (&rest args) t)
-								use-package-always-defer t
-								use-package-hook-name-suffix nil
-								use-package-verbose t
-								use-package-expand-minimally nil))
+  (setq-default use-package-ensure-function #'(lambda (&rest args) t)
+                use-package-always-defer t
+                use-package-hook-name-suffix nil
+                use-package-verbose t
+                use-package-expand-minimally nil))
 
 (if init-file-debug
-		(setq-default use-package-verbose t
-									use-package-expand-minimally nil
-									use-package-compute-statistics t)
-	(setq-default use-package-verbose nil
-								use-package-expand-minimally t))
+    (setq-default use-package-verbose t
+                  use-package-expand-minimally nil
+                  use-package-compute-statistics t)
+  (setq-default use-package-verbose nil
+                use-package-expand-minimally t))
+#+end_src
+*** Package Manager
+:PROPERTIES:
+:CUSTOM_ID: package-manager
+:END:
+**** twist
+#+begin_quote
+Hot-reload Emacs Lisp packages configured with twist.nix
+#+end_quote
+#+begin_src emacs-lisp
+(use-package twist
+  :ensure t
+  :hook (emacs-startup-hook . twist-watch-mode)
+  :bind
+  (("<f12>" . twist-update)))
 #+end_src
 *** Data Management
 :PROPERTIES:
@@ -114,22 +148,26 @@ A configuration macro for simplifying your .emacs
 (require 'xdg)
 
 (defvar emacs-config-home
-	(concat (xdg-config-home) "/emacs/"))
+  (concat (xdg-config-home) "/emacs/"))
 
 (defvar emacs-cache-home
-	(concat (xdg-cache-home) "/emacs/"))
+  (concat (xdg-cache-home) "/emacs/"))
 
 (defvar emacs-data-home
-	(concat (xdg-data-home) "/emacs/"))
+  (concat (xdg-data-home) "/emacs/"))
 
 (defvar emacs-state-home
-	(concat (xdg-state-home) "/emacs/"))
-
-(defvar emacs-pictures-dir
-	(concat (xdg-user-dir "PICTURES") "/emacs/"))
+  (concat (xdg-state-home) "/emacs/"))
 
 (defvar emacs-documents-dir
-	(concat (xdg-user-dir "DOCUMENTS") "/emacs/"))
+  (concat (or (xdg-user-dir "DOCUMENTS")
+              "~/Documents")
+          "/emacs/"))
+
+(defvar emacs-pictures-dir
+  (concat (or (xdg-user-dir "PICTURES")
+              "~/Pictures")
+          "/emacs/"))
 #+end_src
 **** custom
 #+begin_quote
@@ -137,10 +175,10 @@ tools for declaring and initializing options
 #+end_quote
 #+begin_src emacs-lisp
 (use-package custom
-	:custom
-	(custom-file (locate-user-emacs-file "custom.el"))
-	:config
-	(load custom-file :no-error-if-file-is-missing))
+  :custom
+  (custom-file (locate-user-emacs-file "custom.el"))
+  :config
+  (load custom-file :no-error-if-file-is-missing))
 #+end_src
 **** no-littering
 #+begin_quote
@@ -148,24 +186,33 @@ Help keeping ~/.config/emacs clean
 #+end_quote
 #+begin_src emacs-lisp
 (use-package no-littering
-	:ensure t
-	:custom
-	(no-littering-var-directory emacs-cache-home)
-	(no-littering-etc-directory emacs-data-home))
+  :ensure t
+  :custom
+  (no-littering-var-directory emacs-cache-home)
+  (no-littering-etc-directory emacs-data-home))
 #+end_src
 *** Performance Enhancement
 :PROPERTIES:
 :CUSTOM_ID: performance-enhancement
 :END:
+**** banchmark-init
+#+begin_quote
+Benchmarks for require and load calls
+#+end_quote
+#+begin_src emacs-lisp
+(use-package benchmark-init
+  :ensure t
+  :hook (after-init-hook . benchmark-init/deactivate))
+#+end_src
 **** edebug
 #+begin_quote
 a source-level debugger for Emacs Lisp
 #+end_quote
 #+begin_src emacs-lisp
 (use-package edebug
-	:config
-	;; Prevent `edebug' default bindings from interfering with those of `activities-map'.
-	(setq edebug-inhibit-emacs-lisp-mode-bindings t))
+  :config
+  ;; Prevent `edebug' default bindings from interfering with those of `activities-map'.
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t))
 #+end_src
 **** gcmh
 #+begin_quote
@@ -173,13 +220,13 @@ The Garbage Collector Magic Hack
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gcmh
-	:ensure t
-	:custom
-	(gcmh-idle-delay 'auto)
-	(gcmh-high-cons-threshold (* 128 1024 1024))
-	(gcmh-verbose init-file-debug)
-	:hook
-	(after-init-hook . gcmh-mode))
+  :ensure t
+  :custom
+  (gcmh-idle-delay 'auto)
+  (gcmh-high-cons-threshold (* 128 1024 1024))
+  (gcmh-verbose init-file-debug)
+  :hook
+  (after-init-hook . gcmh-mode))
 #+end_src
 *** Custom Keymaps
 :PROPERTIES:
@@ -189,22 +236,22 @@ The Garbage Collector Magic Hack
 Eight looks like going back and forth between two states as in its shape,"8".
 #+begin_src emacs-lisp
 (defvar toggle-prefix "<f8>"
-	"Key prefix for `toggle-map'.")
+  "Key prefix for `toggle-map'.")
 
 (defvar-keymap toggle-map
-	:doc "Keymap for common toggle actions."
-	:prefix 'toggle-map-prefix
-	"*" '("Light/dark theme" . modus-themes-toggle)
-	"=" '("Calculator" . calc)
-	"b" '("Blamer" . blamer-mode)
-	"d" '("Debug on error" . toggle-debug-on-error)
-	"f" '("Fill column indicator" . display-fill-column-indicator-mode)
-	"h" '("Line highlight" . hl-line-mode)
-	"l" '("Line numbers" . global-display-line-numbers-mode)
-	"t" '("Truncate lines" . toggle-truncate-lines)
-	"v" '("Variable pitch" . variable-pitch-mode)
-	"w" '("Whitespace" . whitespace-mode)
-	"x" '("Syntax checker" . flymake-mode))
+  :doc "Keymap for common toggle actions."
+  :prefix 'toggle-map-prefix
+  "*" '("Light/dark theme" . modus-themes-toggle)
+  "=" '("Calculator" . calc)
+  "b" '("Blamer" . blamer-mode)
+  "d" '("Debug on error" . toggle-debug-on-error)
+  "f" '("Fill column indicator" . display-fill-column-indicator-mode)
+  "h" '("Line highlight" . hl-line-mode)
+  "l" '("Line numbers" . global-display-line-numbers-mode)
+  "t" '("Truncate lines" . toggle-truncate-lines)
+  "v" '("Variable pitch" . variable-pitch-mode)
+  "w" '("Whitespace" . whitespace-mode)
+  "x" '("Syntax checker" . flymake-mode))
 
 (keymap-global-set toggle-prefix 'toggle-map-prefix)
 #+end_src
@@ -214,7 +261,7 @@ convenient way to repeat the previous command
 #+end_quote
 #+begin_src emacs-lisp
 (use-package repeat
-	:hook (after-init-hook . repeat-mode))
+  :hook (after-init-hook . repeat-mode))
 #+end_src
 *** Library
 :PROPERTIES:
@@ -227,7 +274,7 @@ Common Lisp extensions for Emacs
 #+begin_src emacs-lisp
 ;; Use macros only.
 (eval-when-compile
-	(require 'cl-lib))
+  (require 'cl-lib))
 #+end_src
 *** Help
 :PROPERTIES:
@@ -239,17 +286,21 @@ Transient user interfaces for various modes
 #+end_quote
 #+begin_src emacs-lisp
 (use-package casual
-	:ensure t
-	:after transient
-	:config
-	(require 'casual-image)
-	:bind
-	((:map calc-mode-map
-				 ("M-h" . casual-calc-tmenu))
-	 (:map dired-mode-map
-				 ("M-h" . casual-dired-tmenu))
-	 (:map image-mode-map
-				 ("M-h" . casual-image-tmenu))))
+  :ensure t
+  :after transient
+  :config
+  (require 'casual-image)
+  :bind
+  ((:map calc-mode-map
+         ("C-:" . casual-calc-tmenu))
+   (:map dired-mode-map
+         ("C-:" . casual-dired-tmenu))
+   (:map image-mode-map
+         ("C-:" . casual-image-tmenu)))
+  :config
+  (with-eval-after-load 'dired
+    (transient-replace-suffix 'casual-dired-tmenu "F"
+      '("N" "File" dired-create-empty-file))))
 #+end_src
 **** help
 #+begin_quote
@@ -257,8 +308,8 @@ help commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package help
-	:custom
-	(help-window-keep-selected t))
+  :custom
+  (help-window-keep-selected t))
 #+end_src
 **** helpful
 #+begin_quote
@@ -266,16 +317,16 @@ A better Emacs *help* buffer
 #+end_quote
 #+begin_src emacs-lisp
 (use-package helpful
-	:ensure t
-	:defer 1
-	:bind
-	(([remap describe-function] . helpful-callable)
-	 ([remap describe-command] . helpful-command)
-	 ([remap describe-key] . helpful-key)
-	 ([remap describe-variable] . helpful-variable)
-	 ([remap Info-goto-emacs-command-node] . helpful-function)
-	 :map mode-specific-map
-	 ("h" .  helpful-at-point)))
+  :ensure t
+  :defer 1
+  :bind
+  (([remap describe-function] . helpful-callable)
+   ([remap describe-command] . helpful-command)
+   ([remap describe-key] . helpful-key)
+   ([remap describe-variable] . helpful-variable)
+   ([remap Info-goto-emacs-command-node] . helpful-function)
+   :map mode-specific-map
+   ("h" .  helpful-at-point)))
 #+end_src
 **** transient
 #+begin_quote
@@ -283,23 +334,24 @@ Transient commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package transient
-	:custom
-	(transient-history-file (concat (emacs-state-home) "transient/history.el"))
-	(transient-values-file (concat (emacs-data-home) "transient/values.el"))
-	(transient-levels-file (concat (emacs-data-home) "transient/levels.el"))
-	:config
-	(transient-define-prefix my/toggle-transient ()
-		"Prefix for `toggle-map'"
-		[("d" "Debug on error" toggle-debug-on-error)
-		 ("f" "Fill column indicator" display-fill-column-indicator-mode)
-		 ("h" "Line highlight" hl-line-mode)
-		 ("l" "Line numbers" global-display-line-numbers-mode)
-		 ("t" "Truncate lines" toggle-truncate-lines)
-		 ("v" "Variable pitch" variable-pitch-mode)
-		 ("w" "Whitespace" whitespace-mode)
-		 ("x" "Syntax checker" flymake-mode)
-		 ("*" "Light/dark theme" modus-themes-toggle)])
-	(keymap-set toggle-map "?" '("Transient help" . my/toggle-transient)))
+  :defer 1
+  :custom
+  (transient-history-file (concat emacs-state-home "transient/history.el"))
+  (transient-values-file (concat emacs-data-home "transient/values.el"))
+  (transient-levels-file (concat emacs-data-home "transient/levels.el"))
+  :config
+  (transient-define-prefix my/toggle-transient ()
+    "Prefix for `toggle-map'"
+    [("d" "Debug on error" toggle-debug-on-error)
+     ("f" "Fill column indicator" display-fill-column-indicator-mode)
+     ("h" "Line highlight" hl-line-mode)
+     ("l" "Line numbers" global-display-line-numbers-mode)
+     ("t" "Truncate lines" toggle-truncate-lines)
+     ("v" "Variable pitch" variable-pitch-mode)
+     ("w" "Whitespace" whitespace-mode)
+     ("x" "Syntax checker" flymake-mode)
+     ("*" "Light/dark theme" modus-themes-toggle)])
+  (keymap-set toggle-map "?" '("Transient help" . my/toggle-transient)))
 #+end_src
 ***** transient-posframe
 #+begin_quote
@@ -307,12 +359,12 @@ Using posframe to show transient
 #+end_quote
 #+begin_src emacs-lisp
 ;; (use-package transient-posframe
-;; 	:ensure t
-;; 	:after transient
-;; 	:custom
-;; 	(transient-posframe-border-width 3)
-;; 	:config
-;; 	(transient-posframe-mode 1))
+;;      :ensure t
+;;      :after transient
+;;      :custom
+;;      (transient-posframe-border-width 3)
+;;      :config
+;;      (transient-posframe-mode 1))
 #+end_src
 **** woman
 #+begin_quote
@@ -320,11 +372,11 @@ browse UN*X manual pages `wo (without) man'
 #+end_quote
 #+begin_src emacs-lisp
 (use-package woman
-	:custom
-	(woman-fill-column 82)
-	(woman-cache-filename (concat (emacs-cache-home) ".wmncach.el"))
-	:bind
-	(("<f1> M-m" . woman)))
+  :custom
+  (woman-fill-column 82)
+  (woman-cache-filename (concat emacs-cache-home ".wmncach.el"))
+  :bind
+  (("<f1> M-m" . woman)))
 #+end_src
 *** Window Management
 :PROPERTIES:
@@ -336,31 +388,31 @@ Quickly switch windows in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package ace-window
-	:ensure t
-	:custom
-	(aw-keys '(?e ?i ?a ?o ?k ?t ?n ?s ?h))
-	(aw-scope 'frame)
-	(aw-dispatch-when-more-than 1)
-	:bind
-	(("M-o" . ace-window)
-	 (:map window-prefix-map
-				 ("o" . ace-swap-window)))
-	:config
-	;; Use `setq' here because `aw-dispatch-alist' is implemented with `defvar' as of Jul 2025.
-	(setq aw-dispatch-alist
-				'((?b aw-switch-buffer-in-window "Select buffer")
-					(?c aw-copy-window "Copy Window")
-					(?f aw-split-window-vert "Split window fairly")
-					(?j aw-switch-buffer-other-window "Select buffer in other window")
-					(?m aw-move-window "Move window")
-					(?v aw-split-window-vert "Split window vertically")
-					(?w aw-swap-window "Swap windows")
-					(?x aw-execute-command-other-window "Execute command in other window")
-					(?z aw-split-window-horz "Split window horizontally")
-					(?0 aw-delete-window "Delete window")
-					(?1 delete-other-windows "Delete other windows")
-					(?~ aw-transpose-frame "Transpose frame")
-					(?? aw-show-dispatch-help))))
+  :ensure t
+  :custom
+  (aw-keys '(?e ?i ?a ?o ?k ?t ?n ?s ?h))
+  (aw-scope 'frame)
+  (aw-dispatch-when-more-than 1)
+  :bind
+  (("M-o" . ace-window)
+   (:map window-prefix-map
+         ("o" . ace-swap-window)))
+  :config
+  ;; Use `setq' here because `aw-dispatch-alist' is implemented with `defvar' as of Jul 2025.
+  (setq aw-dispatch-alist
+        '((?b aw-switch-buffer-in-window "Select buffer")
+          (?c aw-copy-window "Copy Window")
+          (?f aw-split-window-vert "Split window fairly")
+          (?j aw-switch-buffer-other-window "Select buffer in other window")
+          (?m aw-move-window "Move window")
+          (?v aw-split-window-vert "Split window vertically")
+          (?w aw-swap-window "Swap windows")
+          (?x aw-execute-command-other-window "Execute command in other window")
+          (?z aw-split-window-horz "Split window horizontally")
+          (?0 aw-delete-window "Delete window")
+          (?1 delete-other-windows "Delete other windows")
+          (?~ aw-transpose-frame "Transpose frame")
+          (?? aw-show-dispatch-help))))
 #+end_src
 **** popper
 #+begin_quote
@@ -368,40 +420,40 @@ Emacs minor-mode to summon and dismiss buffers easily.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package popper
-	:ensure t
-	:custom
-	(popper-window-height 0.333)
-	(popper-display-function #'popper-display-popup-at-bottom)
-	(popper-mode-line '(:eval (propertize " POP ")))
-	(popper-reference-buffers
-	 '("Output\\*$"
-		 "\\*Backtrace\\*"
-		 "\\*Messages\\*$"
-		 "^\\*Async Shell Command\\*$"
-		 "^\\*Apropos\\*$"
-		 "^\\*Compile-Log\\*$"
-		 "^\\*eat.\\*$" eat-mode
-		 "^\\*envrc\\*"
-		 "^\\*eshell.*\\*$" eshell-mode
-		 "^\\*Flymake diagnostics"
-		 "^\\*Help.*\\*$" help-mode
-		 "^\\*helpful.*\\*$" helpful-mode
-		 "^\\*Shell Command Output\\*"
-		 "^\\*Warnings\\*$"))
-	:hook
-	(after-init-hook . popper-mode)
-	(popper-mode-hook . popper-echo-mode)
-	:bind
-	((:map window-prefix-map
-				 :prefix-map popper-prefix-map
-				 :prefix "p"
-				 ("t" . popper-toggle)
-				 ("@" . popper-cycle)
-				 ("~" . popper-toggle-type))
-	 (:repeat-map popper-repeat-map
-								("t" . popper-toggle)
-								("@" . popper-cycle)
-								("~" . popper-toggle-type))))
+  :ensure t
+  :custom
+  (popper-window-height 0.333)
+  (popper-display-function #'popper-display-popup-at-bottom)
+  (popper-mode-line '(:eval (propertize " POP ")))
+  (popper-reference-buffers
+   '("Output\\*$"
+     "\\*Backtrace\\*"
+     "\\*Messages\\*$"
+     "^\\*Async Shell Command\\*$"
+     "^\\*Apropos\\*$"
+     "^\\*Compile-Log\\*$"
+     "^\\*eat.\\*$" eat-mode
+     "^\\*envrc\\*"
+     "^\\*eshell.*\\*$" eshell-mode
+     "^\\*Flymake diagnostics"
+     "^\\*Help.*\\*$" help-mode
+     "^\\*helpful.*\\*$" helpful-mode
+     "^\\*Shell Command Output\\*"
+     "^\\*Warnings\\*$"))
+  :hook
+  (after-init-hook . popper-mode)
+  (popper-mode-hook . popper-echo-mode)
+  :bind
+  ((:map window-prefix-map
+         :prefix-map popper-prefix-map
+         :prefix "p"
+         ("t" . popper-toggle)
+         ("@" . popper-cycle)
+         ("~" . popper-toggle-type))
+   (:repeat-map popper-repeat-map
+                ("t" . popper-toggle)
+                ("@" . popper-cycle)
+                ("~" . popper-toggle-type))))
 #+end_src
 **** tab-bar
 #+begin_quote
@@ -409,15 +461,19 @@ frame-local tabs with named persistent window configurations
 #+end_quote
 #+begin_src emacs-lisp
 (use-package tab-bar
-	:custom
-	(tab-bar-auto-width-max '(320 25))
-	(tab-bar-new-tab-choice "*scratch*")
-	:bind
-	((:map tab-bar-history-mode-map
-				 :map tab-prefix-map
-				 (">" . tab-bar-history-forward)
-				 ("<" . tab-bar-history-back)))
-	:hook (after-init-hook . tab-bar-history-mode))
+  :custom
+  (tab-bar-auto-width-max '(320 25))
+  (tab-bar-new-tab-choice "*scratch*")
+  :bind
+  ((:map tab-prefix-map
+         ("=" . tab-bar-move-window-to-tab))
+   (:map tab-bar-history-mode-map
+         :map tab-prefix-map
+         (">" . tab-bar-history-forward)
+         ("<" . tab-bar-history-back)))
+  :hook (after-init-hook . tab-bar-history-mode)
+  :config
+  (advice-add 'tab-new :after #'find-file))
 #+end_src
 **** window
 #+begin_quote
@@ -425,25 +481,25 @@ GNU Emacs window commands aside from those written in C
 #+end_quote
 #+begin_src emacs-lisp
 (use-package window
-	:custom
-	(recenter-positions '(top middle bottom))
-	(switch-to-buffer-obey-display-actions t)
-	:bind
-	([remap scroll-up-command] . my/scroll-half-window-height-forward)
-	([remap scroll-down-command] . my/scroll-half-window-height-backward)
-	:config
-	(defun scroll-half-window-height ()
-		(/ (window-body-height) 2))
-	(defun my/scroll-half-window-height-forward (&optional arg)
-		(interactive "P")
-		(if (numberp arg)
-				(pixel-scroll-up arg)
-			(pixel-scroll-up (scroll-half-window-height))))
-	(defun my/scroll-half-window-height-backward (&optional arg)
-		(interactive "P")
-		(if (numberp arg)
-				(pixel-scroll-down arg)
-			(pixel-scroll-down (scroll-half-window-height)))))
+  :custom
+  (recenter-positions '(top middle bottom))
+  (switch-to-buffer-obey-display-actions t)
+  :bind
+  ([remap scroll-up-command] . my/scroll-half-window-height-forward)
+  ([remap scroll-down-command] . my/scroll-half-window-height-backward)
+  :config
+  (defun scroll-half-window-height ()
+    (/ (window-body-height) 2))
+  (defun my/scroll-half-window-height-forward (&optional arg)
+    (interactive "P")
+    (if (numberp arg)
+        (pixel-scroll-up arg)
+      (pixel-scroll-up (scroll-half-window-height))))
+  (defun my/scroll-half-window-height-backward (&optional arg)
+    (interactive "P")
+    (if (numberp arg)
+        (pixel-scroll-down arg)
+      (pixel-scroll-down (scroll-half-window-height)))))
 #+end_src
 **** winner
 #+begin_quote
@@ -451,16 +507,16 @@ Restore old window configurations
 #+end_quote
 #+begin_src emacs-lisp
 (use-package winner
-	:custom
-	(winner-dont-bind-my-keys t)
-	:hook (window-setup-hook . winner-mode)
-	:bind
-	(:map window-prefix-map
-				("<" . winner-undo)
-				(">" . winner-redo))
-	(:repeat-map winner-repeat-map
-							 ("<" . winner-undo)
-							 (">" . winner-redo)))
+  :custom
+  (winner-dont-bind-my-keys t)
+  :hook (window-setup-hook . winner-mode)
+  :bind
+  (:map window-prefix-map
+        ("<" . winner-undo)
+        (">" . winner-redo))
+  (:repeat-map winner-repeat-map
+               ("<" . winner-undo)
+               (">" . winner-redo)))
 #+end_src
 *** Appearance
 :PROPERTIES:
@@ -472,17 +528,17 @@ Buffer manipulation primitives for GNU Emacs.
 #+end_quote
 #+begin_src emacs-lisp
 (setq-default buffer-file-coding-system 'utf-8 ; `undecided-unix' by default
-							cursor-type 'bar ; t by default
-							fill-column 85 ; 70 by default
-							line-spacing 2  ; 1 by default
-							tab-width 2 ; 8 by default
-							indicate-empty-lines t ; nil by default
-							indicate-buffer-boundaries 'left ; nil by default
-							left-fringe-width 2 ; nil by default
-							right-fringe-width 2 ; nil by default
-							left-margin-width 2 ; 0 by default
-							right-margin-width 2 ; 0 by default
-							)
+              cursor-type 'bar ; t by default
+              fill-column 85 ; 70 by default
+              line-spacing 2  ; 1 by default
+              tab-width 2 ; 8 by default
+              indicate-empty-lines t ; nil by default
+              indicate-buffer-boundaries 'left ; nil by default
+              left-fringe-width 2 ; nil by default
+              right-fringe-width 2 ; nil by default
+              left-margin-width 2 ; 0 by default
+              right-margin-width 2 ; 0 by default
+              )
 #+end_src
 **** frame.c
 #+begin_quote
@@ -497,20 +553,20 @@ Display generation from window structure and buffer text.
 #+end_quote
 #+begin_src emacs-lisp
 (defconst my/base-frame-title-format
-	'(" - GNU Emacs"
-		(emacs-version (" " emacs-version))
-		(system-name (" on " system-name))))
+  '(" - GNU Emacs"
+    (emacs-version (" " emacs-version))
+    (system-name (" on " system-name))))
 
 (defconst my/default-frame-title-format
-	(cons '("%b")
-				my/base-frame-title-format))
+  (cons '("%b")
+        my/base-frame-title-format))
 
 (setq-default bidi-inhibit-bpa t
-							bidi-display-reordering 'left-to-right
-							bidi-paragraph-direction 'left-to-right
-							display-line-numbers-width 4
-							frame-title-format my/default-frame-title-format
-							scroll-conservatively 1)
+              bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right
+              display-line-numbers-width 4
+              frame-title-format my/default-frame-title-format
+              scroll-conservatively 1)
 #+end_src
 **** fontaine
 #+begin_quote
@@ -518,26 +574,28 @@ Set Emacs font configurations using presets
 #+end_quote
 #+begin_src emacs-lisp
 (use-package fontaine
-	:ensure t
-	:custom
-	(fontaine-presets
-	 '((regular
-			:default-family "Hackgen NF"
-			:default-height 120
-			:fixed-pitch-family "Hackgen NF"
-			:fixed-pitch-height 1.0
-			:variable-pitch-family "Noto Sans"
-			:variable-pitch-height 1.2
-			:line-spacing 1)
-		 (medium
-			:inherit regular
-			:default-height 150)
-		 (large
-			:inherit regular
-			:default-height 175)))
-	:config
-	(fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
-	(add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+  :ensure t
+  :custom
+  (fontaine-presets
+   '((regular
+      :default-family "HackGen Console NF"
+      :default-height 130
+      :fixed-pitch-family "HackGen Console NF"
+      :fixed-pitch-height 1.0
+      :variable-pitch-family "Noto Sans"
+      :variable-pitch-height 1.0
+      :line-spacing 1)
+     (medium
+      :inherit regular
+      :default-height 140)
+     (large
+      :inherit regular
+      :default-height 150)))
+  :hook
+  (after-init-hook . fontaine-mode)
+  :config
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 #+end_src
 **** frame
 #+begin_quote
@@ -545,12 +603,12 @@ multi-frame management independent of window systems
 #+end_quote
 #+begin_src emacs-lisp
 (use-package frame
-	:custom
-	(window-divider-default-places t)
-	(window-divider-default-bottom-width 5)
-	(window-divider-default-right-width 5)
-	:config
-	(blink-cursor-mode -1))
+  :custom
+  (window-divider-default-places t)
+  (window-divider-default-bottom-width 5)
+  (window-divider-default-right-width 5)
+  :config
+  (blink-cursor-mode -1))
 #+end_src
 **** modus-themes
 #+begin_quote
@@ -558,58 +616,60 @@ Highly accessible themes for GNU Emacs, conforming with the highest standard for
 #+end_quote
 #+begin_src emacs-lisp
 (use-package modus-themes
-	:ensure t
-	:demand t
-	:custom
-	(modus-themes-headings
-	 '((1 . (variable-pitch bold 1.5))
-		 (2 . (variable-pitch rainbow semibold 1.4))
-		 (3 . (variable-pitch rainbow medium 1.3))
-		 (4 . (variable-pitch rainbow medium 1.2))
-		 (t . (1.1))))
-	(modus-themes-common-palette-overrides
-	 '((border-mode-line-active unspecified)
-		 (border-mode-line-inactive unspecified)))
-	(modus-vivendi-tinted-palette-overrides
-	 '((bg-hl-line bg-dim)
-		 (bg-mode-line-active bg-lavender)
-		 (bg-mode-line-inactive bg-inactive)))
-	(modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-	:init
-	(defun my/modus-themes-custom-face ()
-		(modus-themes-with-colors
-			(custom-set-faces
-			 ;; ace-window
-			 `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
-			 `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
-			 ;; dired-filter
-			 `(‎dired-filter-group-header‎ ((,c :background ,bg-lavender :box(:line-width 2 :color ,bg-lavender))))
-			 ;; goggles
-			 `(goggles-added ((,c :background ,bg-added-refine)))
-			 `(goggles-changed ((,c :background ,bg-changed-refine)))
-			 `(goggles-removed ((,c :background ,bg-removed-refine)))
-			 ;; vertico-posframe
-			 `(vertico-posframe-border-2 ((,c :background ,bg-added-refine)))
-			 `(vertico-posframe-border-3 ((,c :background ,bg-added-fringe)))
-			 ;; vundo
-			 `(vundo-saved ((,c :foreground ,blue)))
-			 `(vundo-last-saved ((,c :foreground ,blue-intense)))
-			 `(vundo-highlight ((,c :foreground ,fg-changed)))
-			 ;; Built-ins
-			 `(header-line ((,c :background ,bg-dim :box (:line-width 4 :color ,bg-dim))))
-			 `(mode-line-active ((,c :overline ,bg-lavender
-															 :underline (:color ,bg-lavender :position t))))
-			 `(mode-line-inactive ((,c :overline ,bg-inactive
-																 :underline (:color ,bg-inactive :position t))))
-			 `(tab-bar-tab ((,c :background ,bg-active :box (:line-width 5 :color ,bg-active))))
-			 `(tab-bar-tab-inactive ((,c :background ,bg-inactive :box (:line-width 5 :color ,bg-inactive))))
-			 `(scroll-bar ((,c :foreground ,border :background ,bg-dim)))
-			 `(whitespace-line ((,c :background ,slate :foreground ,fg-main)))
-			 `(whitespace-missing-newline-at-eof ((,c :background ,slate :foreground ,fg-main)))
-			 `(whitespace-trailing ((,c :background ,slate :foreground ,fg-main))))))
-	(add-hook 'modus-themes-after-load-theme-hook #'my/modus-themes-custom-face)
-	:config
-	(modus-themes-load-theme 'modus-vivendi-tinted))
+  :ensure t
+  :demand t
+  :custom
+  (modus-themes-headings
+   '((1 . (variable-pitch bold 1.5))
+     (2 . (variable-pitch rainbow bold 1.4))
+     (3 . (variable-pitch rainbow semibold 1.3))
+     (4 . (variable-pitch rainbow medium 1.2))
+     (t . (1.1))))
+  (modus-themes-common-palette-overrides
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified)))
+  (modus-vivendi-tinted-palette-overrides
+   '((bg-hl-line bg-dim)
+     (bg-mode-line-active bg-lavender)
+     (bg-mode-line-inactive bg-inactive)))
+  (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+  :init
+  (defun my/modus-themes-custom-face ()
+    (modus-themes-with-colors
+      (custom-set-faces
+       ;; ace-window
+       `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
+       `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
+       ;; blamer
+       `(blamer-face ((,c :inherit default :background nil :foreground ,fg-lavender :italic t)))
+       ;; dired-filter
+       `(‎dired-filter-group-header‎ ((,c :background ,bg-lavender :box(:line-width 2 :color ,bg-lavender))))
+       ;; goggles
+       `(goggles-added ((,c :background ,bg-added-refine)))
+       `(goggles-changed ((,c :background ,bg-changed-refine)))
+       `(goggles-removed ((,c :background ,bg-removed-refine)))
+       ;; vertico-posframe
+       `(vertico-posframe-border-2 ((,c :background ,bg-added-refine)))
+       `(vertico-posframe-border-3 ((,c :background ,bg-added-fringe)))
+       ;; vundo
+       `(vundo-saved ((,c :foreground ,blue)))
+       `(vundo-last-saved ((,c :foreground ,blue-intense)))
+       `(vundo-highlight ((,c :foreground ,fg-changed)))
+       ;; Built-ins
+       `(header-line ((,c :background ,bg-dim :box (:line-width 4 :color ,bg-dim))))
+       `(mode-line-active ((,c :overline ,bg-lavender
+                               :underline (:color ,bg-lavender :position t))))
+       `(mode-line-inactive ((,c :overline ,bg-inactive
+                                 :underline (:color ,bg-inactive :position t))))
+       `(tab-bar-tab ((,c :background ,bg-active :box (:line-width 5 :color ,bg-active))))
+       `(tab-bar-tab-inactive ((,c :background ,bg-inactive :box (:line-width 5 :color ,bg-inactive))))
+       `(scroll-bar ((,c :foreground ,border :background ,bg-dim)))
+       `(whitespace-line ((,c :background ,slate :foreground ,fg-main)))
+       `(whitespace-missing-newline-at-eof ((,c :background ,slate :foreground ,fg-main)))
+       `(whitespace-trailing ((,c :background ,slate :foreground ,fg-main))))))
+  (add-hook 'modus-themes-after-load-theme-hook #'my/modus-themes-custom-face)
+  :config
+  (modus-themes-load-theme 'modus-vivendi-tinted))
 #+end_src
 **** nerd-icons
 #+begin_quote
@@ -624,10 +684,10 @@ Icons for completion via nerd-icons
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nerd-icons-completion
-	:ensure t
-	:after marginalia
-	:config
-	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  :ensure t
+  :after marginalia
+  :config
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 #+end_src
 ***** nerd-icons-corfu
 #+begin_quote
@@ -635,10 +695,10 @@ Icons for corfu via nerd-icons
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nerd-icons-corfu
-	:ensure t
-	:after corfu
-	:config
-	(add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
 ***** nerd-icons-dired
 #+begin_quote
@@ -646,9 +706,9 @@ Icons for dired via nerd-icons
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nerd-icons-dired
-	:ensure t
-	:hook
-	(dired-mode-hook . nerd-icons-dired-mode))
+  :ensure t
+  :hook
+  (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 **** olivetti
 #+begin_quote
@@ -656,12 +716,12 @@ Emacs minor mode to automatically balance window margins
 #+end_quote
 #+begin_src emacs-lisp
 (use-package olivetti
-	:ensure t
-	:custom
-	(olivetti-body-width 82)
-	:hook
-	((markdown-mode
-		org-mode) . olivetti-mode))
+  :ensure t
+  :custom
+  (olivetti-body-width 82)
+  :hook
+  ((markdown-mode
+    org-mode) . olivetti-mode))
 #+end_src
 **** page-break-lines
 #+begin_quote
@@ -669,25 +729,24 @@ Emacs: display ugly ^L page breaks as tidy horizontal lines
 #+end_quote
 #+begin_src emacs-lisp
 (use-package page-break-lines
-	:ensure t
-	;; :hook (after-init-hook . global-page-break-lines-mode)
-	:init (global-page-break-lines-mode 1)
-	:config
-	(dolist (mode '(compilation-mode-hook
-									dashboard-mode-hook
-									doc-mode-hook
-									haskell-mode-hook
-									help-mode-hook
-									magit-mode-hook))
-		(add-to-list 'page-break-lines-modes mode)))
+  :ensure t
+  ;; :hook (after-init-hook . global-page-break-lines-mode)
+  :init (global-page-break-lines-mode 1)
+  :config
+  (dolist (mode '(compilation-mode-hook
+                  dashboard-mode-hook
+                  doc-mode-hook
+                  haskell-mode-hook
+                  help-mode-hook
+                  magit-mode-hook))
+    (add-to-list 'page-break-lines-modes mode)))
 #+end_src
 **** show-font
 #+begin_quote
  Show font features in an Emacs buffer
 #+end_quote
 #+begin_src emacs-lisp
-(use-package show-font
-	:ensure t)
+(use-package show-font :ensure t)
 #+end_src
 *** Lines
 :PROPERTIES:
@@ -699,31 +758,29 @@ Buffer manipulation primitives for GNU Emacs.
 #+end_quote
 #+begin_src emacs-lisp
 (setq-default header-line-format
-							'("" header-line-indent
-								(:eval (breadcrumb--header-line))
-								" "
-								(mode-line-misc-info mode-line-misc-info)))
+              '("" header-line-indent
+                (:eval (breadcrumb--header-line))
+                " "
+                (mode-line-misc-info mode-line-misc-info)))
 
 (setq-default mode-line-format
-							'("%e"
-								mode-line-front-space
-								mode-line-mule-info
-								mode-line-modified
-								"  "
-								mode-line-buffer-identification
-								(vc-mode vc-mode)
-								"  "
-								(:eval (if minions-mode
-													 minions-mode-line-modes
-												 mode-line-modes))
-								"  "
-								(mode-line-process ("  " mode-line-process))
-								(current-input-method-title
-								 (current-input-method-title " "))
-								(global-mode-string global-mode-string)
-								(mode-line-client mode-line-client)
-								mode-line-position
-								mode-line-end-spaces))
+              '("%e"
+                mode-line-front-space
+                mode-line-mule-info
+                mode-line-modified
+                "  "
+                mode-line-buffer-identification
+                (vc-mode vc-mode)
+                "  "
+                mode-line-modes
+                "  "
+                (mode-line-process ("  " mode-line-process))
+                (current-input-method-title
+                 (current-input-method-title " "))
+                (global-mode-string global-mode-string)
+                (mode-line-client mode-line-client)
+                mode-line-position
+                mode-line-end-spaces))
 #+end_src
 **** breadcrumb
 #+begin_quote
@@ -731,10 +788,10 @@ Emacs headerline indication of where you are in a large project
 #+end_quote
 #+begin_src emacs-lisp
 (use-package breadcrumb
-	:ensure t
-	:custom
-	(breadcrumb-project-crumb-separator " > ")
-	:hook (after-init-hook . breadcrumb-mode))
+  :ensure t
+  :custom
+  (breadcrumb-project-crumb-separator " > ")
+  :hook (after-init-hook . breadcrumb-mode))
 #+end_src
 **** hide-mode-line
 #+begin_quote
@@ -742,11 +799,11 @@ An Emacs plugin that hides (or masks) the current buffer's mode-line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hide-mode-line
-	:ensure t
-	:commands
-	(hide-mode-line-mode
-	 ‎turn-on-hide-mode-line-mode‎
-	 ‎turn-off-hide-mode-line-mode‎))
+  :ensure t
+  :commands
+  (hide-mode-line-mode
+   ‎turn-on-hide-mode-line-mode‎
+   ‎turn-off-hide-mode-line-mode‎))
 #+end_src
 **** minions
 #+begin_quote
@@ -754,12 +811,12 @@ A minor-mode menu for the mode line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package minions
-	:ensure t
-	:custom
-	(minions-mode-line-lighter "[...]")
-	:bind
-	("<f7>" . minions-minor-modes-menu)
-	:hook (after-init-hook . minions-mode))
+  :ensure t
+  :custom
+  (minions-mode-line-lighter "[...]")
+  :bind
+  ("<f7>" . minions-minor-modes-menu)
+  :hook (after-init-hook . minions-mode))
 #+end_src
 **** mlscroll
 #+begin_quote
@@ -767,15 +824,16 @@ Lightweight scrollbar for the Emacs mode line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mlscroll
-	:ensure t
-	:custom
-	(mlscroll-right-align nil)
-	(mlscroll-alter-percent-position 'replace)
-	(mlscroll-minimum-current-width 5)
-	:config
-	(if (daemonp)
-			(add-hook 'server-after-make-frame-hook #'mlscroll-mode)
-		(mlscroll-mode 1)))
+  :ensure t
+  :custom
+  (mlscroll-right-align nil)
+  (mlscroll-alter-percent-position 'replace)
+  (mlscroll-minimum-current-width 5)
+  :init
+  ;; https://apribase.net/2024/06/20/emacs-as-daemon/
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
+    (mlscroll-mode 1)))
 #+end_src
 **** moody
 #+begin_quote
@@ -783,16 +841,16 @@ Tabs and ribbons for the mode-line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package moody
-	:ensure t
-	:custom
-	(moody-mode-line-height 25)
-	;; Make it align with the colors of mode-line-active and mode-line-inactive.
-	(moody-ribbon-background '(base :background))
-	:hook
-	(after-init-hook . (lambda ()
-											 (moody-replace-mode-line-front-space)
-											 (moody-replace-mode-line-buffer-identification)
-											 (moody-replace-vc-mode))))
+  :ensure t
+  :custom
+  (moody-mode-line-height 25)
+  ;; Make it align with the colors of mode-line-active and mode-line-inactive.
+  (moody-ribbon-background '(base :background))
+  :hook
+  (after-init-hook . (lambda ()
+                       (moody-replace-mode-line-front-space)
+                       (moody-replace-mode-line-buffer-identification)
+                       (moody-replace-vc-mode))))
 #+end_src
 **** which-func
 #+begin_quote
@@ -800,17 +858,17 @@ print current function in mode line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package which-func
-	:custom
-	(which-func-unknown "⊥")
-	(which-func-non-auto-modes
-	 '(fundamental-mode
-		 help-mode
-		 org-mode
-		 markdown-mode
-		 nov-mode
-		 pdf-view-mode
-		 minibuffer-mode))
-	:hook (after-init-hook . which-function-mode))
+  :custom
+  (which-func-unknown "⊥")
+  (which-func-non-auto-modes
+   '(fundamental-mode
+     help-mode
+     org-mode
+     markdown-mode
+     nov-mode
+     pdf-view-mode
+     minibuffer-mode))
+  :hook (after-init-hook . which-function-mode))
 #+end_src
 *** Completion
 :PROPERTIES:
@@ -822,61 +880,61 @@ print current function in mode line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package cape
-	:ensure t
-	:custom
-	(cape-dict-file
-	 (concat (xdg-data-home) "cape/dict"))
-	:functions
-	(cape-capf-buster
-	 cape-capf-super)
-	:bind
-	((:prefix-map cape-capf-prefix-map :prefix "M-p"
-								("a" . cape-abbrev)
-								("d" . cape-dabbrev)
-								("f" . cape-file)
-								("h" . cape-history)
-								("k" . cape-keyword)
-								("l" . cape-line)
-								("r" . cape-rfc1345)
-								("s" . cape-sgml)
-								("w" . cape-dict)
-								("&" . cape-sgml)
-								("\\" . cape-tex)))
-	:hook
-	(eglot-managed-mode-hook . my/setup-cape-eglot-capf)
-	(text-mode-hook . my/setup-cape-text-mode-capf)
-	(prog-mode-hook . my/setup-cape-prog-mode-capf)
-	:config
-	(setq-default completion-at-point-functions
-								(append (default-value 'completion-at-point-functions)
-												(list #'cape-file #'cape-dabbrev)))
-	(defun my/setup-cape-eglot-capf()
-		(setq-local completion-at-point-functions
-								(list (cape-capf-super
-											 #'cape-file
-											 (cape-capf-buster #'eglot-completion-at-point #'string-prefix-p)
-											 #'cape-keyword
-											 :with #'tempel-complete))))
-	(defun my/setup-cape-prog-mode-capf()
-		(add-hook 'completion-at-point-functions #'cape-file nil t))
-	(defun my/setup-cape-text-mode-capf()
-		(add-hook 'completion-at-point-functions #'cape-file nil t)
-		(add-hook 'completion-at-point-functions #'cape-dict 10 t))
-	(with-eval-after-load 'transient
-		(transient-define-prefix my/cape-capf-transient ()
-			"Prefix for cape capfs."
-			[("a" "abbrev" cape-abbrev)
-			 ("d" "dabbrev" cape-dabbrev)
-			 ("f" "file" cape-file)
-			 ("h" "history" cape-history)
-			 ("k" "keyword" cape-keyword)
-			 ("l" "line" cape-line)
-			 ("r" "rfc1345" cape-rfc1345)
-			 ("s" "elisp symbol" cape-elisp-symbol)
-			 ("w" "dict" cape-dict)
-			 ("&" "sgml" cape-sgml)
-			 ("\\" "tex" cape-tex)])
-		(keymap-set cape-capf-prefix-map "?" #'my/cape-capf-transient)))
+  :ensure t
+  :custom
+  (cape-dict-file
+   (concat emacs-data-home "cape/dict"))
+  :functions
+  (cape-capf-buster
+   cape-capf-super)
+  :bind
+  ((:prefix-map cape-capf-prefix-map :prefix "M-p"
+                ("a" . cape-abbrev)
+                ("d" . cape-dabbrev)
+                ("f" . cape-file)
+                ("h" . cape-history)
+                ("k" . cape-keyword)
+                ("l" . cape-line)
+                ("r" . cape-rfc1345)
+                ("s" . cape-sgml)
+                ("w" . cape-dict)
+                ("&" . cape-sgml)
+                ("\\" . cape-tex)))
+  :hook
+  (eglot-managed-mode-hook . my/setup-cape-eglot-capf)
+  (text-mode-hook . my/setup-cape-text-mode-capf)
+  (prog-mode-hook . my/setup-cape-prog-mode-capf)
+  :config
+  (setq-default completion-at-point-functions
+                (append (default-value 'completion-at-point-functions)
+                        (list #'cape-file #'cape-dabbrev)))
+  (defun my/setup-cape-eglot-capf()
+    (setq-local completion-at-point-functions
+                (list (cape-capf-super
+                       #'cape-file
+                       (cape-capf-buster #'eglot-completion-at-point #'string-prefix-p)
+                       #'cape-keyword
+                       :with #'tempel-complete))))
+  (defun my/setup-cape-prog-mode-capf()
+    (add-hook 'completion-at-point-functions #'cape-file nil t))
+  (defun my/setup-cape-text-mode-capf()
+    (add-hook 'completion-at-point-functions #'cape-file nil t)
+    (add-hook 'completion-at-point-functions #'cape-dict 10 t))
+  (with-eval-after-load 'transient
+    (transient-define-prefix my/cape-capf-transient ()
+      "Prefix for cape capfs."
+      [("a" "abbrev" cape-abbrev)
+       ("d" "dabbrev" cape-dabbrev)
+       ("f" "file" cape-file)
+       ("h" "history" cape-history)
+       ("k" "keyword" cape-keyword)
+       ("l" "line" cape-line)
+       ("r" "rfc1345" cape-rfc1345)
+       ("s" "elisp symbol" cape-elisp-symbol)
+       ("w" "dict" cape-dict)
+       ("&" "sgml" cape-sgml)
+       ("\\" "tex" cape-tex)])
+    (keymap-set cape-capf-prefix-map "?" #'my/cape-capf-transient)))
 #+end_src
 **** completion-preview
 #+begin_quote
@@ -884,12 +942,12 @@ Preview completion with inline overlay
 #+end_quote
 #+begin_src emacs-lisp
 (use-package completion-preview
-	:hook
-	(corfu-mode-hook . completion-preview-mode)
-	:bind
-	(:map completion-preview-active-mode-map
-				("TAB" . completion-preview-complete)
-				("C-e" . completions-preview-insert)))
+  :hook
+  (corfu-mode-hook . completion-preview-mode)
+  :bind
+  (:map completion-preview-active-mode-map
+        ("TAB" . completion-preview-complete)
+        ("C-e" . completions-preview-insert)))
 #+end_src
 **** consult
 #+begin_quote
@@ -897,38 +955,45 @@ Preview completion with inline overlay
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult
-	:ensure t
-	:custom
-	(consult-bookmark-narrow
-	 '((?e "Eww" eww-bookmark-jump)
-		 (?f "File" bookmark-default-handler)
-		 (?h "Help" help-bookmark-jump)
-		 (?i "Info" Info-bookmark-jump)
-		 (?o "Org headings" org-bookmark-heading-jump)))
-	:bind
-	(([remap bookmark-jump] . consult-bookmark)
-	 ([remap goto-line] . consult-goto-line)
-	 ([remap switch-to-buffer] . consult-buffer)
-	 ([remap project-switch-to-buffer] . consult-project-buffer)
-	 ([remap yank-pop] . consult-yank-pop)
-	 (:map goto-map
-				 ("m" . consult-mark)
-				 ("M" . consult-global-mark)
-				 ("o" . consult-outline))
-	 (:map search-map
-				 ("f" . consult-fd)
-				 ("g" . consult-git-grep)
-				 ("k" . consult-keep-lines)
-				 ("l" . consult-line)
-				 ("L" . consult-line-multi)
-				 ("r" . consult-ripgrep)
-				 ("u" . consult-focus-lines))
-	 (:map isearch-mode-map
-				 ("M-e" . consult-isearch-history)
-				 ("M-s e" . consult-isearch-history))
-	 (:map mode-specific-map
-				 ("k" . consult-kmacro)))
-	:hook (completion-list-mode-hook . consult-preview-at-point-mode))
+  :ensure t
+  :custom
+  (consult-bookmark-narrow
+   '((?e "Eww" eww-bookmark-jump)
+     (?f "File" bookmark-default-handler)
+     (?h "Help" help-bookmark-jump)
+     (?i "Info" Info-bookmark-jump)
+     (?o "Org headings" org-bookmark-heading-jump)
+     (?w "Woman" woman-bookmark-jump)))
+  (consult-buffer-sources
+   `(consult--source-project-buffer
+     consult--source-project-recent-file
+     consult--source-buffer
+     consult--source-recent-file))
+  (consult-narrow-key "<")
+  :bind
+  (([remap bookmark-jump] . consult-bookmark)
+   ([remap goto-line] . consult-goto-line)
+   ([remap switch-to-buffer] . consult-buffer)
+   ([remap project-switch-to-buffer] . consult-project-buffer)
+   ([remap yank-pop] . consult-yank-pop)
+   (:map goto-map
+         ("m" . consult-mark)
+         ("M" . consult-global-mark)
+         ("o" . consult-outline))
+   (:map search-map
+         ("f" . consult-fd)
+         ("g" . consult-git-grep)
+         ("k" . consult-keep-lines)
+         ("l" . consult-line)
+         ("L" . consult-line-multi)
+         ("r" . consult-ripgrep)
+         ("u" . consult-focus-lines))
+   (:map isearch-mode-map
+         ("M-e" . consult-isearch-history)
+         ("M-s e" . consult-isearch-history))
+   (:map mode-specific-map
+         ("k" . consult-kmacro)))
+  :hook (completion-list-mode-hook . consult-preview-at-point-mode))
 #+end_src
 ***** consult-dir
 #+begin_quote
@@ -936,16 +1001,16 @@ Insert paths into the minibuffer prompt in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-dir
-	:ensure t
-	:after vertico
-	:bind
-	((:map ctl-x-map
-				 ("C-d" . consult-dir))
-	 (:map vertico-map
-				 ("C-x C-d" . consult-dir)
-				 ("C-x C-j" . consult-dir-jump-file)))
-	:config
-	((add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)))
+  :ensure t
+  :after vertico
+  :bind
+  ((:map ctl-x-map
+         ("C-d" . consult-dir))
+   (:map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+  :config
+  ((add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)))
 #+end_src
 ***** consult-gh
 #+begin_quote
@@ -953,24 +1018,24 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-gh
-	:ensure t
-	:if (executable-find "gh")
-	:after consult
-	:custom
-	(consult-gh-default-clone-directory (concat (emacs-documents-dir) "projects/"))
-	(consult-gh-issue-maxnum 50)
-	(consult-gh-repo-maxnum 50)
-	(consult-gh-show-preview t)
-	(consult-gh-preview-key "C-o")
-	(consult-gh-prioritize-local-folder 'suggest)
-	(consult-gh-default-interactive-command #'consult-gh-transient)
-	:bind
-	(:map ctl-x-map
-				("M-g" . consult-gh))
-	:config
-	((add-to-list 'savehist-additional-variables 'consult-gh--known-orgs-list)
-	 (add-to-list 'savehist-additional-variables 'consult-gh--known-repos-list)
-	 (consult-gh-enable-default-keybindings)))
+  :ensure t
+  :if (executable-find "gh")
+  :after consult
+  :custom
+  (consult-gh-default-clone-directory (concat emacs-documents-dir "projects/"))
+  (consult-gh-issue-maxnum 50)
+  (consult-gh-repo-maxnum 50)
+  (consult-gh-show-preview t)
+  (consult-gh-preview-key "C-o")
+  (consult-gh-prioritize-local-folder 'suggest)
+  (consult-gh-default-interactive-command #'consult-gh-transient)
+  :bind
+  (:map ctl-x-map
+        ("M-g" . consult-gh))
+  :config
+  (add-to-list 'savehist-additional-variables 'consult-gh--known-orgs-list)
+  (add-to-list 'savehist-additional-variables 'consult-gh--known-repos-list)
+  (consult-gh-enable-default-keybindings))
 #+end_src
 ***** consult-gh-embark
 #+begin_quote
@@ -978,10 +1043,10 @@ Embark Actions for consult-gh
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-gh-embark
-	:ensure t
-	:after consult-gh
-	:config
-	(consult-gh-embark-mode 1))
+  :ensure t
+  :after consult-gh
+  :config
+  (consult-gh-embark-mode 1))
 #+end_src
 ***** consult-gh-transient
 #+begin_quote
@@ -989,10 +1054,10 @@ Transient Menu for consult-gh
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-gh-transient
-	:after consult-gh
-	:commands consult-gh-transient
-	:custom
-	(consult-gh-default-interactive-command #'consult-gh-transient))
+  :after consult-gh
+  :commands consult-gh-transient
+  :custom
+  (consult-gh-default-interactive-command #'consult-gh-transient))
 #+end_src
 ***** consult-imenu
 #+begin_quote
@@ -1000,11 +1065,11 @@ Consult commands for imenu
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-imenu
-	:after consult
-	:bind
-	(([remap imenu] . consult-imenu))
-	(:map goto-map
-				("I" . consult-imenu-multi)))
+  :after consult
+  :bind
+  (([remap imenu] . consult-imenu))
+  (:map goto-map
+        ("I" . consult-imenu-multi)))
 #+end_src
 ***** consult-xref
 #+begin_quote
@@ -1012,12 +1077,12 @@ Xref integration for Consult
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult-xref
-	:after xref
-	:functions
-	(consult-xref)
-	:init
-	(setq xref-show-xrefs-function #'consult-xref)
-	(setq xref-show-definitions-function #'consult-xref))
+  :after xref
+  :functions
+  (consult-xref)
+  :init
+  (setq xref-show-xrefs-function #'consult-xref)
+  (setq xref-show-definitions-function #'consult-xref))
 #+end_src
 **** corfu
 #+begin_quote
@@ -1025,32 +1090,32 @@ Xref integration for Consult
 #+end_quote
 #+begin_src emacs-lisp
 (use-package corfu
-	:ensure t
-	:custom
-	(corfu-cycle t)
-	(corfu-preview-current nil)
-	(corfu-min-width 20)
-	(corfu-scroll-margin 5)
-	(corfu-quit-at-boundary nil)
-	:hook
-	((comint-mode-hook
-		eshell-mode-hook
-		prog-mode-hook
-		text-mode-hook) . corfu-mode)
-	(minibuffer-setup-hook . my/corfu-enable-in-minibuffer)
-	:bind
-	(:map corfu-map
-				("SPC" . corfu-insert-separator)
-				("TAB" . corfu-next)
-				([tab] . corfu-next)
-				("S-TAB" . corfu-previous)
-				([backtab] . corfu-previous)
-				("C-e" . corfu-complete))
-	:config
-	(defun my/corfu-enable-in-minibuffer ()
-		"Enable Corfu in the minibuffer if `completion-at-point' is bound."
-		(when (where-is-internal #'completion-at-point (list (current-local-map)))
-			(corfu-mode 1))))
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-preview-current nil)
+  (corfu-min-width 20)
+  (corfu-scroll-margin 5)
+  (corfu-quit-at-boundary nil)
+  :hook
+  ((comint-mode-hook
+    eshell-mode-hook
+    prog-mode-hook
+    text-mode-hook) . corfu-mode)
+  (minibuffer-setup-hook . my/corfu-enable-in-minibuffer)
+  :bind
+  (:map corfu-map
+        ("SPC" . corfu-insert-separator)
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)
+        ("C-e" . corfu-complete))
+  :config
+  (defun my/corfu-enable-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      (corfu-mode 1))))
 #+end_src
 ***** corfu-history
 #+begin_quote
@@ -1058,11 +1123,11 @@ Sorting by history for Corfu
 #+end_quote
 #+begin_src emacs-lisp
 (use-package corfu-history
-	:after corfu
-	:hook (corfu-mode-hook . corfu-history-mode)
-	:config
-	(with-eval-after-load 'savehist
-		(add-to-list 'savehist-additional-variables 'corfu-history)))
+  :after corfu
+  :hook (corfu-mode-hook . corfu-history-mode)
+  :config
+  (with-eval-after-load 'savehist
+    (add-to-list 'savehist-additional-variables 'corfu-history)))
 #+end_src
 ***** corfu-popupinfo
 #+begin_quote
@@ -1070,11 +1135,11 @@ Candidate information popup for Corfu
 #+end_quote
 #+begin_src emacs-lisp
 (use-package corfu-popupinfo
-	:after corfu
-	:custom
-	(corfu-popupinfo-delay '(1.5 . 0.5))
-	(corfu-popupinfo-max-height 15)
-	:hook (corfu-mode-hook . corfu-popupinfo-mode))
+  :after corfu
+  :custom
+  (corfu-popupinfo-delay '(1.5 . 0.5))
+  (corfu-popupinfo-max-height 15)
+  :hook (corfu-mode-hook . corfu-popupinfo-mode))
 #+end_src
 **** embark
 #+begin_quote
@@ -1082,43 +1147,43 @@ Emacs Mini-Buffer Actions Rooted in Keymaps
 #+end_quote
 #+begin_src emacs-lisp
 (use-package embark
-	:ensure t
-	:defer 2
-	:custom
-	(embark-indicators
-	 '(embark-minimal-indicator
-		 embark-highlight-indicator
-		 embark-isearch-highlight-indicator))
-	:bind
-	((("C-," . embark-act)
-		("C-." . embark-dwim)
-		("C-*" . embark-act-all))
-	 (:map minibuffer-mode-map
-				 ("C-<" . embark-become)
-				 ("C-SPC" . embark-select))
-	 (:map help-map
-				 ("b" . embark-bindings))))
+  :ensure t
+  :defer 2
+  :custom
+  (embark-indicators
+   '(embark-minimal-indicator
+     embark-highlight-indicator
+     embark-isearch-highlight-indicator))
+  :bind
+  ((("C-." . embark-act)
+    ("C->" . embark-dwim)
+    ("C-*" . embark-act-all))
+   (:map minibuffer-mode-map
+         ("C-<" . embark-become)
+         ("C-SPC" . embark-select))
+   (:map help-map
+         ("b" . embark-bindings))))
 #+end_src
-***** emburk-consult
+***** embark-consult
 #+begin_quote
 Consult integration for Embark
 #+end_quote
 #+begin_src emacs-lisp
 (use-package embark-consult
-	:after (consult embark)
-	:hook (embark-collect-mode . consult-preview-at-point-mode))
+  :after (consult embark)
+  :hook (embark-collect-mode-hook . consult-preview-at-point-mode))
 #+end_src
-***** emburk-org
+***** embark-org
 #+begin_quote
 Embark targets and actions for Org Mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package embark-org
-	:bind
-	((:map embark-org-link-map
-				 ("l" . org-insert-link))
-	 (:map embark-org-src-block-map
-				 ("e" . org-edit-special))))
+  :bind
+  ((:map embark-org-link-map
+         ("l" . org-insert-link))
+   (:map embark-org-src-block-map
+         ("e" . org-edit-special))))
 #+end_src
 **** indent
 #+begin_quote
@@ -1126,8 +1191,8 @@ indentation commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package indent
-	:custom
-	(tab-always-indent 'complete))
+  :custom
+  (tab-always-indent 'complete))
 #+end_src
 **** marginalia
 #+begin_quote
@@ -1135,8 +1200,8 @@ indentation commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package marginalia
-	:ensure t
-	:hook (after-init-hook . marginalia-mode))
+  :ensure t
+  :hook (after-init-hook . marginalia-mode))
 #+end_src
 **** minibuffer
 #+begin_quote
@@ -1144,8 +1209,8 @@ Minibuffer and completion functions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package minibuffer
-	:custom
-	(completion-cycle-threshold 3))
+  :custom
+  (completion-cycle-threshold 3))
 #+end_src
 **** orderless
 #+begin_quote
@@ -1153,11 +1218,11 @@ Emacs completion style that matches multiple regexps in any order
 #+end_quote
 #+begin_src emacs-lisp
 (use-package orderless
-	:ensure t
-	:custom
-	(completion-styles '(orderless basic))
-	(completion-category-defaults nil)
-	(completion-category-overrides nil))
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides nil))
 #+end_src
 **** vertico
 #+begin_quote
@@ -1165,11 +1230,11 @@ Emacs completion style that matches multiple regexps in any order
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico
-	:ensure t
-	:custom
-	(vertico-count 20)
-	(vertico-resize nil)
-	:hook (after-init-hook . vertico-mode))
+  :ensure t
+  :custom
+  (vertico-count 20)
+  (vertico-resize nil)
+  :hook (after-init-hook . vertico-mode))
 #+end_src
 ***** vertico-directory
 #+begin_quote
@@ -1177,13 +1242,13 @@ Ido-like directory navigation for Vertico
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico-directory
-	:after vertico
-	:bind
-	(:map vertico-map
-				("RET" . vertico-directory-enter)
-				("DEL" . vertico-directory-delete-char)
-				("M-DEL" . vertico-directory-delete-word))
-	:hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+  :after vertico
+  :bind
+  (:map vertico-map
+        ("RET" . vertico-directory-enter)
+        ("DEL" . vertico-directory-delete-char)
+        ("M-DEL" . vertico-directory-delete-word))
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 #+end_src
 ***** vertico-multiform
 #+begin_quote
@@ -1191,18 +1256,18 @@ Configure Vertico in different forms per command
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico-multiform
-	:after vertico
-	:custom
-	(vertico-multiform-categories
-	 '((embark-keybinding grid)
-		 (jinx grid)))
-	(vertico-multiform-commands
-	 '((consult-buffer (:not posframe))
-		 (consult-line (:not posframe))
-		 (consult-ripgrep (:not posframe))
-		 (t posframe)))
-	:config
-	(vertico-multiform-mode 1))
+  :after vertico
+  :custom
+  (vertico-multiform-categories
+   '((embark-keybinding grid)
+     (jinx grid)))
+  (vertico-multiform-commands
+   '((consult-buffer (:not posframe))
+     (consult-line (:not posframe))
+     (consult-ripgrep (:not posframe))
+     (t posframe)))
+  :config
+  (vertico-multiform-mode 1))
 #+end_src
 ***** vertico-posframe
 #+begin_quote
@@ -1210,44 +1275,64 @@ vertico-posframe is an vertico extension, which lets vertico use posframe to sho
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico-posframe
-	:ensure t
-	:custom
-	(vertico-posframe-border-width 3)
-	(vertico-posframe-min-width 80)
-	(vertico-posframe-width nil)
-	(vertico-posframe-parameters
-	 '((left-fringe . 10)
-		 (right-fringe . 10)))
-	;; (vertico-posframe-poshandler 'posframe-poshandler-frame-center)
-	:hook (vertico-mode-hook . vertico-posframe-mode))
+  :ensure t
+  :custom
+  (vertico-posframe-border-width 3)
+  (vertico-posframe-min-width 80)
+  (vertico-posframe-width nil)
+  (vertico-posframe-parameters
+   '((left-fringe . 10)
+     (right-fringe . 10)))
+  ;; (vertico-posframe-poshandler 'posframe-poshandler-frame-center)
+  :hook (vertico-mode-hook . vertico-posframe-mode))
 #+end_src
 *** Editing
 :PROPERTIES:
 :CUSTOM_ID: editing
 :END:
+**** fns.c
+#+begin_quote
+Random utility Lisp functions.
+#+end_quote
+#+begin_src emacs-lisp
+(setq use-short-answers t)
+#+end_src
 **** abbrev
 #+begin_quote
 abbrev mode commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package abbrev
-	:custom
-	(save-abbrevs nil)
-	:hook
-	((git-commit-mode-hook
-		vc-git-log-edit-mode-hook
-		markdown-mode-hook
-		org-mode-hook) . abbrev-mode)
-	:config
-	(define-abbrev-table 'global-abbrev-table
-		'(("fixme" "FIXME")
-			("tbd" "TBD")
-			("wip" "WIP")
-			("teh" "the")
-			("afaik" "As far as I know")
-			("btw" "By the way")
-			("imo" "In my opinion")
-			("imho" "In my humble opinion"))))
+  :custom
+  (save-abbrevs nil)
+  :hook
+  ((git-commit-mode-hook
+    vc-git-log-edit-mode-hook
+    markdown-mode-hook
+    org-mode-hook) . abbrev-mode)
+  :config
+  (define-abbrev-table 'global-abbrev-table
+    '(("fixme" "FIXME")
+      ("tbd" "TBD")
+      ("wip" "WIP")
+      ("teh" "the")
+      ("afaik" "As far as I know")
+      ("btw" "By the way")
+      ("imo" "In my opinion")
+      ("imho" "In my humble opinion"))))
+#+end_src
+**** autoinsert
+#+begin_quote
+automatic mode-dependent insertion of text into new files
+#+end_quote
+#+begin_src emacs-lisp
+(use-package autoinsert
+  :custom
+  (auto-insert 'other)
+  (auto-insert-directory (concat emacs-data-home "templates/autoinsert/"))
+  (auto-insert-query nil)
+  :hook
+  (after-init-hook . auto-insert-mode))
 #+end_src
 **** avy
 #+begin_quote
@@ -1255,57 +1340,57 @@ Jump to things in Emacs tree-style
 #+end_quote
 #+begin_src emacs-lisp
 (use-package avy
-	:ensure t
-	:custom
-	(avy-dispatch-alist
-	 '((?c . avy-action-copy)
-		 (?l . avy-action-ispell)
-		 (?m . avy-action-mark)
-		 (?r . avy-action-teleport)
-		 (?w . avy-action-kill-move)
-		 (?W . avy-action-kill-stay)
-		 (?y . avy-action-yank)
-		 (?Y . avy-action-yank-line)
-		 (?z . avy-action-zap-to-char)))
-	(avy-keys '(?e ?i ?a ?o ?k ?t ?n ?s ?h))
-	(avy-style 'pre)
-	(avy-styles-alist '((avy-goto-char-timer . at-full)))
-	(avy-all-windows t)
-	(avy-single-candidate-jump nil)
-	(avy-timeout-seconds 0.5)
-	:bind
-	(("M-j" . avy-goto-char-timer)
-	 ("M-J" . avy-goto-char-in-line)
-	 (:map goto-map
-				 ("e" . avy-goto-end-of-line)
-				 ("j" . avy-goto-char-timer)
-				 ("J" . avy-goto-char-in-line)
-				 ("w" . avy-goto-whitespace-end))
-	 (:map isearch-mode-map
-				 ("M-j" . avy-isearch)))
-	:config
-	(with-eval-after-load 'helpful
-		;; https://karthinks.com/software/avy-can-do-anything/#look-up-the-documentation-for-a-symbol
-		(defun my/avy-action-helpful (pt)
-			(save-excursion
-				(goto-char pt)
-				(helpful-at-point))
-			(select-window
-			 (cdr (ring-ref avy-ring 0)))
-			t)
-		(setf (alist-get ?H avy-dispatch-alist) #'my/avy-action-helpful))
+  :ensure t
+  :custom
+  (avy-dispatch-alist
+   '((?c . avy-action-copy)
+     (?l . avy-action-ispell)
+     (?m . avy-action-mark)
+     (?r . avy-action-teleport)
+     (?w . avy-action-kill-move)
+     (?W . avy-action-kill-stay)
+     (?y . avy-action-yank)
+     (?Y . avy-action-yank-line)
+     (?z . avy-action-zap-to-char)))
+  (avy-keys '(?e ?i ?a ?o ?k ?t ?n ?s ?h))
+  (avy-style 'pre)
+  (avy-styles-alist '((avy-goto-char-timer . at-full)))
+  (avy-all-windows t)
+  (avy-single-candidate-jump nil)
+  (avy-timeout-seconds 0.5)
+  :bind
+  (("M-j" . avy-goto-char-timer)
+   ("M-J" . avy-goto-char-in-line)
+   (:map goto-map
+         ("e" . avy-goto-end-of-line)
+         ("j" . avy-goto-char-timer)
+         ("J" . avy-goto-char-in-line)
+         ("w" . avy-goto-whitespace-end))
+   (:map isearch-mode-map
+         ("M-j" . avy-isearch)))
+  :config
+  (with-eval-after-load 'helpful
+    ;; https://karthinks.com/software/avy-can-do-anything/#look-up-the-documentation-for-a-symbol
+    (defun my/avy-action-helpful (pt)
+      (save-excursion
+        (goto-char pt)
+        (helpful-at-point))
+      (select-window
+       (cdr (ring-ref avy-ring 0)))
+      t)
+    (setf (alist-get ?H avy-dispatch-alist) #'my/avy-action-helpful))
 
-	(with-eval-after-load 'embark
-		;; https://karthinks.com/software/avy-can-do-anything/#avy-plus-embark-any-action-anywhere
-		(defun my/avy-action-embark (pt)
-			(unwind-protect
-					(save-excursion
-						(goto-char pt)
-						(embark-act))
-				(select-window
-				 (cdr (ring-ref avy-ring 0))))
-			t)
-		(setf (alist-get ?. avy-dispatch-alist) #'my/avy-action-embark)))
+  (with-eval-after-load 'embark
+    ;; https://karthinks.com/software/avy-can-do-anything/#avy-plus-embark-any-action-anywhere
+    (defun my/avy-action-embark (pt)
+      (unwind-protect
+          (save-excursion
+            (goto-char pt)
+            (embark-act))
+        (select-window
+         (cdr (ring-ref avy-ring 0))))
+      t)
+    (setf (alist-get ?. avy-dispatch-alist) #'my/avy-action-embark)))
 #+end_src
 **** deadgrep
 #+begin_quote
@@ -1313,18 +1398,18 @@ fast, friendly searching with ripgrep and Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package deadgrep
-	:ensure t
-	:custom
-	(deadgrep-display-buffer-function 'pop-to-buffer)
-	(deadgrep-extra-arguments
-	 '("--no-config"
-		 "--hidden"
-		 "--ignore-file=.gitignore"
-		 "--iglob=!.git"
-		 "--sort=modified"))
-	:bind
-	((:map search-map
-				 ("d" . deadgrep))))
+  :ensure t
+  :custom
+  (deadgrep-display-buffer-function 'pop-to-buffer)
+  (deadgrep-extra-arguments
+   '("--no-config"
+     "--hidden"
+     "--ignore-file=.gitignore"
+     "--iglob=!.git"
+     "--sort=modified"))
+  :bind
+  ((:map search-map
+         ("d" . deadgrep))))
 #+end_src
 **** delsel
 #+begin_quote
@@ -1332,7 +1417,7 @@ delete selection if you insert
 #+end_quote
 #+begin_src emacs-lisp
 (use-package delsel
-	:hook (after-init-hook . delete-selection-mode))
+  :hook (after-init-hook . delete-selection-mode))
 #+end_src
 **** elec-pair
 #+begin_quote
@@ -1340,7 +1425,7 @@ Automatically insert matching delimiters
 #+end_quote
 #+begin_src emacs-lisp
 (use-package elec-pair
-	:hook (after-init-hook . electric-pair-mode))
+  :hook (after-init-hook . electric-pair-mode))
 #+end_src
 **** grugru
 #+begin_quote
@@ -1348,38 +1433,38 @@ Rotate text at point in Emacs.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package grugru
-	:ensure t
-	:bind
-	(:map mode-specific-map
-				("@ <right>" . grugru-forward)
-				("@ <left>" . grugru-backward)
-				("@ >" . grugru-forward)
-				("@ <" . grugru-backward)
-				("@ SPC" . grugru-select))
-	(:repeat-map grugru-repeat-map
-							 ("<right>" . grugru-forward)
-							 ("<left>" . grugru-backward)
-							 (">" . grugru-forward)
-							 ("<" . grugru-backward)
-							 ("SPC" . grugru-select))
-	:config
-	(grugru-default-setup)
-	(grugru-define-global 'symbol '("yes" "no"))
-	(grugru-define-global 'symbol '("true" "false"))
-	(grugru-define-multiple
-		((nix-mode rust-mode)
-		 (non-alphabet "==" "!="))
-		(nix-mode
-		 (symbol "fetchurl" "fetchGit" "fetchTarball" "fetchClosure")
-		 (symbol "mkShell" "mkShellNoCC"))
-		(rust-mode
-		 (non-alphabet "&&" "||")
-		 (non-alphabet "+=" "-=")
-		 (non-alphabet "*=" "/=" "%=")
-		 (non-alphabet "&=" "|=" "^=")
-		 (non-alphabet "<" "<=" ">" ">=")
-		 (non-alphabet ">>=" "<<=")
-		 (symbol "const" "let" "static"))))
+  :ensure t
+  :bind
+  (:map mode-specific-map
+        ("@ <right>" . grugru-forward)
+        ("@ <left>" . grugru-backward)
+        ("@ >" . grugru-forward)
+        ("@ <" . grugru-backward)
+        ("@ SPC" . grugru-select))
+  (:repeat-map grugru-repeat-map
+               ("<right>" . grugru-forward)
+               ("<left>" . grugru-backward)
+               (">" . grugru-forward)
+               ("<" . grugru-backward)
+               ("SPC" . grugru-select))
+  :config
+  (grugru-default-setup)
+  (grugru-define-global 'symbol '("yes" "no"))
+  (grugru-define-global 'symbol '("true" "false"))
+  (grugru-define-multiple
+    ((nix-mode rust-mode)
+     (non-alphabet "==" "!="))
+    (nix-mode
+     (symbol "fetchurl" "fetchGit" "fetchTarball" "fetchClosure")
+     (symbol "mkShell" "mkShellNoCC"))
+    (rust-mode
+     (non-alphabet "&&" "||")
+     (non-alphabet "+=" "-=")
+     (non-alphabet "*=" "/=" "%=")
+     (non-alphabet "&=" "|=" "^=")
+     (non-alphabet "<" "<=" ">" ">=")
+     (non-alphabet ">>=" "<<=")
+     (symbol "const" "let" "static"))))
 #+end_src
 **** hippie-exp
 #+begin_quote
@@ -1387,16 +1472,16 @@ expand text trying various ways to find its expansion
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hippie-exp
-	:custom
-	(hippie-expand-try-functions-list
-	 '(try-complete-file-name-partially
-		 try-complete-file-name
-		 try-expand-dabbrev
-		 try-expand-dabbrev-visible
-		 try-expand-dabbrev-from-kill
-		 try-expand-dabbrev-all-buffers))
-	:bind
-	([remap dabbrev-expand] . hippie-expand))
+  :custom
+  (hippie-expand-try-functions-list
+   '(try-complete-file-name-partially
+     try-complete-file-name
+     try-expand-dabbrev
+     try-expand-dabbrev-visible
+     try-expand-dabbrev-from-kill
+     try-expand-dabbrev-all-buffers))
+  :bind
+  ([remap dabbrev-expand] . hippie-expand))
 #+end_src
 **** isearch
 #+begin_quote
@@ -1404,9 +1489,9 @@ incremental search minor mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package isearch
-	:custom
-	(isearch-allow-scroll t)
-	(isearch-lazy-count t))
+  :custom
+  (isearch-allow-scroll t)
+  (isearch-lazy-count t))
 #+end_src
 **** jinx
 #+begin_quote
@@ -1414,15 +1499,15 @@ incremental search minor mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package jinx
-	:ensure t
-	:hook
-	((git-commit-mode-hook
-		vc-git-log-edit-mode-hook
-		markdown-mode-hook
-		org-mode-hook) . jinx-mode)
-	:bind
-	(([remap ispell-word] . jinx-correct)
-	 ("C-M-$" . jinx-correct-nearest)))
+  :ensure t
+  :hook
+  ((git-commit-mode-hook
+    vc-git-log-edit-mode-hook
+    markdown-mode-hook
+    org-mode-hook) . jinx-mode)
+  :bind
+  (([remap ispell-word] . jinx-correct)
+   ("C-M-$" . jinx-correct-nearest)))
 #+end_src
 **** link-hint
 #+begin_quote
@@ -1430,58 +1515,49 @@ Pentadactyl-like Link Hinting in Emacs with Avy
 #+end_quote
 #+begin_src emacs-lisp
 (use-package link-hint
-	:ensure t
-	:bind
-	((:map goto-map
-				 ("l" . link-hint-open-link)
-				 ("L" . link-hint-copy-link))))
+  :ensure t
+  :bind
+  ((:map goto-map
+         ("l" . link-hint-open-link)
+         ("L" . link-hint-copy-link))))
 #+end_src
 **** markdown-mode
-:PROPERTIES:
-:CUSTOM_ID: markdown-mode
-:END:
 #+begin_quote
 Emacs Markdown Mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package markdown-mode
-	:ensure t
-	:custom
-	(markdown-fontify-code-blocks-natively t)
-	:mode
-	(("\\.markdown\\'"
-		"\\.md\\'"
-		"\\.mdoc\\'"
-		"\\.mdx\\'") . markdown-mode)
-	("README\\.md\\'" . gfm-mode)
-	:hook
-	(markdown-mode-hook . dprint-on-save-mode)
-	:bind
-	(:map markdown-mode-map
-				:map mode-specific-map
-				("'" . markdown-edit-code-block)))
+  :ensure t
+  :custom
+  (markdown-fontify-code-blocks-natively t)
+  :mode
+  (("\\.markdown\\'"
+    "\\.md\\'"
+    "\\.mdoc\\'"
+    "\\.mdx\\'") . markdown-mode)
+  ("README\\.md\\'" . gfm-mode)
+  :hook
+  (markdown-mode-hook . dprint-on-save-mode)
+  :bind
+  (:map markdown-mode-map
+        :map mode-specific-map
+        ("'" . markdown-edit-code-block)))
 #+end_src
 **** move-dup
-:PROPERTIES:
-:CUSTOM_ID: move-dup
-:END:
 #+begin_quote
 Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package move-dup
-	:ensure t
-	:bind
-	(("M-P" . move-dup-move-lines-up)
-	 ("M-N" . move-dup-move-lines-down)
-	 ("C-M-p" . move-dup-duplicate-up)
-	 ("C-M-n" . move-dup-duplicate-down))
-	:hook (after-init-hook . global-move-dup-mode))
+  :ensure t
+  :bind
+  (("M-P" . move-dup-move-lines-up)
+   ("M-N" . move-dup-move-lines-down)
+   ("C-M-p" . move-dup-duplicate-up)
+   ("C-M-n" . move-dup-duplicate-down))
+  :hook (after-init-hook . global-move-dup-mode))
 #+end_src
 **** pixel-scroll
-:PROPERTIES:
-:CUSTOM_ID: pixel-scroll
-:END:
 #+begin_quote
 Scroll a line smoothly
 #+end_quote
@@ -1490,218 +1566,196 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
 
 #+begin_src emacs-lisp
 (use-package pixel-scroll
-	:if (>= emacs-major-version 29)
-	:custom
-	(pixel-scroll-precision-interpolate-page t)
-	(pixel-scroll-precision-use-momentum t)
-	(pixel-scroll-precision-momentum-seconds 0.5)
-	(pixel-scroll-precision-initial-velocity-factor 0.000375)
-	(pixel-scroll-precision-large-scroll-height 100)
-	:hook (after-init-hook . pixel-scroll-precision-mode))
+  :if (>= emacs-major-version 29)
+  :custom
+  (pixel-scroll-precision-interpolate-page t)
+  (pixel-scroll-precision-use-momentum t)
+  (pixel-scroll-precision-momentum-seconds 0.5)
+  (pixel-scroll-precision-initial-velocity-factor 0.000375)
+  (pixel-scroll-precision-large-scroll-height 100)
+  :hook (after-init-hook . pixel-scroll-precision-mode))
 #+end_src
 **** puni
-:PROPERTIES:
-:CUSTOM_ID: puni
-:END:
 #+begin_quote
 Structured editing (soft deletion, expression navigating & manipulating) that supports many major modes out of the box.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package puni
-	:ensure t
-	:hook (after-init-hook . puni-global-mode)
-	:bind
-	((:map puni-mode-map
-				 ([remap mark-sexp] . puni-mark-sexp-at-point)
-				 ([remap transpose-sexps] . puni-transpose))
-	 (:map mode-specific-map
-				 ("SPC" . puni-expand-region)
-				 ("<" . puni-wrap-angle)
-				 ("{" . puni-wrap-curly)
-				 ("^" . puni-splice))
-	 (:repeat-map puni-region-repeat-map
-								("SPC" . puni-expand-region)
-								("<right>" . puni-expand-region)
-								("<left>" . puni-contract-region)))
-	:config
-	(mapc (lambda (k) (keymap-unset puni-mode-map k))
-				'("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
+  :ensure t
+  :hook (after-init-hook . puni-global-mode)
+  :bind
+  ((:map puni-mode-map
+         ([remap mark-sexp] . puni-mark-sexp-at-point)
+         ([remap transpose-sexps] . puni-transpose))
+   (:map mode-specific-map
+         ("SPC" . puni-expand-region)
+         ("<" . puni-wrap-angle)
+         ("{" . puni-wrap-curly)
+         ("^" . puni-splice))
+   (:repeat-map puni-region-repeat-map
+                ("SPC" . puni-expand-region)
+                ("<right>" . puni-expand-region)
+                ("<left>" . puni-contract-region)))
+  :config
+  (mapc (lambda (k) (keymap-unset puni-mode-map k))
+        '("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
 #+end_src
 **** replace
-:PROPERTIES:
-:CUSTOM_ID: replace
-:END:
 #+begin_quote
 replace commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package replace
-	:bind
-	(:map mode-specific-map
-				("o" . occur)))
+  :bind
+  (:map mode-specific-map
+        ("o" . occur)))
 #+end_src
 **** savehist
-:PROPERTIES:
-:CUSTOM_ID: savehist
-:END:
 #+begin_quote
 Save minibuffer history
 #+end_quote
 #+begin_src emacs-lisp
 (use-package savehist
-	:hook (after-init-hook . savehist-mode))
+  :hook (after-init-hook . savehist-mode))
 #+end_src
 **** saveplace
-:PROPERTIES:
-:CUSTOM_ID: saveplace
-:END:
 #+begin_quote
 automatically save place in files
 #+end_quote
 #+begin_src emacs-lisp
 (use-package saveplace
-	:hook (after-init-hook . save-place-mode))
+  :hook (after-init-hook . save-place-mode))
 #+end_src
 **** separedit
-:PROPERTIES:
-:CUSTOM_ID: separedit
-:END:
 #+begin_quote
 Edit comment or string/docstring or code block inside them in separate buffer with your favorite mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package separedit
-	:ensure t
-	:custom
-	(separedit-default-mode 'markdown-mode)
-	:bind
-	(:map mode-specific-map
-				("'" . separedit)))
+  :ensure t
+  :custom
+  (separedit-default-mode 'markdown-mode)
+  :bind
+  (:map mode-specific-map
+        ("'" . separedit)))
 #+end_src
 **** simple
-:PROPERTIES:
-:CUSTOM_ID: simple
-:END:
 #+begin_quote
 basic editing commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package simple
-	:custom
-	(read-extended-command-predicate 'command-completion-default-include-p)
-	(kill-whole-line t)
-	(line-number-mode nil))
+  :custom
+  (indent-tabs-mode nil) ;; Use spaces instead of tabs for indentation.
+  (kill-whole-line t)
+  (line-number-mode nil)
+  (read-extended-command-predicate 'command-completion-default-include-p))
 #+end_src
 **** string-inflection
-:PROPERTIES:
-:CUSTOM_ID: string-inflection
-:END:
 #+begin_quote
 underscore -> UPCASE -> CamelCase conversion of names
 #+end_quote
 #+begin_src emacs-lisp
 (use-package string-inflection
-	:ensure t
-	:bind
-	((:map mode-specific-map
-				 ("-" . string-inflection-all-cycle))
-	 (:repeat-map string-inflection-repeat-map
-								("-" . string-inflection-all-cycle))))
+  :ensure t
+  :bind
+  ((:map mode-specific-map
+         ("-" . string-inflection-all-cycle))
+   (:repeat-map string-inflection-repeat-map
+                ("-" . string-inflection-all-cycle))))
 #+end_src
 **** text-mode
-:PROPERTIES:
-:CUSTOM_ID: text-mode
-:END:
 #+begin_quote
 text mode, and its idiosyncratic commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package text-mode
-	:custom
-	(text-mode-ispell-word-completion nil)) ; recommended for cape
+  :custom
+  (text-mode-ispell-word-completion nil)) ; recommended for cape
 #+end_src
 **** tempel
-:PROPERTIES:
-:CUSTOM_ID: tempel
-:END:
 #+begin_quote
 🏛️ TempEl - Simple templates for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package tempel
-	:ensure t
-	:custom
-	(tempel-path (list (expand-file-name "templates/*.eld" user-emacs-directory)))
-	:bind
-	(("M-+" . tempel-complete)
-	 ("M-*" . tempel-insert)
-	 (:map tempel-map
-				 ("TAB" . tempel-next)
-				 ([tab] . tempel-next)
-				 ("S-TAB" . tempel-previous)
-				 ([backtab] . tempel-previous)
-				 ("M-RET". tempel-done))))
+  :ensure t
+  :custom
+  ;; (tempel-path (concat emacs-data-home "templates/*.eld"))
+  (tempel-path (expand-file-name "templates/*.eld" emacs-data-home))
+  :bind
+  (("M-+" . tempel-complete)
+   ("M-*" . tempel-insert)
+   (:map tempel-map
+         ("TAB" . tempel-next)
+         ([tab] . tempel-next)
+         ("S-TAB" . tempel-previous)
+         ([backtab] . tempel-previous)
+         ("M-RET". tempel-done))))
 #+end_src
 **** visual-replace
-:PROPERTIES:
-:CUSTOM_ID: visual-replace
-:END:
 #+begin_quote
 A nicer interface for query-replace on Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package visual-replace
-	:ensure t
-	:custom
-	(visual-replace-default-to-full-scope t)
-	(visual-replace-keep-initial-position t)
-	:hook
-	(after-init-hook . visual-replace-global-mode)
-	:bind
-	([remap query-replace] . visual-replace)
-	(:map mode-specific-map
-				("r" . visual-replace))
-	:config
-	(with-eval-after-load 'transient
-		(transient-define-prefix my/visual-replace-mode-transient ()
-			"Prefix for `visual-replace-mode-map'."
-			["Basic operation"
-			 ("a" "apply one repeat" visual-replace-apply-one-repeat)
-			 ("A" "apply one" visual-replace-apply-one)
-			 ("s" "substring match" visual-replace-substring-match)
-			 ("u" "undo" visual-replace-undo)
-			 ("y" "yank" visual-replace-yank)
-			 ("M-y" "yank-pop" visual-replace-yank-pop)]
-			["Toggle replace mode"
-			 ("c" "toggle case fold" visual-replace-toggle-case-fold)
-			 ("e" "toggle regexp" visual-replace-toggle-regexp)
-			 ("q" "toggle query" visual-replace-toggle-query)
-			 ("w" "toggle word" visual-replace-toggle-word)]
-			["Change scope"
-			 ("f" "switch to full scope" visual-replace-switch-to-full-scope)
-			 ("p" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
-			 ("r" "switch to region scope" visual-replace-switch-to-region-scope)])
-		(keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
+  :ensure t
+  :custom
+  (visual-replace-default-to-full-scope t)
+  (visual-replace-keep-initial-position t)
+  :hook
+  (after-init-hook . visual-replace-global-mode)
+  :bind
+  ([remap query-replace] . visual-replace)
+  :config
+  (with-eval-after-load 'transient
+    (transient-define-prefix my/visual-replace-mode-transient ()
+      "Prefix for `visual-replace-mode-map'."
+      ["Basic operation"
+       ("a" "apply one repeat" visual-replace-apply-one-repeat)
+       ("A" "apply one" visual-replace-apply-one)
+       ("s" "substring match" visual-replace-substring-match)
+       ("u" "undo" visual-replace-undo)
+       ("y" "yank" visual-replace-yank)
+       ("M-y" "yank-pop" visual-replace-yank-pop)]
+      ["Toggle replace mode"
+       ("c" "toggle case fold" visual-replace-toggle-case-fold)
+       ("e" "toggle regexp" visual-replace-toggle-regexp)
+       ("q" "toggle query" visual-replace-toggle-query)
+       ("w" "toggle word" visual-replace-toggle-word)]
+      ["Change scope"
+       ("f" "switch to full scope" visual-replace-switch-to-full-scope)
+       ("p" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
+       ("r" "switch to region scope" visual-replace-switch-to-region-scope)])
+    (keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
 #+end_src
 **** vundo
-:PROPERTIES:
-:CUSTOM_ID: vundo
-:END:
 #+begin_quote
 Visualize the undo tree.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vundo
-	:ensure t
-	:custom
-	(vundo-glyph-alist vundo-unicode-symbols)
-	(vundo-popup-timeout 3.0)
-	(vundo-window-max-height 15)
-	:bind
-	(("C-z" . vundo)
-	 (:map vundo-mode-map
-				 ("C-e" . vundo-confirm)))
-	:hook (after-init-hook . vundo-popup-mode))
+  :ensure t
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols)
+  (vundo-popup-timeout 3.0)
+  (vundo-window-max-height 15)
+  :bind
+  (("C-z" . vundo)
+   (:map vundo-mode-map
+         ("C-e" . vundo-confirm)))
+  :hook (after-init-hook . vundo-popup-mode))
+#+end_src
+**** ws-butler
+#+begin_quote
+Unobtrusively trim extraneous white-space *ONLY* in lines edited.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :ensure t
+  :hook
+  ((prog-mode-hook
+    text-mode-hook) . ws-butler-mode))
 #+end_src
 *** Visual Aid
 :PROPERTIES:
@@ -1722,14 +1776,14 @@ By default, the following major modes are included in `global-colorful-modes`:
 
 #+begin_src emacs-lisp
 (use-package colorful-mode
-	:ensure t
-	:custom
-	(colorful-use-prefix t)
-	(colorful-only-strings 'only-prog)
-	(css-fontify-colors nil)
-	:config
-	(global-colorful-mode 1)
-	(add-to-list 'global-colorful-modes 'helpful-mode))
+  :ensure t
+  :custom
+  (colorful-use-prefix t)
+  (colorful-only-strings 'only-prog)
+  (css-fontify-colors nil)
+  :config
+  (global-colorful-mode 1)
+  (add-to-list 'global-colorful-modes 'helpful-mode))
 #+end_src
 **** display-fill-column-indicator
 #+begin_quote
@@ -1737,9 +1791,9 @@ interface for display-fill-column-indicator
 #+end_quote
 #+begin_src emacs-lisp
 (use-package display-fill-column-indicator
-	:hook
-	((prog-mode-hook
-		text-mode-hook) . display-fill-column-indicator-mode))
+  :hook
+  ((prog-mode-hook
+    text-mode-hook) . display-fill-column-indicator-mode))
 #+end_src
 **** display-line-numbers
 #+begin_quote
@@ -1747,28 +1801,28 @@ interface for display-line-numbers
 #+end_quote
 #+begin_src emacs-lisp
 (use-package display-line-numbers
-	:custom
-	(display-line-numbers-type t)
-	(display-line-numbers-grow-only t)
-	(display-line-numbers-width-start t)
-	:hook
-	(display-line-numbers-mode-hook . header-line-indent-mode)
-	:init
-	(global-display-line-numbers-mode 1)
-	:config
-	(defun my/display-line-numbers-fixed-width ()
-		(when (< display-line-numbers-width 5)
-			(setq display-line-numbers-width 5)))
-	(add-hook 'display-line-numbers-mode-hook #'my/display-line-numbers-fixed-width)
-	(dolist (mode '(dashboard-mode-hook
-									dired-mode-hook
-									eat-mode-hook
-									eshell-mode-hook
-									org-mode-hook
-									shell-mode-hook
-									term-mode-hook
-									vterm-mode-hook))
-		(add-hook mode (lambda () (display-line-numbers-mode 0)))))
+  :custom
+  (display-line-numbers-type t)
+  (display-line-numbers-grow-only t)
+  (display-line-numbers-width-start t)
+  :hook
+  (display-line-numbers-mode-hook . header-line-indent-mode)
+  :init
+  (global-display-line-numbers-mode 1)
+  :config
+  (defun my/display-line-numbers-fixed-width ()
+    (when (< display-line-numbers-width 5)
+      (setq display-line-numbers-width 5)))
+  (add-hook 'display-line-numbers-mode-hook #'my/display-line-numbers-fixed-width)
+  (dolist (mode '(dashboard-mode-hook
+                  dired-mode-hook
+                  eat-mode-hook
+                  eshell-mode-hook
+                  org-mode-hook
+                  shell-mode-hook
+                  term-mode-hook
+                  vterm-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0)))))
 #+end_src
 **** goggles
 #+begin_quote
@@ -1776,13 +1830,26 @@ goggles.el - Pulse modified region
 #+end_quote
 #+begin_src emacs-lisp
 (use-package goggles
-	:ensure t
-	:custom
-	(goggles-pulse-delay 0.05)
-	(goggles-pulse-iterations 15)
-	:hook
-	((prog-mode-hook
-		text-mode-hook) . goggles-mode))
+  :ensure t
+  :custom
+  (goggles-pulse-delay 0.05)
+  (goggles-pulse-iterations 15)
+  :hook
+  ((prog-mode-hook
+    text-mode-hook) . goggles-mode))
+#+end_src
+**** highlight-indent-guides
+#+begin_quote
+Emacs minor mode to highlight indentation
+#+end_quote
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :custom
+  (highlight-indent-guides-method 'character)
+  :hook
+  ((python-mode-hook
+    yaml-mode-hook) . highlight-indent-guides-mode))
 #+end_src
 **** hl-line
 #+begin_quote
@@ -1790,13 +1857,13 @@ highlight the current line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hl-line
-	:custom
-	(hl-line-sticky-flag nil)
-	(global-hl-line-sticky-flag nil)
-	:hook
-	((prog-mode-hook
-		text-mode-hook
-		dired-mode-hook) . hl-line-mode))
+  :custom
+  (hl-line-sticky-flag nil)
+  (global-hl-line-sticky-flag nil)
+  :hook
+  ((prog-mode-hook
+    text-mode-hook
+    dired-mode-hook) . hl-line-mode))
 #+end_src
 **** hl-todo
 #+begin_quote
@@ -1804,25 +1871,25 @@ Highlight TODO keywords
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hl-todo
-	:ensure t
-	:custom
-	(hl-todo-highlight-punctuation ":")
-	:hook
-	((org-mode-hook
-		prog-mode-hook) . hl-todo-mode)
-	:bind
-	((:map hl-todo-mode-map
-				 :map mode-specific-map
-				 ("t <right>" . hl-todo-next)
-				 ("t <left>" . hl-todo-previous)
-				 ("t >" . hl-todo-next)
-				 ("t <" . hl-todo-previous)
-				 ("t o" . hl-todo-occur))
-	 (:repeat-map hl-todo-repeat-map
-								("<right>" . hl-todo-next)
-								("<left>" . hl-todo-previous)
-								(">" . hl-todo-next)
-								("<" . hl-todo-previous))))
+  :ensure t
+  :custom
+  (hl-todo-highlight-punctuation ":")
+  :hook
+  ((org-mode-hook
+    prog-mode-hook) . hl-todo-mode)
+  :bind
+  ((:map hl-todo-mode-map
+         :map mode-specific-map
+         ("t <right>" . hl-todo-next)
+         ("t <left>" . hl-todo-previous)
+         ("t >" . hl-todo-next)
+         ("t <" . hl-todo-previous)
+         ("t o" . hl-todo-occur))
+   (:repeat-map hl-todo-repeat-map
+                ("<right>" . hl-todo-next)
+                ("<left>" . hl-todo-previous)
+                (">" . hl-todo-next)
+                ("<" . hl-todo-previous))))
 #+end_src
 **** paren
 #+begin_quote
@@ -1830,9 +1897,9 @@ highlight matching paren
 #+end_quote
 #+begin_src emacs-lisp
 (use-package paren
-	:custom
-	(show-paren-context-when-offscreen t)
-	:hook (after-init-hook . show-paren-mode))
+  :custom
+  (show-paren-context-when-offscreen t)
+  :hook (after-init-hook . show-paren-mode))
 #+end_src
 **** rainbow-delimiters
 #+begin_quote
@@ -1840,12 +1907,12 @@ Emacs rainbow delimiters mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
-	:ensure t
-	:hook
-	((clojure-mode-hook
-		emacs-lisp-mode-hook
-		haskell-mode-hook
-		lisp-mode-hook) . rainbow-delimiters-mode))
+  :ensure t
+  :hook
+  ((clojure-mode-hook
+    emacs-lisp-mode-hook
+    haskell-mode-hook
+    lisp-mode-hook) . rainbow-delimiters-mode))
 #+end_src
 **** valign
 #+begin_quote
@@ -1853,10 +1920,10 @@ Pixel-perfect visual alignment for Org and Markdown tables.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package valign
-	:ensure t
-	:custom
-	(valign-fancy-bar t)
-	:hook ((markdown-mode-hook org-mode-hook) . valign-mode))
+  :ensure t
+  :custom
+  (valign-fancy-bar t)
+  :hook ((markdown-mode-hook org-mode-hook) . valign-mode))
 #+end_src
 **** visual-fill-column
 #+begin_quote
@@ -1864,11 +1931,11 @@ Emacs mode for wrapping visual-line-mode buffers at fill-column.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package visual-fill-column
-	:ensure t
-	:custom
-	(visual-fill-column-center-text t)
-	(visual-fill-column-extra-text-width '(5 . 0))
-	(visual-fill-column-width 100))
+  :ensure t
+  :custom
+  (visual-fill-column-center-text t)
+  (visual-fill-column-extra-text-width '(5 . 0))
+  (visual-fill-column-width 100))
 #+end_src
 **** whitespace
 #+begin_quote
@@ -1876,22 +1943,22 @@ minor mode to visualize TAB, (HARD) SPACE, NEWLINE
 #+end_quote
 #+begin_src emacs-lisp
 (use-package whitespace
-	:custom
-	(whitespace-line-column fill-column)
-	(whitespace-space-regexp "\\(\u3000+\\)")
-	(whitespace-style '(face
-											trailing
-											tabs
-											spaces
-											empty
-											missing-newline-at-eof))
-	:config
-	(global-whitespace-mode t))
+  :custom
+  (whitespace-line-column fill-column)
+  (whitespace-space-regexp "\\(\u3000+\\)")
+  (whitespace-style '(face
+                      trailing
+                      tabs
+                      spaces
+                      empty
+                      missing-newline-at-eof))
+  :config
+  (global-whitespace-mode t))
 
 (use-package whitespace-cleanup-mode
-	:commands whitespace-cleanup-mode
-	:config
-	(global-whitespace-cleanup-mode 1))
+  :commands whitespace-cleanup-mode
+  :config
+  (global-whitespace-cleanup-mode 1))
 #+end_src
 *** File and Directory
 :PROPERTIES:
@@ -1910,41 +1977,41 @@ Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their 
 #+end_quote
 #+begin_src emacs-lisp
 (use-package activities
-	:ensure t
-	:custom
-	(activities-bookmark-warnings t)
-	:bind
-	((:map ctl-x-map
-				 :prefix-map activities-map
-				 :prefix "C-a"
-				 ("l" . activities-list)
-				 ("g" . activities-revert)
-				 ("RET" . activities-switch)
-				 ("C-d" . activities-define)
-				 ("C-k" . activities-kill)
-				 ("C-n" . activities-new)
-				 ("C-a" . activities-resume)
-				 ("C-s" . activities-suspend)))
-	:hook (after-init-hook . activities-tabs-mode)
-	:config
-	(with-eval-after-load 'consult
-		(defun my/activities-local-buffer-p (buffer)
-			"Returns non-nil if BUFFER is present in `activities-current'."
-			(when (activities-current)
-				(memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
-		(defvar my-consult--source-activities-buffer
-			`(:name "Activities Buffers"
-							:narrow ?a
-							:category buffer
-							:face consult-buffer
-							:history buffer-name-history
-							:default t
-							:items ,(lambda () (consult--buffer-query
-																	:predicate #'my/activities-local-buffer-p
-																	:sort 'visibility
-																	:as #'buffer-name))
-							:state ,#'consult--buffer-state))
-		(add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
+  :ensure t
+  :custom
+  (activities-bookmark-warnings t)
+  :bind
+  ((:map ctl-x-map
+         :prefix-map activities-map
+         :prefix "C-a"
+         ("l" . activities-list)
+         ("g" . activities-revert)
+         ("RET" . activities-switch)
+         ("C-d" . activities-define)
+         ("C-k" . activities-kill)
+         ("C-n" . activities-new)
+         ("C-a" . activities-resume)
+         ("C-s" . activities-suspend)))
+  :hook (after-init-hook . activities-tabs-mode)
+  :config
+  (with-eval-after-load 'consult
+    (defun my/activities-local-buffer-p (buffer)
+      "Returns non-nil if BUFFER is present in `activities-current'."
+      (when (activities-current)
+        (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
+    (defvar my-consult--source-activities-buffer
+      `(:name "Activities Buffers"
+              :narrow ?a
+              :category buffer
+              :face consult-buffer
+              :history buffer-name-history
+              :default t
+              :items ,(lambda () (consult--buffer-query
+                                  :predicate #'my/activities-local-buffer-p
+                                  :sort 'visibility
+                                  :as #'buffer-name))
+              :state ,#'consult--buffer-state))
+    (add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
 #+end_src
 **** dashboard
 #+begin_quote
@@ -1952,58 +2019,58 @@ An extensible emacs dashboard
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dashboard
-	:ensure t
-	:custom
-	(dashboard-startup-banner (concat (emacs-pictures-dir) "dashboard-banner.png"))
-	(dashboard-banner-logo-title "Welcome to Ametsuchi.")
-	;; (dashboard-init-info nil)
-	(dashboard-center-content t)
-	(dashboard-vertically-center-content t)
-	(dashboard-page-separator "\n\f\f\n")
-	;; (dashboard-set-navigator t)
-	(dashboard-set-footer nil)
-	(dashboard-set-file-icons t)
-	(dashboard-set-heading-icons t)
-	(dashboard-show-shortcuts t)
-	(dashboard-projects-backend 'project-el)
-	(dashboard-items
-	 '((agenda . 10)
-		 (projects . 5)
-		 (bookmarks . 10)
-		 (recents . 15)))
-	(dashboard-item-shortcuts
-	 '((agenda . "a")
-		 (bookmarks . "s")
-		 (projects . "j")
-		 (recents . "r")
-		 (registers . "e")))
-	:bind
-	(("<f5>" . my/home)
-	 (:map dashboard-mode-map
-				 ("?" . my/dashboard-mode-transient)))
-	:hook
-	;; (window-setup-hook . dashboard-open)
-	(after-init-hook . dashboard-refresh-buffer)
-	(server-after-make-frame-hook . dashboard-refresh-buffer)
-	(dashboard-mode-hook . (lambda ()
-													 (setq-local frame-title-format nil)))
-	:config
-	(defun my/home ()
-		(interactive)
-		(delete-other-windows)
-		(dashboard-refresh-buffer))
-	(mapc (lambda (k) (keymap-unset dashboard-mode-map k))
-				'("j" "k" "{" "}"))
-	(with-eval-after-load 'transient
-		(transient-define-prefix my/dashboard-mode-transient ()
-			"Prefix for dashboard launch menu."
-			[("m" "Mastodon" mastodon)
-			 ("o" "OpenStreetMap" osm)
-			 ("g" "GitHub CLI" consult-gh)
-			 ;; ("c" "Calibre" calibredb)
-			 ("?" "Gptel" gptel-menu)
-			 ("e" "Mu4e" mu4e)]))
-	(dashboard-setup-startup-hook))
+  :ensure t
+  :custom
+  (dashboard-startup-banner (concat emacs-pictures-dir "dashboard-banner.png"))
+  (dashboard-banner-logo-title "Welcome to Ametsuchi.")
+  ;; (dashboard-init-info nil)
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-page-separator "\n\f\f\n")
+  ;; (dashboard-set-navigator t)
+  (dashboard-set-footer nil)
+  (dashboard-set-file-icons t)
+  (dashboard-set-heading-icons t)
+  (dashboard-show-shortcuts t)
+  (dashboard-projects-backend 'project-el)
+  (dashboard-items
+   '((agenda . 10)
+     (projects . 5)
+     (bookmarks . 10)
+     (recents . 15)))
+  (dashboard-item-shortcuts
+   '((agenda . "a")
+     (bookmarks . "s")
+     (projects . "j")
+     (recents . "r")
+     (registers . "e")))
+  :bind
+  (("<f5>" . my/home)
+   (:map dashboard-mode-map
+         ("?" . my/dashboard-mode-transient)))
+  :hook
+  ;; (window-setup-hook . dashboard-open)
+  (after-init-hook . dashboard-refresh-buffer)
+  (server-after-make-frame-hook . dashboard-refresh-buffer)
+  (dashboard-mode-hook . (lambda ()
+                           (setq-local frame-title-format nil)))
+  :config
+  (defun my/home ()
+    (interactive)
+    (delete-other-windows)
+    (dashboard-refresh-buffer))
+  (mapc (lambda (k) (keymap-unset dashboard-mode-map k))
+        '("j" "k" "{" "}"))
+  (with-eval-after-load 'transient
+    (transient-define-prefix my/dashboard-mode-transient ()
+      "Prefix for dashboard launch menu."
+      [("m" "Mastodon" mastodon)
+       ("o" "OpenStreetMap" osm)
+       ("g" "GitHub CLI" consult-gh)
+       ;; ("c" "Calibre" calibredb)
+       ("?" "Gptel" gptel-menu)
+       ("e" "Mu4e" mu4e)]))
+  (dashboard-setup-startup-hook))
 #+end_src
 **** dired
 #+begin_quote
@@ -2011,15 +2078,19 @@ directory-browsing commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired
-	:commands dired
-	:custom
-	(dired-recursive-copies 'always)
-	(dired-recursive-deletes 'always)
-	(delete-by-moving-to-trash t)
-	(dired-dwim-target t)
-	(dired-listing-switches "-alh")
-	:hook
-	(dired-mode-hook . dired-hide-details-mode))
+  :commands dired
+  :custom
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (delete-by-moving-to-trash t)
+  (dired-dwim-target t)
+  (dired-listing-switches "-alh")
+  :bind
+  ;; replace `dired-do-man' with a more frequently used one.
+  ((:map dired-mode-map
+         ("N" . dired-create-empty-file)))
+  :hook
+  (dired-mode-hook . dired-hide-details-mode))
 #+end_src
 ***** dired-collapse
 #+begin_quote
@@ -2027,10 +2098,10 @@ Collapse unique nested paths in dired listing
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-collapse
-	:ensure t
-	:after dired
-	:hook
-	(dired-mode-hook . dired-collapse-mode))
+  :ensure t
+  :after dired
+  :hook
+  (dired-mode-hook . dired-collapse-mode))
 #+end_src
 ***** dired-filter
 #+begin_quote
@@ -2038,49 +2109,49 @@ Ibuffer-like filtering for dired
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-filter
-	:ensure t
-	:after dired
-	:custom
-	(dired-filter-group-saved-groups
-	 '(("default"
-			("General directories"
-			 (directory . t)
-			 (name . "^[[:alnum:]]"))
-			("Dot directories"
-			 (directory . t)
-			 (name . "^\\."))
-			("Dot or config files"
-			 (file . t)
-			 (or (dot-files)
-					 (extension "conf" "toml" "yaml" "yml")))
-			("Data files"
-			 (file . t)
-			 (extension "csv" "json" "jsonc" "lock"))
-			("Code"
-			 (file . t)
-			 (extension "astro" "c" "clj" "css" "el" "hs"
-									"html" "js" "jsx" "nix" "py" "rs"
-									"scss" "ts" "tsx" "zig"))
-			("Org"
-			 (file . t)
-			 (extension "org" "org_archive"))
-			("Text documents"
-			 (file . t)
-			 (or (name . "COPYING")
-					 (name . "LICENSE")
-					 (name . "README")
-					 (name . "TODO")
-					 (extension "markdown" "md" "mdx" "mkd" "rst" "txt")))
-			("E-books and PDF" (extension "azw" "epub" "mobi"  "pdf"))
-			("Archives" (extension "bz2" "gz" "nar" "rar" "tar" "zip"))
-			("LaTeX" (extension "tex" "bib"))
-			("Executables" (executable))
-			("Images"
-			 (extension "avif" "bmp" "ico" "jpeg" "jpg" "gif"
-									"png" "raw" "svg" "tiff" "webp" "xcf")))))
-	:hook
-	((dired-mode-hook . dired-filter-mode)
-	 (dired-mode-hook . dired-filter-group-mode)))
+  :ensure t
+  :after dired
+  :custom
+  (dired-filter-group-saved-groups
+   '(("default"
+      ("General directories"
+       (directory . t)
+       (name . "^[[:alnum:]]"))
+      ("Dot directories"
+       (directory . t)
+       (name . "^\\."))
+      ("Dot or config files"
+       (file . t)
+       (or (dot-files)
+           (extension "conf" "toml" "yaml" "yml")))
+      ("Data files"
+       (file . t)
+       (extension "csv" "json" "jsonc" "lock"))
+      ("Code"
+       (file . t)
+       (extension "astro" "c" "clj" "css" "el" "hs"
+                  "html" "js" "jsx" "nix" "py" "rs"
+                  "scss" "ts" "tsx" "zig"))
+      ("Org"
+       (file . t)
+       (extension "org" "org_archive"))
+      ("Text documents"
+       (file . t)
+       (or (name . "COPYING")
+           (name . "LICENSE")
+           (name . "README")
+           (name . "TODO")
+           (extension "markdown" "md" "mdx" "mkd" "rst" "txt")))
+      ("E-books and PDF" (extension "azw" "epub" "mobi"  "pdf"))
+      ("Archives" (extension "bz2" "gz" "nar" "rar" "tar" "zip"))
+      ("LaTeX" (extension "tex" "bib"))
+      ("Executables" (executable))
+      ("Images"
+       (extension "avif" "bmp" "ico" "jpeg" "jpg" "gif"
+                  "png" "raw" "svg" "tiff" "webp" "xcf")))))
+  :hook
+  ((dired-mode-hook . dired-filter-mode)
+   (dired-mode-hook . dired-filter-group-mode)))
 #+end_src
 ***** dired-hacks-utils
 #+begin_quote
@@ -2088,12 +2159,12 @@ Utilities and helpers for dired-hacks collection
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-hacks-utils
-	:ensure t
-	:after dired
-	:bind
-	(:map dired-mode-map
-				("n" . dired-hacks-next-file)
-				("p" . dired-hacks-previous-file)))
+  :ensure t
+  :after dired
+  :bind
+  (:map dired-mode-map
+        ("n" . dired-hacks-next-file)
+        ("p" . dired-hacks-previous-file)))
 #+end_src
 ***** dired-open-with
 #+begin_quote
@@ -2101,11 +2172,11 @@ An 'Open with' dialog for opening files in external applications from Dired.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-open-with
-	:ensure t
-	:after dired
-	:bind
-	((:map dired-mode-map
-				 ("M-RET" . dired-open-with))))
+  :ensure t
+  :after dired
+  :bind
+  ((:map dired-mode-map
+         ("M-RET" . dired-open-with))))
 #+end_src
 ***** dired-ranger
 #+begin_quote
@@ -2113,15 +2184,15 @@ Implementation of useful ranger features for dired
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-ranger
-	:ensure t
-	:after dired
-	:bind
-	((:map dired-mode-map
-				 :prefix-map dired-ranger-map
-				 :prefix "r"
-				 ("c" . dired-ranger-copy)
-				 ("x" . dired-ranger-move)
-				 ("y" . dired-ranger-paste))))
+  :ensure t
+  :after dired
+  :bind
+  ((:map dired-mode-map
+         :prefix-map dired-ranger-map
+         :prefix "r"
+         ("c" . dired-ranger-copy)
+         ("x" . dired-ranger-move)
+         ("y" . dired-ranger-paste))))
 #+end_src
 ***** dired-subtree
 #+begin_quote
@@ -2129,15 +2200,15 @@ Insert subdirectories in a tree-like fashion
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-subtree
-	:ensure t
-	:after dired
-	:custom
-	(dired-subtree-use-backgrounds nil)
-	:bind
-	(:map dired-mode-map
-				("i" . dired-subtree-insert)
-				("SPC" . dired-subtree-toggle)
-				("b" . dired-subtree-remove)))
+  :ensure t
+  :after dired
+  :custom
+  (dired-subtree-use-backgrounds nil)
+  :bind
+  (:map dired-mode-map
+        ("i" . dired-subtree-insert)
+        ("SPC" . dired-subtree-toggle)
+        ("b" . dired-subtree-remove)))
 #+end_src
 **** envrc
 #+begin_quote
@@ -2145,9 +2216,9 @@ Emacs support for direnv which operates buffer-locally
 #+end_quote
 #+begin_src emacs-lisp
 (use-package envrc
-	:ensure t
-	:if (executable-find "direnv")
-	:hook (after-init-hook . envrc-global-mode))
+  :ensure t
+  :if (executable-find "direnv")
+  :hook (after-init-hook . envrc-global-mode))
 #+end_src
 **** files
 #+begin_quote
@@ -2155,22 +2226,22 @@ file input and output commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package files
-	:custom
-	(auto-mode-case-fold nil)
-	(backup-by-copying t)
-	(backup-directory-alist
-	 `(("." . ,(locate-user-emacs-file "backup/"))))
-	(delete-old-versions t)
-	(require-final-newline t)
-	(version-control t)
-	(view-read-only t)
-	:config
-	(with-eval-after-load 'embark
-		(defun my/find-file-vertically (file)
-			"Open FILE in a new vertically split window."
-			(select-window (split-window-right))
-			(find-file file))
-		(keymap-set embark-file-map "M-RET" #'my/find-file-vertically)))
+  :custom
+  (auto-mode-case-fold nil)
+  (backup-by-copying t)
+  (backup-directory-alist
+   `(("." . ,(locate-user-emacs-file "backup/"))))
+  (delete-old-versions t)
+  (require-final-newline t)
+  (version-control t)
+  (view-read-only t)
+  :config
+  (with-eval-after-load 'embark
+    (defun my/find-file-vertically (file)
+      "Open FILE in a new vertically split window."
+      (select-window (split-window-right))
+      (find-file file))
+    (keymap-set embark-file-map "M-RET" #'my/find-file-vertically)))
 #+end_src
 **** project
 #+begin_quote
@@ -2178,15 +2249,15 @@ Operations on the current project
 #+end_quote
 #+begin_src emacs-lisp
 (use-package project
-	:config
-	(defun my/project-try-nix-store (dir)
-		(save-match-data
-			(when (string-match (rx bol "/nix/store/" (+ (not "/")) "/")
-													dir)
-				(list 'nix-store (match-string 0 dir)))))
-	(add-hook 'project-find-functions #'my/project-try-nix-store)
-	(cl-defmethod project-root ((project (head nix-store)))
-		(cadr project)))
+  :config
+  (defun my/project-try-nix-store (dir)
+    (save-match-data
+      (when (string-match (rx bol "/nix/store/" (+ (not "/")) "/")
+                          dir)
+        (list 'nix-store (match-string 0 dir)))))
+  (add-hook 'project-find-functions #'my/project-try-nix-store)
+  (cl-defmethod project-root ((project (head nix-store)))
+    (cadr project)))
 #+end_src
 **** recentf
 #+begin_quote
@@ -2194,14 +2265,14 @@ keep track of recently opened files
 #+end_quote
 #+begin_src emacs-lisp
 (use-package recentf
-	:custom
-	(recentf-max-saved-items 300)
-	(recentf-auto-cleanup 'never)
-	(recentf-exclude
-	 '("/tmp/"
-		 "/nix/store/"))
-	:hook
-	(after-init-hook . recentf-mode))
+  :custom
+  (recentf-max-saved-items 300)
+  (recentf-auto-cleanup 'never)
+  (recentf-exclude
+   '("/tmp/"
+     "/nix/store/"))
+  :hook
+  (after-init-hook . recentf-mode))
 #+end_src
 **** startup
 #+begin_quote
@@ -2209,14 +2280,14 @@ process Emacs shell arguments
 #+end_quote
 #+begin_src emacs-lisp
 (use-package startup
-	:custom
-	(inhibit-default-init t)
-	(inhibit-startup-echo-area-message t)
-	(inhibit-startup-screen t)
-	(initial-buffer-choice
-	 (lambda () (get-buffer-create "*dashboard*")))
-	(initial-scratch-message nil)
-	(initial-major-mode 'fundamental-mode))
+  :custom
+  (inhibit-default-init t)
+  (inhibit-startup-echo-area-message t)
+  (inhibit-startup-screen t)
+  (initial-buffer-choice
+   (lambda () (get-buffer-create "*dashboard*")))
+  (initial-scratch-message nil)
+  (initial-major-mode 'fundamental-mode))
 #+end_src
 *** Development
 :PROPERTIES:
@@ -2228,8 +2299,8 @@ Emacs minor mode that keeps your code always indented. More reliable than electr
 #+end_quote
 #+begin_src emacs-lisp
 (use-package aggressive-indent
-	:ensure t
-	:hook (emacs-lisp-mode-hook . aggressive-indent-mode))
+  :ensure t
+  :hook (emacs-lisp-mode-hook . aggressive-indent-mode))
 #+end_src
 **** compile
 #+begin_quote
@@ -2237,15 +2308,15 @@ run compiler as inferior of Emacs, parse error messages
 #+end_quote
 #+begin_src emacs-lisp
 (use-package compile
-	:custom
-	(compilation-ask-about-save nil)
-	(compilation-scroll-output t)
-	:config
-	;; http://stackoverflow.com/a/13408008/1219634
-	(require 'ansi-color)
-	(defun my/colorize-compilation-buffer ()
-		(ansi-color-apply-on-region compilation-filter-start (point)))
-	(add-hook 'compilation-filter-hook #'my/colorize-compilation-buffer))
+  :custom
+  (compilation-ask-about-save nil)
+  (compilation-scroll-output t)
+  :config
+  ;; http://stackoverflow.com/a/13408008/1219634
+  (require 'ansi-color)
+  (defun my/colorize-compilation-buffer ()
+    (ansi-color-apply-on-region compilation-filter-start (point)))
+  (add-hook 'compilation-filter-hook #'my/colorize-compilation-buffer))
 #+end_src
 **** dumb-jump
 #+begin_quote
@@ -2253,11 +2324,11 @@ an Emacs "jump to definition" package for 50+ languages
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dumb-jump
-	:ensure t
-	:custom
-	(dumb-jump-selector 'completing-read)
-	:hook
-	(xref-backend-functions . dumb-jump-xref-activate))
+  :ensure t
+  :custom
+  (dumb-jump-selector 'completing-read)
+  :hook
+  (xref-backend-functions . dumb-jump-xref-activate))
 #+end_src
 **** eglot
 #+begin_quote
@@ -2265,34 +2336,34 @@ A client for Language Server Protocol servers
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eglot
-	:defer 3
-	:custom
-	(eglot-autoshutdown t)
-	(eglot-code-action-indications nil)
-	(eglot-confirm-server-edits nil)
-	(eglot-extend-to-xref t)
-	:hook
-	(eglot-managed-mode-hook . my/setup-eglot-buffer)
-	:bind
-	(:map eglot-mode-map
-				:map mode-specific-map
-				("L a" . eglot-code-actions)
-				("L i" . eglot-code-actions-inline)
-				("L o" . eglot-code-actions-organize-imports)
-				("L q" . eglot-code-actions-quickfix)
-				("L R" . eglot-reconnect)
-				("L r" . eglot-rename)
-				("L Q" . eglot-shutdown))
-	:config
-	(defun my/setup-eglot-buffer ()
-		(if (eglot-managed-p)
-				(add-hook 'before-save-hook #'eglot-format-buffer nil t)
-			(remove-hook 'before-save-hook #'eglot-format-buffer t)))
+  :defer 3
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-code-action-indications nil)
+  (eglot-confirm-server-edits nil)
+  (eglot-extend-to-xref t)
+  :hook
+  (eglot-managed-mode-hook . my/setup-eglot-buffer)
+  :bind
+  (:map eglot-mode-map
+        :map mode-specific-map
+        ("L a" . eglot-code-actions)
+        ("L i" . eglot-code-actions-inline)
+        ("L o" . eglot-code-actions-organize-imports)
+        ("L q" . eglot-code-actions-quickfix)
+        ("L R" . eglot-reconnect)
+        ("L r" . eglot-rename)
+        ("L Q" . eglot-shutdown))
+  :config
+  (defun my/setup-eglot-buffer ()
+    (if (eglot-managed-p)
+        (add-hook 'before-save-hook #'eglot-format-buffer nil t)
+      (remove-hook 'before-save-hook #'eglot-format-buffer t)))
 
-	(dolist (entry '((just-mode . ("just-lsp"))
-									 ((nix-ts-mode nix-mode) . ("nil"))
-									 (zig-ts-mode . ("zls"))))
-		(cl-pushnew entry eglot-server-programs :test #'equal)))
+  (dolist (entry '((just-mode . ("just-lsp"))
+                   ((nix-ts-mode nix-mode) . ("nil"))
+                   (zig-ts-mode . ("zls"))))
+    (cl-pushnew entry eglot-server-programs :test #'equal)))
 #+end_src
 ***** eglot-booster
 #+begin_quote
@@ -2300,9 +2371,9 @@ boost eglot using emacs-lsp-booster
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eglot-booster
-	:ensure t
-	:after eglot
-	:hook (eglot-managed-mode-hook . eglot-booster-mode))
+  :ensure t
+  :after eglot
+  :hook (eglot-managed-mode-hook . eglot-booster-mode))
 #+end_src
 ***** eglot-tempel
 #+begin_quote
@@ -2310,9 +2381,9 @@ bridge for tempel templates with eglot
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eglot-tempel
-	:ensure t
-	:after (eglot tempel)
-	:hook (eglot-managed-mode-hook . eglot-tempel-mode))
+  :ensure t
+  :after (eglot tempel)
+  :hook (eglot-managed-mode-hook . eglot-tempel-mode))
 #+end_src
 **** eldoc
 #+begin_quote
@@ -2320,9 +2391,9 @@ Show function arglist or variable docstring in echo area
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eldoc
-	:custom
-	(eldoc-echo-area-use-multiline-p nil)
-	:hook (after-init-hook . global-eldoc-mode))
+  :custom
+  (eldoc-echo-area-use-multiline-p nil)
+  :hook (after-init-hook . global-eldoc-mode))
 #+end_src
 **** elysium
 #+begin_quote
@@ -2330,13 +2401,13 @@ Automatically apply AI-generated code changes in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package elysium
-	:ensure t
-	:after gptel
-	:config
-	(with-eval-after-load 'gptel-transient
-		(transient-append-suffix 'gptel-menu '(-1 -1)
-			["Elysium"
-			 ("q" "Elysium query" elysium-query)])))
+  :ensure t
+  :after gptel
+  :config
+  (with-eval-after-load 'gptel-transient
+    (transient-append-suffix 'gptel-menu '(-1 -1)
+      ["Elysium"
+       ("q" "Elysium query" elysium-query)])))
 #+end_src
 **** flymake
 #+begin_quote
@@ -2344,14 +2415,14 @@ a universal on-the-fly syntax checker
 #+end_quote
 #+begin_src emacs-lisp
 (use-package flymake
-	:bind
-	((:map flymake-mode-map
-				 :map goto-map
-				 ("M-n" . flymake-goto-next-error)
-				 ("M-p" . flymake-goto-prev-error))
-	 (:repeat-map flymake-mode-repeat-map
-								("n" . flymake-goto-next-error)
-								("p" . flymake-goto-prev-error))))
+  :bind
+  ((:map flymake-mode-map
+         :map goto-map
+         ("M-n" . flymake-goto-next-error)
+         ("M-p" . flymake-goto-prev-error))
+   (:repeat-map flymake-mode-repeat-map
+                ("n" . flymake-goto-next-error)
+                ("p" . flymake-goto-prev-error))))
 #+end_src
 **** reformatter
 #+begin_quote
@@ -2359,20 +2430,20 @@ Define commands which run reformatters on the current Emacs buffer
 #+end_quote
 #+begin_src emacs-lisp
 (use-package reformatter
-	:ensure t
-	:config
-	(reformatter-define dprint
-		:program "dprint"
-		:args (list "fmt" "--stdin" (buffer-file-name)))
-	(reformatter-define stylua
-		:program "stylua"
-		:args (list "-" "--indent-type=Spaces" "--indent-width=2"))
-	(reformatter-define nixfmt
-		:program "nixfmt"
-		:args (list "-"))
-	(reformatter-define yamlfmt
-		:program "yamlfmt"
-		:args (list "-")))
+  :ensure t
+  :config
+  (reformatter-define dprint
+    :program "dprint"
+    :args (list "fmt" "--stdin" (buffer-file-name)))
+  (reformatter-define stylua
+    :program "stylua"
+    :args (list "-" "--indent-type=Spaces" "--indent-width=2"))
+  (reformatter-define nixfmt
+    :program "nixfmt"
+    :args (list "-"))
+  (reformatter-define yamlfmt
+    :program "yamlfmt"
+    :args (list "-")))
 #+end_src
 **** repl-toggle
 #+begin_quote
@@ -2380,9 +2451,9 @@ Switch to/from repl buffer for current major-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package repl-toggle
-	:ensure t
-	:custom
-	(rtog/goto-buffer-fun #'pop-to-buffer))
+  :ensure t
+  :custom
+  (rtog/goto-buffer-fun #'pop-to-buffer))
 #+end_src
 **** treesit
 #+begin_quote
@@ -2390,8 +2461,8 @@ tree-sitter utilities
 #+end_quote
 #+begin_src emacs-lisp
 (use-package treesit
-	:custom
-	(treesit-font-lock-level 4))
+  :custom
+  (treesit-font-lock-level 4))
 #+end_src
 **** Language-specific modes
 ***** astro-ts-mode
@@ -2400,9 +2471,9 @@ Emacs major mode for Astro templates
 #+end_quote
 #+begin_src emacs-lisp
 (use-package astro-ts-mode
-	:ensure t
-	:mode "\\.astro\\'"
-	:hook (astro-ts-mode-hook . eglot-ensure))
+  :ensure t
+  :mode "\\.astro\\'"
+  :hook (astro-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** dockerfile-ts-mode
 #+begin_quote
@@ -2410,12 +2481,37 @@ tree-sitter support for Dockerfiles
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dockerfile-ts-mode
-	:mode
-	"\\.dockerfile\\'"
-	"[/\\]\\(?:Containerfile\\|Dockerfile\\)\\(?:\\.[^/\\]*\\)?\\'"
-	:hook
-	(dockerfile-ts-mode-hook . eglot-ensure)
-	(dockerfile-ts-mode-hook . dprint-on-save-mode))
+  :mode
+  "\\.dockerfile\\'"
+  "[/\\]\\(?:Containerfile\\|Dockerfile\\)\\(?:\\.[^/\\]*\\)?\\'"
+  :hook
+  (dockerfile-ts-mode-hook . eglot-ensure)
+  (dockerfile-ts-mode-hook . dprint-on-save-mode))
+#+end_src
+***** elisp-mode
+#+begin_quote
+Emacs Lisp mode
+#+end_quote
+#+begin_src emacs-lisp
+(use-package elisp-mode
+  :config
+  (add-to-list 'auto-mode-alist
+               '("/recipes/[-a-z0-9]+\\'" . lisp-data-mode))
+  (define-skeleton elisp-skeleton
+    "Insert a header for Emacs Lisp files."
+    > ";;; "
+    (file-name-nondirectory (or buffer-file-name (buffer-name)))
+    " --- " _
+    " -*- lexical-binding: t -*-\n"
+    "\n\n\n"
+    ";;; "
+    (file-name-nondirectory (or buffer-file-name (buffer-name)))
+    " ends here")
+  (with-eval-after-load 'autoinsert
+    (dolist (entry (reverse
+                    '(("\\.dir-locals\\(?:-2\\)?\\.el\\'" . "dir-locals-insert.el")
+                      ("\\.el\\'" . elisp-skeleton))))
+      (add-to-list 'auto-insert-alist entry))))
 #+end_src
 ***** just-mode
 #+begin_quote
@@ -2423,8 +2519,8 @@ Emacs mode for justfiles
 #+end_quote
 #+begin_src emacs-lisp
 (use-package just-mode
-	:ensure t
-	:mode "/justfile\\'")
+  :ensure t
+  :mode "/justfile\\'")
 #+end_src
 ***** lua-ts-mode
 #+begin_quote
@@ -2432,10 +2528,10 @@ Major mode for editing Lua files
 #+end_quote
 #+begin_src emacs-lisp
 (use-package lua-ts-mode
-	:mode "\\.lua\\'"
-	:hook
-	(lua-ts-mode-hook . eglot-ensure)
-	(lua-ts-mode-hook . stylua-on-save-mode))
+  :mode "\\.lua\\'"
+  :hook
+  (lua-ts-mode-hook . eglot-ensure)
+  (lua-ts-mode-hook . stylua-on-save-mode))
 #+end_src
 ***** nix-ts-mode
 #+begin_quote
@@ -2443,11 +2539,11 @@ An Emacs major mode for editing Nix expressions, powered by tree-sitter
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nix-ts-mode
-	:ensure t
-	:mode "\\.nix\\'"
-	:hook
-	(nix-ts-mode-hook . eglot-ensure)
-	(nix-ts-mode-hook . nixfmt-on-save-mode))
+  :ensure t
+  :mode "\\.nix\\'"
+  :hook
+  (nix-ts-mode-hook . eglot-ensure)
+  (nix-ts-mode-hook . nixfmt-on-save-mode))
 #+end_src
 ***** nix-mode
 #+begin_quote
@@ -2455,8 +2551,8 @@ An Emacs major mode for editing Nix expressions.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nix-mode
-	:ensure t
-	:commands nix-repl)
+  :ensure t
+  :commands nix-repl)
 #+end_src
 ***** rust-ts-mode
 #+begin_quote
@@ -2464,9 +2560,9 @@ tree-sitter support for Rust
 #+end_quote
 #+begin_src emacs-lisp
 (use-package rust-ts-mode
-	:mode "\\.rs\\'"
-	:hook
-	(rust-ts-mode-hook . eglot-ensure))
+  :mode "\\.rs\\'"
+  :hook
+  (rust-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** toml-ts-mode
 #+begin_quote
@@ -2474,10 +2570,10 @@ tree-sitter support for TOML
 #+end_quote
 #+begin_src emacs-lisp
 (use-package toml-ts-mode
-	:mode "\\.toml\\'"
-	:hook
-	(toml-ts-mode-hook . eglot-ensure)
-	(toml-ts-mode-hook . dprint-on-save-mode))
+  :mode "\\.toml\\'"
+  :hook
+  (toml-ts-mode-hook . eglot-ensure)
+  (toml-ts-mode-hook . dprint-on-save-mode))
 #+end_src
 ***** typescript-ts-mode
 #+begin_quote
@@ -2485,8 +2581,8 @@ tree sitter support for TypeScript
 #+end_quote
 #+begin_src emacs-lisp
 (use-package typescript-ts-mode
-	:mode "\\.ts$" "\\.mts\\'"
-	:hook (typescript-ts-mode-hook . eglot-ensure))
+  :mode "\\.ts$" "\\.mts\\'"
+  :hook (typescript-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** web-mode
 #+begin_quote
@@ -2494,15 +2590,15 @@ web template editing mode for emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package web-mode
-	:ensure t
-	:custom
-	(web-mode-enable-front-matter-block t)
-	(web-mode-enable-current-element-highlight t)
-	:mode
-	"\\.html?\\'"
-	"\\.mdx\\'"
-	:hook
-	(web-mode-hook . eglot-ensure))
+  :ensure t
+  :custom
+  (web-mode-enable-front-matter-block t)
+  (web-mode-enable-current-element-highlight t)
+  :mode
+  "\\.html?\\'"
+  "\\.mdx\\'"
+  :hook
+  (web-mode-hook . eglot-ensure))
 #+end_src
 ***** yaml-ts-mode
 #+begin_quote
@@ -2510,10 +2606,10 @@ tree-sitter support for YAML
 #+end_quote
 #+begin_src emacs-lisp
 (use-package yaml-ts-mode
-	:mode "\\.ya?ml\\'"
-	:hook
-	(yaml-ts-mode-hook . eglot-ensure)
-	(yaml-ts-mode-hook . yamlfmt-on-save-mode))
+  :mode "\\.ya?ml\\'"
+  :hook
+  (yaml-ts-mode-hook . eglot-ensure)
+  (yaml-ts-mode-hook . yamlfmt-on-save-mode))
 #+end_src
 ***** zig-ts-mode
 #+begin_quote
@@ -2521,10 +2617,10 @@ Emacs Zig Tree Sitter Mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package zig-ts-mode
-	:ensure t
-	:mode "\\(?:\\.z\\(?:ig\\|on\\)\\)\\'"
-	:hook
-	(zig-ts-mode-hook . eglot-ensure))
+  :ensure t
+  :mode "\\(?:\\.z\\(?:ig\\|on\\)\\)\\'"
+  :hook
+  (zig-ts-mode-hook . eglot-ensure))
 #+end_src
 *** Version Control System
 :PROPERTIES:
@@ -2536,22 +2632,22 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+end_quote
 #+begin_src emacs-lisp
 (use-package blamer
-	:ensure t
-	:defer 7
-	:custom
-	(blamer-idle-time 0.5)
-	(blamer-max-commit-message-length 30)
-	(blamer-max-lines 30)
-	(blamer-min-offset 60)
-	(blamer-author-formatter "%s ")
-	(blamer-commit-formatter "● \'%s\' ● ")
-	(‎blamer-datetime-formatter‎ "[%s]")
-	(blamer-view 'overlay)
-	:bind
-	((:map help-map
-				 ("M-g" . blamer-show-commit-info)))
-	:config
-	(global-blamer-mode 1))
+  :ensure t
+  :defer 7
+  :custom
+  (blamer-idle-time 0.5)
+  (blamer-max-commit-message-length 50)
+  (blamer-max-lines 40)
+  (blamer-min-offset 60)
+  (blamer-author-formatter "%s ")
+  (blamer-commit-formatter "● \'%s\' ● ")
+  (‎blamer-datetime-formatter‎ "[%s]")
+  (blamer-view 'overlay)
+  :bind
+  ((:map help-map
+         ("M-g" . blamer-show-commit-info)))
+  :config
+  (global-blamer-mode 1))
 #+end_src
 **** diff-hl
 #+begin_quote
@@ -2559,17 +2655,17 @@ Emacs package for highlighting uncommitted changes
 #+end_quote
 #+begin_src emacs-lisp
 (use-package diff-hl
-	:ensure t
-	:custom
-	(diff-hl-command-prefix (kbd "C-x v"))
-	(diff-hl-draw-borders t)
-	:hook
-	(after-init-hook . global-diff-hl-mode)
-	(dired-mode-hook . diff-hl-dired-mode)
-	:config
-	(with-eval-after-load 'magit
-		(add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
-		(add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)))
+  :ensure t
+  :custom
+  (diff-hl-command-prefix (kbd "C-x v"))
+  (diff-hl-draw-borders t)
+  :hook
+  (after-init-hook . global-diff-hl-mode)
+  (dired-mode-hook . diff-hl-dired-mode)
+  :config
+  (with-eval-after-load 'magit
+    (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+    (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)))
 #+end_src
 **** forge
 #+begin_quote
@@ -2577,12 +2673,12 @@ Work with Git forges from the comfort of Magit
 #+end_quote
 #+begin_src emacs-lisp
 (use-package forge
-	:ensure t
-	:after magit
-	:custom
-	(forge-database-file (concat (emacs-data-home) "forge/database.sqlite"))
-	(forge-owned-accounts '(("brklntmhwk")))
-	(forge-add-pullreq-refspec 'ask))
+  :ensure t
+  :after magit
+  :custom
+  (forge-database-file (concat emacs-data-home "forge/database.sqlite"))
+  (forge-owned-accounts '(("brklntmhwk")))
+  (forge-add-pullreq-refspec 'ask))
 #+end_src
 **** git-auto-commit-mode
 #+begin_quote
@@ -2590,16 +2686,18 @@ Automatically commit to git after each save
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-auto-commit-mode
-	:ensure t)
+  :ensure t
+  :custom
+  ;; (gac-default-message "xxx")
+  (gac-silent-message-p t))
 #+end_src
 **** git-commit
 #+begin_quote
-Edit Git commit messages 
+Edit Git commit messages
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-commit
-	:ensure t
-	:after magit)
+  :after magit)
 #+end_src
 **** magit
 #+begin_quote
@@ -2607,19 +2705,21 @@ It's Magit! A Git Porcelain inside Emacs.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package magit
-	:ensure t
-	:custom
-	(magit-save-repository-buffers 'dontask)
-	(magit-define-global-key-bindings nil)
-	:bind
-	((:map ctl-x-map
-				 :prefix-map magit-prefix-map
-				 :prefix "g"
-				 ("s" . magit-status)
-				 ("d" . magit-dispatch)
-				 ("f" . magit-file-dispatch)))
-	:config
-	(add-hook 'git-commit-post-finish-hook #'magit))
+  :ensure t
+  :custom
+  (magit-save-repository-buffers 'dontask)
+  (magit-define-global-key-bindings nil)
+  :bind
+  ((:map ctl-x-map
+         :prefix-map magit-prefix-map
+         :prefix "g"
+         ("s" . magit-status)
+         ("d" . magit-dispatch)
+         ("f" . magit-file-dispatch)))
+  :config
+  ;; https://www.reddit.com/r/emacs/comments/11auxod/magit_quits_after_a_commit_happen/
+  ;; Explicitly set this to prevent the Dashboard buffer from appearing after every commit.
+  (add-hook 'git-commit-post-finish-hook #'magit))
 #+end_src
 ***** magit-delta
 #+begin_quote
@@ -2627,21 +2727,22 @@ Use Delta when displaying diffs in Magit
 #+end_quote
 #+begin_src emacs-lisp
 (use-package magit-delta
-	:ensure t
-	:if (executable-find "delta")
-	:after magit
-	:hook (magit-mode . magit-delta-mode))
+  :ensure t
+  :if (executable-find "delta")
+  :after magit
+  :hook (magit-mode . magit-delta-mode))
 #+end_src
 ***** magit-todos
 #+begin_quote
 Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
 #+end_quote
 #+begin_src emacs-lisp
-(use-package magit-delta
-	:ensure t
-	:if (executable-find "delta")
-	:after magit
-	:hook (magit-mode . magit-delta-mode))
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :custom
+  (magit-todos-exclude-globs '(".git/"))
+  :hook (magit-mode-hook . magit-todos-mode))
 #+end_src
 *** Terminal
 :PROPERTIES:
@@ -2653,13 +2754,16 @@ Emulate A Terminal, in a region, in a buffer and in Eshell
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eat
-	:ensure t
-	:custom
-	;; (eat-enable-shell-prompt-annotation nil)
-	(eat-kill-buffer-on-exit t)
-	:bind
-	((:map project-prefix-map
-				 ("t" . eat-preject))))
+  :ensure t
+  :custom
+  ;; (eat-enable-shell-prompt-annotation nil)
+  (eat-kill-buffer-on-exit t)
+  :bind
+  ((:map project-prefix-map
+         ("t" . eat-preject)))
+  :config
+  (mapc (lambda (k) (keymap-unset eat-semi-char-mode-map k))
+        '("M-g" "M-o" "M-s")))
 #+end_src
 **** exec-path-from-shell
 #+begin_quote
@@ -2667,12 +2771,12 @@ Make Emacs use the $PATH set up by the user's shell
 #+end_quote
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
-	:ensure t
-	:if (eq system-type 'darwin)
-	:config
-	(when (or window-system
-						(daemonp))
-		(exec-path-from-shell-initialize)))
+  :ensure t
+  :if (eq system-type 'darwin)
+  :config
+  (when (or window-system
+            (daemonp))
+    (exec-path-from-shell-initialize)))
 #+end_src
 *** Email
 :PROPERTIES:
@@ -2683,8 +2787,8 @@ Make Emacs use the $PATH set up by the user's shell
 Mu-based mua for emacs
 #+end_quote
 #+begin_src emacs-lisp
-(use-package mu4e
-	:ensure t)
+;; (use-package mu4e
+;;      :ensure t)
 #+end_src
 *** Org Mode
 :PROPERTIES:
@@ -2696,40 +2800,40 @@ Outline-based notes management and organizer
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org
-	:defer 5
-	:custom
-	;; Org files management
-	(org-default-notes-file (concat (emacs-documents-dir) "inbox.org"))
-	;; Agenda-related stuff
-	(org-enforce-todo-dependencies t)
-	(org-extend-today-until 4)
-	(org-use-effective-time t)
-	(org-log-done 'time)
-	(org-tags-exclude-from-inheritance '("crypt"))
-	(org-track-ordered-property-with-tag t)
-	;; General workflow
-	(org-cycle-separator-lines 0)
-	(org-imenu-depth 6)
-	(org-use-speed-commands t)
-	(org-special-ctrl-a/e t)
-	(org-special-ctrl-k t)
-	;; Appearance
-	(org-ellipsis "  ")
-	(org-fontify-done-headline t)
-	(org-fontify-quote-and-verse-blocks t)
-	(org-fontify-whole-heading-line t)
-	(org-image-actual-width t)
-	(org-pretty-entities t)
-	(org-startup-folded 'content)
-	(org-startup-indented nil)
-	(org-startup-truncated nil)
-	(org-tags-column -80)
-	;; Misc
-	(org-bookmark-names-plist nil)
-	:hook (org-mode-hook . my/org-mode-setup)
-	:config
-	(defun my/org-mode-setup ()
-		(setq-local tab-width 8)))
+  :defer 5
+  :custom
+  ;; Org files management
+  (org-default-notes-file (concat emacs-documents-dir "inbox.org"))
+  ;; Agenda-related stuff
+  (org-enforce-todo-dependencies t)
+  (org-extend-today-until 4)
+  (org-use-effective-time t)
+  (org-log-done 'time)
+  (org-tags-exclude-from-inheritance '("crypt"))
+  (org-track-ordered-property-with-tag t)
+  ;; General workflow
+  (org-cycle-separator-lines 0)
+  (org-imenu-depth 6)
+  (org-use-speed-commands t)
+  (org-special-ctrl-a/e t)
+  (org-special-ctrl-k t)
+  ;; Appearance
+  (org-ellipsis "  ")
+  (org-fontify-done-headline t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-fontify-whole-heading-line t)
+  (org-image-actual-width t)
+  (org-pretty-entities t)
+  (org-startup-folded 'content)
+  (org-startup-indented nil)
+  (org-startup-truncated nil)
+  (org-tags-column -80)
+  ;; Misc
+  (org-bookmark-names-plist nil)
+  :hook (org-mode-hook . my/org-mode-setup)
+  :config
+  (defun my/org-mode-setup ()
+    (setq-local tab-width 8)))
 #+end_src
 **** dslide
 #+begin_quote
@@ -2737,16 +2841,16 @@ Present anything Emacs can do with programmable, extensible, configurable slides
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dslide
-	:ensure t
-	:after org
-	:custom
-	(dslide-header nil)
-	(dslide-header-author nil)
-	(dslide-header-date nil)
-	(dslide-header-email nil)
-	(dslide-breadcrumb-separator nil)
-	:hook
-	(dslide-start-hook . hide-mode-line-mode))
+  :ensure t
+  :after org
+  :custom
+  (dslide-header nil)
+  (dslide-header-author nil)
+  (dslide-header-date nil)
+  (dslide-header-email nil)
+  (dslide-breadcrumb-separator nil)
+  :hook
+  (dslide-start-hook . hide-mode-line-mode))
 #+end_src
 **** org-agenda
 #+begin_quote
@@ -2754,23 +2858,22 @@ Dynamic task and appointment lists for Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-agenda
-	:after org
-	:custom
-	;; (org-agenda-compact-blocks t)
-	;; (org-agenda-custom-commands
-	;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
-	;; (org-agenda-dim-blocked-tasks nil)
-	(org-agenda-files (lambda ()
-											(directory-files-recursively
-											 emacs-documents-dir "\\.org\\'")))
-	(org-agenda-inhibit-startup t)
-	(org-agenda-restore-windows-after-quit t)
-	;; (org-agenda-use-tag-inheritance '(todo search agenda))
-	(org-agenda-window-setup 'current-window)
-	:bind
-	(:map mode-specific-map
-				("a" . org-agenda))
-	:hook (org-agenda-finalize-hook . hl-line-mode))
+  :after org
+  :custom
+  ;; (org-agenda-compact-blocks t)
+  ;; (org-agenda-custom-commands
+  ;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
+  ;; (org-agenda-dim-blocked-tasks nil)
+  (org-agenda-files (directory-files-recursively
+                      emacs-documents-dir "\\.org\\'"))
+  (org-agenda-inhibit-startup t)
+  (org-agenda-restore-windows-after-quit t)
+  ;; (org-agenda-use-tag-inheritance '(todo search agenda))
+  (org-agenda-window-setup 'current-window)
+  :bind
+  (:map mode-specific-map
+        ("a" . org-agenda))
+  :hook (org-agenda-finalize-hook . hl-line-mode))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
@@ -2778,14 +2881,14 @@ Supercharge your Org daily/weekly agenda by grouping items
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-super-agenda
-	:ensure t
-	:after org-agenda
-	:custom
-	(org-super-agenda-groups
-	 '((:name "Timeline"
-						:time-grid t)))
-	:config
-	(org-super-agenda-mode 1))
+  :ensure t
+  :after org-agenda
+  :custom
+  (org-super-agenda-groups
+   '((:name "Timeline"
+            :time-grid t)))
+  :config
+  (org-super-agenda-mode 1))
 #+end_src
 **** org-anki
 #+begin_quote
@@ -2793,21 +2896,21 @@ Sync org notes to Anki via AnkiConnect
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-anki
-	:ensure t
-	:after org
-	:custom
-	(org-anki-default-deck "Default")
-	(org-anki-default-note-type "Basic")
-	(org-anki-inherit-tags nil)
-	:bind
-	(:map org-mode-map
-				:prefix-map org-anki-map
-				:prefix "C-c C-x k"
-				("b" . org-anki-browse-entry)
-				("s" . org-anki-sync-entry)
-				("S" . org-anki-sync-all)
-				("u" . org-anki-update-all)
-				("U" . org-anki-update-dir)))
+  :ensure t
+  :after org
+  :custom
+  (org-anki-default-deck "Default")
+  (org-anki-default-note-type "Basic")
+  (org-anki-inherit-tags nil)
+  :bind
+  (:map org-mode-map
+        :prefix-map org-anki-map
+        :prefix "C-c C-x k"
+        ("b" . org-anki-browse-entry)
+        ("s" . org-anki-sync-entry)
+        ("S" . org-anki-sync-all)
+        ("u" . org-anki-update-all)
+        ("U" . org-anki-update-dir)))
 #+end_src
 **** org-appear
 #+begin_quote
@@ -2815,8 +2918,8 @@ Toggle visibility of hidden Org mode element parts upon entering and leaving an 
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-appear
-	:ensure t
-	:hook (org-mode-hook . org-appear-mode))
+  :ensure t
+  :hook (org-mode-hook . org-appear-mode))
 #+end_src
 **** org-autolist
 #+begin_quote
@@ -2824,8 +2927,8 @@ Making it even easier to edit lists in org-mode!
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-autolist
-	:ensure t
-	:hook (org-mode-hook . org-autolist-mode))
+  :ensure t
+  :hook (org-mode-hook . org-autolist-mode))
 #+end_src
 **** org-babel(ob)
 #+begin_quote
@@ -2833,21 +2936,21 @@ Working with Code Blocks in Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package ob
-	:after org
-	:custom
-	(org-confirm-babel-evaluate nil)
-	(org-babel-load-languages
-	 '((clojure . t)
-		 (emacs-lisp . t)
-		 (haskell . t)
-		 (julia . t)
-		 (latex . t)
-		 (lua . t)
-		 (python . t)
-		 (ocaml . t)
-		 (shell . t)
-		 (sql . t)
-		 (sqlite . t))))
+  :after org
+  :custom
+  (org-confirm-babel-evaluate nil)
+  (org-babel-load-languages
+   '((clojure . t)
+     (emacs-lisp . t)
+     (haskell . t)
+     (julia . t)
+     (latex . t)
+     (lua . t)
+     (python . t)
+     (ocaml . t)
+     (shell . t)
+     (sql . t)
+     (sqlite . t))))
 #+end_src
 **** org-bookmark-heading
 #+begin_quote
@@ -2855,10 +2958,10 @@ Emacs bookmark support for Org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-bookmark-heading
-	:ensure t
-	:after org
-	:custom
-	(org-bookmark-heading-make-ids t))
+  :ensure t
+  :after org
+  :custom
+  (org-bookmark-heading-make-ids t))
 #+end_src
 **** org-capture
 #+begin_quote
@@ -2866,15 +2969,15 @@ Fast note taking in Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-capture
-	:after org
-	:custom
-	(org-capture-templates
-	 `(("i" "Inbox" entry
-			(file "")
-			"* %?\n%U\n\n  %i")))
-	:bind
-	(:map mode-specific-map
-				("c" . org-capture)))
+  :after org
+  :custom
+  (org-capture-templates
+   `(("i" "Inbox" entry
+      (file "")
+      "* %?\n%U\n\n  %i")))
+  :bind
+  (:map mode-specific-map
+        ("c" . org-capture)))
 #+end_src
 **** org-clock
 #+begin_quote
@@ -2882,16 +2985,16 @@ The time clocking code for Org mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-clock
-	:after org
-	:custom
-	(org-clock-auto-clockout-timer (* 60 20))
-	(org-clock-history-length 30)
-	(org-clock-in-resume t)
-	(org-clock-mode-line-total 'today)
-	(org-clock-out-remove-zero-time-clocks t)
-	(org-clock-persist t)
-	(org-clock-persist-query-resume t)
-	(org-clock-persist-query-save t))
+  :after org
+  :custom
+  (org-clock-auto-clockout-timer (* 60 20))
+  (org-clock-history-length 30)
+  (org-clock-in-resume t)
+  (org-clock-mode-line-total 'today)
+  (org-clock-out-remove-zero-time-clocks t)
+  (org-clock-persist t)
+  (org-clock-persist-query-resume t)
+  (org-clock-persist-query-save t))
 #+end_src
 **** org-clock-convenience
 #+begin_quote
@@ -2899,11 +3002,11 @@ Convenience functions to work with emacs org mode clocking from the agenda view
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-clock-convenience
-	:ensure t
-	:bind
-	(:map org-agenda-mode-map
-				("M-]" . org-clock-convenience-timestamp-up)
-				("M-[" . org-clock-convenience-timestamp-down)))
+  :ensure t
+  :bind
+  (:map org-agenda-mode-map
+        ("M-]" . org-clock-convenience-timestamp-up)
+        ("M-[" . org-clock-convenience-timestamp-down)))
 #+end_src
 **** org-crypt
 #+begin_quote
@@ -2911,12 +3014,12 @@ Public Key Encryption for Org Entries
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-crypt
-	:custom
-	(org-crypt-key nil)
-	:hook (org-mode-hook . my/org-encrypt-entries)
-	:config
-	(defun my/org-encrypt-entries ()
-		(add-hook 'before-save-hook #'org-encrypt-entries nil t)))
+  :custom
+  (org-crypt-key nil)
+  :hook (org-mode-hook . my/org-encrypt-entries)
+  :config
+  (defun my/org-encrypt-entries ()
+    (add-hook 'before-save-hook #'org-encrypt-entries nil t)))
 #+end_src
 **** org-download
 #+begin_quote
@@ -2924,14 +3027,14 @@ Drag and drop images to Emacs org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-download
-	:ensure t
-	:after org
-	:custom
-	(org-download-image-dir emacs-pictures-dir)
-	;; (org-download-edit-cmd "swappy %s")
-	;; (org-download-screenshot-method "grimblast copysave")
-	(org-download-timestamp "%Y%m%d_%H%M%S_")
-	:hook (dired-mode-hook . org-download-enable))
+  :ensure t
+  :after org
+  :custom
+  (org-download-image-dir emacs-pictures-dir)
+  ;; (org-download-edit-cmd "swappy %s")
+  ;; (org-download-screenshot-method "grimblast copysave")
+  (org-download-timestamp "%Y%m%d_%H%M%S_")
+  :hook (dired-mode-hook . org-download-enable))
 #+end_src
 **** org-element
 #+begin_quote
@@ -2939,9 +3042,9 @@ Parser for Org Syntax
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-element
-	:after org
-	:init
-	(setq org-element-cache-persistent nil))
+  :after org
+  :init
+  (setq org-element-cache-persistent nil))
 #+end_src
 **** org-habit
 #+begin_quote
@@ -2949,12 +3052,12 @@ The habit tracking code for Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-habit
-	:after org-agenda
-	:custom
-	(org-habit-graph-column 35)
-	(org-habit-following-days 7)
-	(org-habit-preceding-days 14)
-	(org-habit-show-done-always-green t))
+  :after org-agenda
+  :custom
+  (org-habit-graph-column 35)
+  (org-habit-following-days 7)
+  (org-habit-preceding-days 14)
+  (org-habit-show-done-always-green t))
 #+end_src
 **** org-id
 #+begin_quote
@@ -2962,11 +3065,11 @@ Global identifiers for Org entries
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-id
-	:after org
-	:custom
-	(org-id-locations-file (concat (emacs-cache-home) "org-id-locations"))
-	(org-id-link-to-org-use-id t)
-	(org-id-search-archives nil))
+  :after org
+  :custom
+  (org-id-locations-file (concat emacs-cache-home "org-id-locations"))
+  (org-id-link-to-org-use-id t)
+  (org-id-search-archives nil))
 #+end_src
 **** org-indent
 #+begin_quote
@@ -2974,8 +3077,8 @@ Dynamic indentation for Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-indent
-	:custom
-	(org-indent-mode-turns-on-hiding-stars t))
+  :custom
+  (org-indent-mode-turns-on-hiding-stars t))
 #+end_src
 **** org-journal
 #+begin_quote
@@ -2983,28 +3086,28 @@ A simple org-mode based journaling mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-journal
-	:ensure t
-	:after org
-	:custom
-	(org-journal-dir (concat (emacs-documents-dir) "journal/"))
-	(org-journal-prefix-key nil)
-	(org-journal-date-format "%a, %d %b")
-	(org-journal-time-format "")
-	(org-journal-time-prefix "")
-	(org-journal-file-format "%Y.org")
-	(org-journal-enable-agenda-integration t)
-	;; (org-journal-enable-encryption t)
-	(org-journal-file-type 'yearly)
-	(org-journal-file-header "#+TITLE: %Y Journal\n\n")
-	:bind
-	((:map mode-specific-map
-				 ("j" . org-journal-new-entry))
-	 (:map org-journal-mode-map
-				 :map mode-specific-map
-				 ("n" . org-journal-next-entry)
-				 ("p" . org-journal-previous-entry)
-				 ("j" . org-journal-new-entry)
-				 ("s" . org-journal-search))))
+  :ensure t
+  :after org
+  :custom
+  (org-journal-dir (concat emacs-documents-dir "journal/"))
+  (org-journal-prefix-key nil)
+  (org-journal-date-format "%a, %d %b")
+  (org-journal-time-format "")
+  (org-journal-time-prefix "")
+  (org-journal-file-format "%Y.org")
+  (org-journal-enable-agenda-integration t)
+  ;; (org-journal-enable-encryption t)
+  (org-journal-file-type 'yearly)
+  (org-journal-file-header "#+TITLE: %Y Journal\n\n")
+  :bind
+  ((:map mode-specific-map
+         ("j" . org-journal-new-entry))
+   (:map org-journal-mode-map
+         :map mode-specific-map
+         ("n" . org-journal-next-entry)
+         ("p" . org-journal-previous-entry)
+         ("j" . org-journal-new-entry)
+         ("s" . org-journal-search))))
 #+end_src
 **** org-link(ol)
 #+begin_quote
@@ -3012,11 +3115,11 @@ Org links library
 #+end_quote
 #+begin_src emacs-lisp
 (use-package ol
-	:custom
-	(org-link-keep-stored-after-insertion t)
-	:bind
-	(:map mode-specific-map
-				("l" . org-store-link)))
+  :custom
+  (org-link-keep-stored-after-insertion t)
+  :bind
+  (:map mode-specific-map
+        ("l" . org-store-link)))
 #+end_src
 **** org-make-toc
 #+begin_quote
@@ -3024,10 +3127,10 @@ Automatic tables of contents for Org-mode files
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-make-toc
-	:ensure t
-	:custom
-	(org-make-toc-insert-custom-ids t)
-	:hook (org-mode-hook . org-make-toc-mode))
+  :ensure t
+  :custom
+  (org-make-toc-insert-custom-ids t)
+  :hook (org-mode-hook . org-make-toc-mode))
 #+end_src
 **** org-modern
 #+begin_quote
@@ -3035,13 +3138,13 @@ Automatic tables of contents for Org-mode files
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-modern
-	:ensure t
-	:after org
-	:custom
-	(org-modern-hide-stars nil)
-	:hook
-	(org-mode-hook . org-modern-mode)
-	(org-agenda-finalize . org-modern-agenda))
+  :ensure t
+  :after org
+  :custom
+  (org-modern-hide-stars nil)
+  :hook
+  (org-mode-hook . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
 #+end_src
 **** org-nix-shell
 #+begin_quote
@@ -3049,8 +3152,8 @@ Use buffer-local nix-shell environments in org-mode.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-nix-shell
-	:ensure t
-	:hook (org-mode-hook . org-nix-shell-mode))
+  :ensure t
+  :hook (org-mode-hook . org-nix-shell-mode))
 #+end_src
 **** org-pomodoro
 #+begin_quote
@@ -3058,13 +3161,13 @@ pomodoro technique for org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-pomodoro
-	:ensure t
-	:after org-agenda
-	:commands (org-pomodoro)
-	:custom
-	(org-pomodoro-length 25)
-	(org-pomodoro-short-break-length 5)
-	(org-pomodoro-long-break-length 20))
+  :ensure t
+  :after org-agenda
+  :commands (org-pomodoro)
+  :custom
+  (org-pomodoro-length 25)
+  (org-pomodoro-short-break-length 5)
+  (org-pomodoro-long-break-length 20))
 #+end_src
 **** org-ql
 #+begin_quote
@@ -3072,11 +3175,11 @@ A searching tool for Org-mode, including custom query languages, commands, saved
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-ql
-	:ensure t
-	:after org
-	:bind
-	(:map org-mode-map
-				("C-c C-x /" . org-ql-sparse-tree)))
+  :ensure t
+  :after org
+  :bind
+  (:map org-mode-map
+        ("C-c C-x /" . org-ql-sparse-tree)))
 #+end_src
 **** org-recur
 #+begin_quote
@@ -3084,10 +3187,10 @@ Simple recurring org-mode tasks.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-recur
-	:ensure t
-	:hook
-	((org-mode-hook . org-recur-mode)
-	 (org-agenda-mode-hook . org-recur-agenda-mode)))
+  :ensure t
+  :hook
+  ((org-mode-hook . org-recur-mode)
+   (org-agenda-mode-hook . org-recur-agenda-mode)))
 #+end_src
 **** org-refile
 #+begin_quote
@@ -3095,15 +3198,15 @@ Refile Org Subtrees
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-refile
-	:after org
-	:custom
-	(org-log-refile nil)
-	(org-outline-path-complete-in-steps nil)
-	(org-refile-allow-creating-parent-nodes 'confirm)
-	(org-refile-targets
-	 '((nil :maxlevel . 99)
-		 (org-agenda-files :maxlevel . 99)))
-	(org-refile-use-outline-path 'file))
+  :after org
+  :custom
+  (org-log-refile nil)
+  (org-outline-path-complete-in-steps nil)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  (org-refile-targets
+   '((nil :maxlevel . 99)
+     (org-agenda-files :maxlevel . 99)))
+  (org-refile-use-outline-path 'file))
 #+end_src
 **** org-src
 #+begin_quote
@@ -3111,11 +3214,11 @@ Source code examples in Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-src
-	:custom
-	(org-src-tab-acts-natively t)
-	(org-src-window-setup 'split-window-below)
-	(org-src-preserve-indentation nil)
-	(org-edit-src-content-indentation 0))
+  :custom
+  (org-src-tab-acts-natively t)
+  (org-src-window-setup 'split-window-below)
+  (org-src-preserve-indentation nil)
+  (org-edit-src-content-indentation 0))
 #+end_src
 **** org-super-links
 #+begin_quote
@@ -3123,14 +3226,30 @@ Package to create links with auto backlinks
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-super-links
-	:ensure t
-	:bind
-	((:map org-mode-map
-				 :prefix-map org-super-links-map
-				 :prefix "C-c C-x s"
-				 ;; ("d" . org-super-links-delete-link)
-				 ("l" . org-super-links-insert-link)
-				 ("s" . org-super-links-store-link))))
+  :ensure t
+  :bind
+  ((:map org-mode-map
+         :prefix-map org-super-links-map
+         :prefix "C-c C-x s"
+         ;; ("d" . org-super-links-delete-link)
+         ("l" . org-super-links-insert-link)
+         ("s" . org-super-links-store-link))))
+#+end_src
+**** org-superstar
+#+begin_quote
+Prettify headings and plain lists in Org mode
+#+end_quote
+#+begin_src emacs-lisp
+(use-package org-superstar
+  :ensure t
+  :after org
+  :custom
+  ;; TODO: Consider using chess pieces as bullets
+  ;; (org-superstar-headline-bullets-list
+  ;;  '(""))
+  (org-superstar-remove-leading-stars t)
+  (org-superstar-special-todo-items t)
+  :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 **** org-transclusion
 #+begin_quote
@@ -3138,11 +3257,11 @@ Emacs package to enable transclusion with Org Mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-transclusion
-	:ensure t
-	:after org
-	;; :custom
-	;; (org-transclusion-add-all-on-activate t)
-	:hook (org-mode-hook . org-transclusion-mode))
+  :ensure t
+  :after org
+  ;; :custom
+  ;; (org-transclusion-add-all-on-activate t)
+  :hook (org-mode-hook . org-transclusion-mode))
 #+end_src
 **** org-web-tools
 #+begin_quote
@@ -3150,19 +3269,29 @@ View, capture, and archive Web pages in Org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-web-tools
-	:ensure t
-	:after org
-	:bind
-	((:map org-mode-map
-				 :prefix-map org-web-tools-map
-				 :prefix "C-c C-x w"
-				 ("y" . org-web-tools-insert-link-for-url)
-				 ("Y" . org-web-tools-insert-web-page-as-entry))))
+  :ensure t
+  :after org
+  :bind
+  ((:map org-mode-map
+         :prefix-map org-web-tools-map
+         :prefix "C-c C-x w"
+         ("y" . org-web-tools-insert-link-for-url)
+         ("Y" . org-web-tools-insert-web-page-as-entry))))
 #+end_src
 *** Miscellaneous
 :PROPERTIES:
 :CUSTOM_ID: miscellaneous
 :END:
+**** keyboard.c
+#+begin_quote
+Keyboard and mouse input; editor command loop.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package keyboard
+  :custom
+  ;; Fix the copy issue on WSL with WSLg.
+  (select-active-regions nil))
+#+end_src
 **** terminal.c
 #+begin_quote
 Functions related to terminal devices.
@@ -3176,8 +3305,8 @@ the GNU Emacs calculator
 #+end_quote
 #+begin_src emacs-lisp
 (use-package calc
-	:custom
-	(calc-kill-line-numbering nil))
+  :custom
+  (calc-kill-line-numbering nil))
 #+end_src
 **** calendar
 #+begin_quote
@@ -3185,9 +3314,9 @@ calendar functions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package calendar
-	:custom
-	(calendar-mark-holidays-flag t)
-	(calendar-date-style 'european))
+  :custom
+  (calendar-mark-holidays-flag t)
+  (calendar-date-style 'european))
 #+end_src
 **** calibredb
 #+begin_quote
@@ -3195,17 +3324,17 @@ Emacs calibre client - A Document Management Solution in Emacs.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package calibredb
-	:ensure t
-	:custom
-	(calibredb-root-dir (concat (emacs-documents-dir) "calibre/"))
-	(calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
-	;; (calibredb-device-dir "/TODO")
-	(calibredb-download-dir nil)
-	(calibredb-format-nerd-icons t)
-	(calibredb-library-alist
-	 '((calibredb-root-dir (name . "Calibre"))))
-	(calibredb-virtual-library-default-name "Library")
-	(calibredb-virtual-library-alist nil))
+  :ensure t
+  :custom
+  (calibredb-root-dir (concat emacs-documents-dir "calibre/"))
+  (calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+  ;; (calibredb-device-dir "/TODO")
+  (calibredb-download-dir nil)
+  (calibredb-format-nerd-icons t)
+  (calibredb-library-alist
+   '((calibredb-root-dir (name . "Calibre"))))
+  (calibredb-virtual-library-default-name "Library")
+  (calibredb-virtual-library-alist nil))
 #+end_src
 **** epkg
 #+begin_quote
@@ -3213,8 +3342,8 @@ Browse the Emacsmirror package database
 #+end_quote
 #+begin_src emacs-lisp
 (use-package epkg
-	:custom
-	(epkg-repository (concat (emacs-data-home) "epkgs/")))
+  :custom
+  (epkg-repository (concat emacs-data-home "epkgs/")))
 #+end_src
 ***** epkg-marginalia
 #+begin_quote
@@ -3222,11 +3351,11 @@ Show Epkg information in completion annotations
 #+end_quote
 #+begin_src emacs-lisp
 (use-package epkg-marginalia
-	:ensure t
-	:after (epkg marginalia)
-	:config
-	(cl-pushnew 'epkg-marginalia-annotate-package
-							(alist-get 'package marginalia-annotator-registry)))
+  :ensure t
+  :after (epkg marginalia)
+  :config
+  (cl-pushnew 'epkg-marginalia-annotate-package
+              (alist-get 'package marginalia-annotator-registry)))
 #+end_src
 **** go-translate
 #+begin_quote
@@ -3234,24 +3363,24 @@ Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, Chat
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gt
-	:ensure t
-	:custom
-	(gt-langs '(en es ja))
-	(gt-polyglot-p t)
-	(gt-default-translator
-	 (gt-translator
-		:taker (list
-						(gt-taker :pick nil :if 'selection)
-						;; (gt-taker :text 'buffer :pick 'paragraph)
-						(gt-taker :text 'word))
-		:engines (gt-google-engine)
-		;; :engines (list
-		;; 					(gt-google-engine :if 'word)
-		;; 					(gt-deepl-engine :if 'not-word))
-		:render (gt-buffer-render)))
-	:bind
-	((:map mode-specific-map
-				 ("q" . gt-do-translate))))
+  :ensure t
+  :custom
+  (gt-langs '(en es ja))
+  (gt-polyglot-p t)
+  (gt-default-translator
+   (gt-translator
+    :taker (list
+            (gt-taker :pick nil :if 'selection)
+            ;; (gt-taker :text 'buffer :pick 'paragraph)
+            (gt-taker :text 'word))
+    :engines (gt-google-engine)
+    ;; :engines (list
+    ;;                                  (gt-google-engine :if 'word)
+    ;;                                  (gt-deepl-engine :if 'not-word))
+    :render (gt-buffer-render)))
+  :bind
+  ((:map mode-specific-map
+         ("q" . gt-do-translate))))
 #+end_src
 **** gptel
 #+begin_quote
@@ -3259,25 +3388,25 @@ A simple LLM client for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel
-	:ensure t
-	:custom
-	(gptel-default-mode 'org-mode)
-	(gptel-use-header-line t)
-	(gptel-log-level 'info)
-	:bind
-	(:map mode-specific-map
-				("\\" . gptel-menu))
-	:config
-	(setq gptel-model 'gemma3:4b
-				gptel-backend (gptel-make-ollama "Ollama"
-												:host "localhost:11434"
-												:stream t
-												:models '(deepseek-r1:8b
-																	gemma3:4b
-																	llama3.2:3b
-																	mistral:7b
-																	phi4:14b
-																	qwen3:4b))))
+  :ensure t
+  :custom
+  (gptel-default-mode 'org-mode)
+  (gptel-use-header-line t)
+  (gptel-log-level 'info)
+  :bind
+  (:map mode-specific-map
+        ("\\" . gptel-menu))
+  :config
+  (setq gptel-model 'gemma3:4b
+        gptel-backend (gptel-make-ollama "Ollama"
+                        :host "localhost:11434"
+                        :stream t
+                        :models '(deepseek-r1:8b
+                                  gemma3:4b
+                                  llama3.2:3b
+                                  mistral:7b
+                                  phi4:14b
+                                  qwen3:4b))))
 #+end_src
 ***** gptel-org
 #+begin_quote
@@ -3285,23 +3414,22 @@ Org functions for gptel
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel-org
-	:after gptel
-	:bind
-	(:map org-mode-map
-				("C-c C-x `" . gptel-org-set-topic)
-				("C-c C-x =" . gptel-org-set-properties)))
+  :after gptel
+  :bind
+  (:map org-mode-map
+        ("C-c C-x `" . gptel-org-set-topic)
+        ("C-c C-x =" . gptel-org-set-properties)))
 #+end_src
 ***** gptel-quick
 #+begin_quote
 Quick LLM lookups in Emacs
 #+end_quote
 #+begin_src emacs-lisp
-;; (use-package gptel-quick
-;; 	:ensure t
-;; 	:after (gptel)
-;; 	:config
-;; 	(with-eval-after-load 'embark
-;; 		(keymap-set embark-general-map "?" #'gptel-quick)))
+(use-package gptel-quick
+  :after (gptel)
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-general-map "?" #'gptel-quick)))
 #+end_src
 ***** gptel-rewrite
 #+begin_quote
@@ -3309,12 +3437,12 @@ Refactoring functions for gptel
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel-rewrite
-	:after gptel
-	:custom
-	(‎gptel-rewrite-default-action‎ 'dispatch)
-	:config
-	(with-eval-after-load 'embark
-		(keymap-set embark-region-map "!" #'gptel-rewrite)))
+  :after gptel
+  :custom
+  (‎gptel-rewrite-default-action‎ 'dispatch)
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-region-map "!" #'gptel-rewrite)))
 #+end_src
 **** mastodon
 #+begin_quote
@@ -3322,7 +3450,7 @@ Emacs client for fediverse servers that implement the Mastodon API.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mastodon
-	:ensure t)
+  :ensure t)
 #+end_src
 **** nov
 #+begin_quote
@@ -3330,22 +3458,22 @@ Major mode for reading EPUBs in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nov
-	:ensure t
-	:mode ("\\.epub\\'" . nov-mode)
-	:custom
-	(nov-text-width 82)
-	;; File name where last reading places are saved to and restored from.
-	(nov-save-place-file (concat (emacs-cache-home) "nov-places"))
-	:hook (nov-mode-hook . my/nov-mode-setup)
-	:config
-	;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
-	(defun my/nov-mode-setup ()
-		(when (require 'olivetti nil t)
-			(olivetti-mode 1)
-			(setq-local nov-text-width nil)
-			(add-hook 'olivetti-expand-hook
-								#'nov-render-document
-								nil t))))
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode)
+  :custom
+  (nov-text-width 82)
+  ;; File name where last reading places are saved to and restored from.
+  (nov-save-place-file (concat emacs-cache-home "nov-places"))
+  :hook (nov-mode-hook . my/nov-mode-setup)
+  :config
+  ;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
+  (defun my/nov-mode-setup ()
+    (when (require 'olivetti nil t)
+      (olivetti-mode 1)
+      (setq-local nov-text-width nil)
+      (add-hook 'olivetti-expand-hook
+                #'nov-render-document
+                nil t))))
 #+end_src
 **** osm
 #+begin_quote
@@ -3353,24 +3481,24 @@ Major mode for reading EPUBs in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package osm
-	:ensure t
-	:custom
-	(osm-search-language "en,ja")
-	(osm-tile-directory emacs-cache-home)
-	:bind
-	(("<f6>" . osm)
-	 (:map osm-mode-map
-				 ([remap previous-line] . osm-up)
-				 ([remap next-line] . osm-down)
-				 ([remap backward-char] . osm-left)
-				 ([remap forward-char] . osm-right)
-				 ("g" . osm-goto)
-				 ("h" . osm-home)
-				 ("j" . osm-jump)
-				 ("s" . osm-search)
-				 ("v" . osm-server)
-				 ("x" . osm-gpx-show)
-				 ("X" . osm-gpx-hide))))
+  :ensure t
+  :custom
+  (osm-search-language "en,ja")
+  (osm-tile-directory emacs-cache-home)
+  :bind
+  (("<f6>" . osm)
+   (:map osm-mode-map
+         ([remap previous-line] . osm-up)
+         ([remap next-line] . osm-down)
+         ([remap backward-char] . osm-left)
+         ([remap forward-char] . osm-right)
+         ("g" . osm-goto)
+         ("h" . osm-home)
+         ("j" . osm-jump)
+         ("s" . osm-search)
+         ("v" . osm-server)
+         ("x" . osm-gpx-show)
+         ("X" . osm-gpx-hide))))
 #+end_src
 **** pdf-tools
 #+begin_quote
@@ -3378,8 +3506,8 @@ Emacs support library for PDF files.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package pdf-tools
-	:ensure t
-	:magic ("%PDF" . pdf-view-mode))
+  :ensure t
+  :magic ("%PDF" . pdf-view-mode))
 #+end_src
 **** prodigy
 #+begin_quote
@@ -3387,7 +3515,19 @@ Manage external services from within Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package prodigy
-	:ensure t)
+  :ensure t)
+#+end_src
+*** Personal
+:PROPERTIES:
+:CUSTOM_ID: personal
+:END:
+
+Make sure that customizable variables whose values should preferably be kept private are added to the custom file. (e.g., auth-sources)
+
+#+begin_src emacs-lisp
+;; Load `custom-file' if you have created one.
+(when (and custom-file (file-readable-p custom-file))
+  (load custom-file))
 #+end_src
 ** License
 :PROPERTIES:
@@ -3409,3 +3549,11 @@ Below are some of the resources I frequently consulted:
 - [[https://github.com/terlar/emacs-config][Terlar's Emacs Config]]
 - [[https://github.com/jwiegley/dot-emacs][Jwiegley's Dot Emacs]]
 - [[https://karthinks.com/][Karthinks.com]]
+- [[https://www.masteringemacs.org/][Mastering Emacs]]
+
+** Footnotes
+:PROPERTIES:
+:CUSTOM_ID: footnotes
+:END:
+
+[fn:1] https://zero-to-nix.com/concepts/reproducibility/

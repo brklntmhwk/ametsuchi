@@ -92,8 +92,10 @@
         "type": "github"
       },
       "original": {
+        "lastModified": 1451290400,
         "owner": "jwiegley",
         "repo": "emacs-async",
+        "rev": "1794ea4955c6eeb62471b232a2d4fd6a6925a2c9",
         "type": "github"
       }
     },
@@ -110,6 +112,22 @@
       "original": {
         "owner": "abo-abo",
         "repo": "avy",
+        "type": "github"
+      }
+    },
+    "benchmark-init": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1741867258,
+        "narHash": "sha256-woUqo6zPt/M87BtVFKX1MYEj8GWG4FOiaPvN1kLGjno=",
+        "owner": "dholm",
+        "repo": "benchmark-init-el",
+        "rev": "6507caa3c4cb2a6c9b85c771c5e9e5aeb7d745bc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dholm",
+        "repo": "benchmark-init-el",
         "type": "github"
       }
     },
@@ -673,6 +691,38 @@
         "type": "github"
       }
     },
+    "epkg": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1755969194,
+        "narHash": "sha256-BLrZ1xoUIgoW/FgYXuhmBeRvWhQ/yPULLTRz5d614Xk=",
+        "owner": "emacscollective",
+        "repo": "epkg",
+        "rev": "832b346491475f390a9ab185e3659a720c047a02",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacscollective",
+        "repo": "epkg",
+        "type": "github"
+      }
+    },
+    "epkg-marginalia": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1755981320,
+        "narHash": "sha256-hR2tDNmMJoj3wk9Dvi6sYg5yNVHrN6mi+9MRIpxdbOY=",
+        "owner": "emacscollective",
+        "repo": "epkg-marginalia",
+        "rev": "8071419d7031f7caf8c5e6ec711f5c97fc9a8697",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacscollective",
+        "repo": "epkg-marginalia",
+        "type": "github"
+      }
+    },
     "esxml": {
       "flake": false,
       "locked": {
@@ -801,6 +851,22 @@
         "type": "github"
       }
     },
+    "git-auto-commit-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1670431672,
+        "narHash": "sha256-3DGKV4jLGU3FWSTmeUSgATXrKddM5BBAZ4/uuLzRd84=",
+        "owner": "ryuslash",
+        "repo": "git-auto-commit-mode",
+        "rev": "a7b59acea622a737d23c783ce7d212fefb29f7e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ryuslash",
+        "repo": "git-auto-commit-mode",
+        "type": "github"
+      }
+    },
     "gntp": {
       "flake": false,
       "locked": {
@@ -865,6 +931,22 @@
         "type": "github"
       }
     },
+    "gt": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753583428,
+        "narHash": "sha256-saIh7+dtulRvM+4crE/WaVPgf+JvnfX47UJtPdPcOf0=",
+        "owner": "lorniu",
+        "repo": "gt.el",
+        "rev": "f9febd8583ea482f72139e02f440f3972502f5a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lorniu",
+        "repo": "gt.el",
+        "type": "github"
+      }
+    },
     "helpful": {
       "flake": false,
       "locked": {
@@ -894,6 +976,22 @@
       "original": {
         "owner": "hlissner",
         "repo": "emacs-hide-mode-line",
+        "type": "github"
+      }
+    },
+    "highlight-indent-guides": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1754942216,
+        "narHash": "sha256-Y8AimUspmKfvpv/vNN3Vjh7Rz+U0iGqFoqqlmlcmYbA=",
+        "owner": "DarthFennec",
+        "repo": "highlight-indent-guides",
+        "rev": "dfc43e0741444c50adbb1140dfe67d780752a18b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DarthFennec",
+        "repo": "highlight-indent-guides",
         "type": "github"
       }
     },
@@ -1070,6 +1168,22 @@
       "original": {
         "owner": "magit",
         "repo": "magit",
+        "type": "github"
+      }
+    },
+    "magit-todos": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1727398364,
+        "narHash": "sha256-tB8feZReuAEMKwHnJfA/3aNHHXTzZ3u/AN6Stie9eWA=",
+        "owner": "alphapapa",
+        "repo": "magit-todos",
+        "rev": "bd27c57eada0fda1cc0a813db04731a9bcc51b7b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alphapapa",
+        "repo": "magit-todos",
         "type": "github"
       }
     },
@@ -1601,6 +1715,22 @@
         "type": "github"
       }
     },
+    "org-superstar": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756585266,
+        "narHash": "sha256-r+c3iJuM6pliLAHh8GUuW0tdAVdYh0/SsfNQ2sFeXnI=",
+        "owner": "integral-dw",
+        "repo": "org-superstar-mode",
+        "rev": "be423ca3670ecbb9904b923c7a487c56c21380a8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "integral-dw",
+        "repo": "org-superstar-mode",
+        "type": "github"
+      }
+    },
     "org-transclusion": {
       "flake": false,
       "locked": {
@@ -1610,6 +1740,7 @@
         "url": "https://elpa.gnu.org/packages/org-transclusion-1.4.0.tar"
       },
       "original": {
+        "lastModified": 1716239161,
         "type": "tarball",
         "url": "https://elpa.gnu.org/packages/org-transclusion-1.4.0.tar"
       }
@@ -1694,6 +1825,38 @@
         "type": "github"
       }
     },
+    "pcre2el": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1719703334,
+        "narHash": "sha256-XXfmGrVdGAQnEKqdn8o6UeXyhCY4TpGj3OTIH1xq40A=",
+        "owner": "joddie",
+        "repo": "pcre2el",
+        "rev": "b4d846d80dddb313042131cf2b8fbf647567e000",
+        "type": "github"
+      },
+      "original": {
+        "owner": "joddie",
+        "repo": "pcre2el",
+        "type": "github"
+      }
+    },
+    "pdd": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1754716167,
+        "narHash": "sha256-1Sajtus0VOBL2EWprKm/H3Q7h4hv1e0ooSW7sDFgTgs=",
+        "owner": "lorniu",
+        "repo": "pdd.el",
+        "rev": "533e8fde36cb9fae1fae3bf44eb6dbf39ec10f53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lorniu",
+        "repo": "pdd.el",
+        "type": "github"
+      }
+    },
     "pdf-tools": {
       "flake": false,
       "locked": {
@@ -1719,6 +1882,7 @@
         "url": "https://elpa.gnu.org/packages/peg-1.0.1.tar"
       },
       "original": {
+        "lastModified": 1711878471,
         "type": "tarball",
         "url": "https://elpa.gnu.org/packages/peg-1.0.1.tar"
       }
@@ -1732,6 +1896,7 @@
         "url": "https://elpa.gnu.org/packages/persist-0.6.1.tar"
       },
       "original": {
+        "lastModified": 1718485631,
         "type": "tarball",
         "url": "https://elpa.gnu.org/packages/persist-0.6.1.tar"
       }
@@ -1922,6 +2087,7 @@
         "astro-ts-mode": "astro-ts-mode",
         "async": "async",
         "avy": "avy",
+        "benchmark-init": "benchmark-init",
         "blamer": "blamer",
         "breadcrumb": "breadcrumb",
         "calibredb": "calibredb",
@@ -1957,6 +2123,8 @@
         "embark": "embark",
         "embark-consult": "embark-consult",
         "envrc": "envrc",
+        "epkg": "epkg",
+        "epkg-marginalia": "epkg-marginalia",
         "esxml": "esxml",
         "exec-path-from-shell": "exec-path-from-shell",
         "f": "f",
@@ -1965,12 +2133,15 @@
         "fullframe": "fullframe",
         "gcmh": "gcmh",
         "ghub": "ghub",
+        "git-auto-commit-mode": "git-auto-commit-mode",
         "gntp": "gntp",
         "goggles": "goggles",
         "gptel": "gptel",
         "grugru": "grugru",
+        "gt": "gt",
         "helpful": "helpful",
         "hide-mode-line": "hide-mode-line",
+        "highlight-indent-guides": "highlight-indent-guides",
         "hl-todo": "hl-todo",
         "ht": "ht",
         "inheritenv": "inheritenv",
@@ -1982,6 +2153,7 @@
         "magit": "magit",
         "magit-delta": "magit-delta",
         "magit-section": "magit-section",
+        "magit-todos": "magit-todos",
         "marginalia": "marginalia",
         "markdown-mode": "markdown-mode",
         "mastodon": "mastodon",
@@ -2015,12 +2187,15 @@
         "org-recur": "org-recur",
         "org-super-agenda": "org-super-agenda",
         "org-super-links": "org-super-links",
+        "org-superstar": "org-superstar",
         "org-transclusion": "org-transclusion",
         "org-web-tools": "org-web-tools",
         "osm": "osm",
         "ov": "ov",
         "ox-gfm": "ox-gfm",
         "page-break-lines": "page-break-lines",
+        "pcre2el": "pcre2el",
+        "pdd": "pdd",
         "pdf-tools": "pdf-tools",
         "peg": "peg",
         "persist": "persist",
@@ -2037,6 +2212,7 @@
         "request": "request",
         "s": "s",
         "separedit": "separedit",
+        "show-font": "show-font",
         "spinner": "spinner",
         "string-inflection": "string-inflection",
         "tablist": "tablist",
@@ -2053,6 +2229,7 @@
         "vundo": "vundo",
         "web-mode": "web-mode",
         "with-editor": "with-editor",
+        "ws-butler": "ws-butler",
         "xterm-color": "xterm-color",
         "yaml": "yaml",
         "zig-ts-mode": "zig-ts-mode"
@@ -2087,6 +2264,22 @@
       "original": {
         "owner": "twlz0ne",
         "repo": "separedit.el",
+        "type": "github"
+      }
+    },
+    "show-font": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756266922,
+        "narHash": "sha256-DIGkp2Sz0/Pm4mnzlPmGKTNtRdKHLAda/6QpuS/k0UU=",
+        "owner": "protesilaos",
+        "repo": "show-font",
+        "rev": "c3aa4fc3a4775c72da42d9f39ae9b312523a999f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "protesilaos",
+        "repo": "show-font",
         "type": "github"
       }
     },
@@ -2344,6 +2537,23 @@
         "owner": "magit",
         "repo": "with-editor",
         "type": "github"
+      }
+    },
+    "ws-butler": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749778858,
+        "narHash": "sha256-maOhnDkG3GibrbI1EuPRY+Ej4AZJgbFheu6lC72vZ4w=",
+        "ref": "elpa/ws-butler",
+        "rev": "67c49cfdf5a5a9f28792c500c8eb0017cfe74a3a",
+        "revCount": 110,
+        "type": "git",
+        "url": "https://git.savannah.gnu.org/git/emacs/nongnu.git"
+      },
+      "original": {
+        "ref": "elpa/ws-butler",
+        "type": "git",
+        "url": "https://git.savannah.gnu.org/git/emacs/nongnu.git"
       }
     },
     "xterm-color": {
