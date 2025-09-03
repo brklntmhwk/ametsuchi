@@ -3283,6 +3283,16 @@ View, capture, and archive Web pages in Org-mode
 :PROPERTIES:
 :CUSTOM_ID: miscellaneous
 :END:
+**** keyboard.c
+#+begin_quote
+Keyboard and mouse input; editor command loop.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package keyboard
+  :custom
+  ;; Fix the copy issue on WSL with WSLg.
+  (select-active-regions nil))
+#+end_src
 **** terminal.c
 #+begin_quote
 Functions related to terminal devices.
