@@ -3527,7 +3527,7 @@ Make sure that customizable variables whose values should preferably be kept pri
 #+begin_src emacs-lisp
 ;; Load `custom-file' if you have created one.
 (when (and custom-file (file-readable-p custom-file))
-  (load-file custom-file))
+  (load custom-file))
 #+end_src
 ** License
 :PROPERTIES:
