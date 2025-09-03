@@ -287,17 +287,20 @@ Transient user interfaces for various modes
 #+end_quote
 #+begin_src emacs-lisp
 (use-package casual
-	:ensure t
-	:after transient
-	:config
-	(require 'casual-image)
-	:bind
-	((:map calc-mode-map
-				 ("C-:" . casual-calc-tmenu))
-	 (:map dired-mode-map
-				 ("C-:" . casual-dired-tmenu))
-	 (:map image-mode-map
-				 ("C-:" . casual-image-tmenu))))
+  :ensure t
+  :after transient
+  :config
+  (require 'casual-image)
+  :bind
+  ((:map calc-mode-map
+         ("C-:" . casual-calc-tmenu))
+   (:map dired-mode-map
+         ("C-:" . casual-dired-tmenu))
+   (:map image-mode-map
+         ("C-:" . casual-image-tmenu)))
+  :config
+  (transient-replace-suffix 'casual-dired-tmenu "F"
+    '("N" "File" dired-create-empty-file)))
 #+end_src
 **** help
 #+begin_quote
@@ -2075,15 +2078,19 @@ directory-browsing commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired
-	:commands dired
-	:custom
-	(dired-recursive-copies 'always)
-	(dired-recursive-deletes 'always)
-	(delete-by-moving-to-trash t)
-	(dired-dwim-target t)
-	(dired-listing-switches "-alh")
-	:hook
-	(dired-mode-hook . dired-hide-details-mode))
+  :commands dired
+  :custom
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (delete-by-moving-to-trash t)
+  (dired-dwim-target t)
+  (dired-listing-switches "-alh")
+  :bind
+  ;; replace `dired-do-man' with a more frequently used one.
+  ((:map dired-mode-map
+         ("N" . dired-create-empty-file)))
+  :hook
+  (dired-mode-hook . dired-hide-details-mode))
 #+end_src
 ***** dired-collapse
 #+begin_quote
