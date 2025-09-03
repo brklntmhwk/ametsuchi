@@ -2730,7 +2730,7 @@ Use Delta when displaying diffs in Magit
   :ensure t
   :if (executable-find "delta")
   :after magit
-  :hook (magit-mode . magit-delta-mode))
+  :hook (magit-mode-hook . magit-delta-mode))
 #+end_src
 ***** magit-todos
 #+begin_quote
