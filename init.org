@@ -1636,23 +1636,18 @@ Edit comment or string/docstring or code block inside them in separate buffer wi
 				("'" . separedit)))
 #+end_src
 **** simple
-:PROPERTIES:
-:CUSTOM_ID: simple
-:END:
 #+begin_quote
 basic editing commands for Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package simple
 	:custom
-	(read-extended-command-predicate 'command-completion-default-include-p)
+	(indent-tabs-mode nil) ;; Use spaces instead of tabs for indentation.
 	(kill-whole-line t)
-	(line-number-mode nil))
+	(line-number-mode nil)
+	(read-extended-command-predicate 'command-completion-default-include-p))
 #+end_src
 **** string-inflection
-:PROPERTIES:
-:CUSTOM_ID: string-inflection
-:END:
 #+begin_quote
 underscore -> UPCASE -> CamelCase conversion of names
 #+end_quote
