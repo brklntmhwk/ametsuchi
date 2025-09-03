@@ -37,6 +37,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#email][Email]]
   - [[#org-mode][Org Mode]]
   - [[#miscellaneous][Miscellaneous]]
+  - [[#personal][Personal]]
 - [[#license][License]]
 - [[#acknowledgements][Acknowledgements]]
 - [[#footnotes][Footnotes]]
@@ -3517,6 +3518,18 @@ Manage external services from within Emacs
 #+begin_src emacs-lisp
 (use-package prodigy
   :ensure t)
+#+end_src
+*** Personal
+:PROPERTIES:
+:CUSTOM_ID: personal
+:END:
+
+Make sure that customizable variables whose values should preferably be kept private are added to the custom file. (e.g., auth-sources)
+
+#+begin_src emacs-lisp
+;; Load `custom-file' if you have created one.
+(when (and custom-file (file-readable-p custom-file))
+  (load-file custom-file))
 #+end_src
 ** License
 :PROPERTIES:
