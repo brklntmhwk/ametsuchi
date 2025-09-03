@@ -299,8 +299,9 @@ Transient user interfaces for various modes
    (:map image-mode-map
          ("C-:" . casual-image-tmenu)))
   :config
-  (transient-replace-suffix 'casual-dired-tmenu "F"
-    '("N" "File" dired-create-empty-file)))
+  (with-eval-after-load 'dired
+    (transient-replace-suffix 'casual-dired-tmenu "F"
+      '("N" "File" dired-create-empty-file))))
 #+end_src
 **** help
 #+begin_quote
