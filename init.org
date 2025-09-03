@@ -87,7 +87,6 @@ NOTE: This section is still a work in progress.
 :PROPERTIES:
 :CUSTOM_ID: initialization
 :END:
-
 #+begin_src emacs-lisp
 ;;; init.el -*- lexical-binding: t; -*-
 #+end_src
@@ -99,7 +98,6 @@ For simplicity, assume that there are only two sets, 𝐀 and 𝐁, where 𝐀 �
 - "𝐀 is a proper subset of 𝐁 (𝐀 ⊂ 𝐁)"
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), and 𝓨 is not in the intersection of 𝐀 and 𝐁"
 - "𝐀 is not a proper subset of 𝐁 (𝐀 ⊄ 𝐁), 𝓨 is in the intersection of 𝐀 and 𝐁, and you feel that 𝓨 is relatively closer to 𝐀"
-
 *** Configuration Macro
 :PROPERTIES:
 :CUSTOM_ID: configuration-macro
