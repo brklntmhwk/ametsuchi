@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 {
-  description = "Ametsuchi is the universe ── It encompasses (almost) everything that composes my ideal workstation.";
+  description = ''
+    Ametsuchi is the universe ── It encompasses (almost) everything that forms
+    my ideal Emacs workstation, a living cosmos where creativity, logic,
+    and intuition intertwine.
+  '';
 
   nixConfig = {
     extra-substituters = [
