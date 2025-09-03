@@ -331,6 +331,7 @@ Transient commands
 #+end_quote
 #+begin_src emacs-lisp
 (use-package transient
+  :defer 1
 	:custom
 	(transient-history-file (concat emacs-state-home "transient/history.el"))
 	(transient-values-file (concat emacs-data-home "transient/values.el"))
