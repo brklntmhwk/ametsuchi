@@ -26,11 +26,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1756890608,
-        "narHash": "sha256-TXPhZLtrpszi8+5leykCFONj29c1JwOFr9gmz2z2Xa8=",
+        "lastModified": 1756948762,
+        "narHash": "sha256-yQUaCz0bu4b09Yse1YWqZyun1rU+pbm63RkYFUFdfBs=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "a72d7da8929b4fdf5d9679762b305a84f04e58d8",
+        "rev": "4d06a7cf8096476b87cf13fe18a4f0632a97e81f",
         "type": "github"
       },
       "original": {
@@ -92,7 +92,7 @@
     "gnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-E81hp5/5hx+CEFv1W4QwOI/lQsunDm75YLyiDpul9yU=",
+        "narHash": "sha256-YT8yT4DKtdPXmUqZ/GzLMYtYMBgu9ER8okIR2ivpqa0=",
         "type": "file",
         "url": "https://elpa.gnu.org/packages/archive-contents"
       },
@@ -114,21 +114,6 @@
       "original": {
         "owner": "melpa",
         "repo": "melpa",
-        "type": "github"
-      }
-    },
-    "nix-filter": {
-      "locked": {
-        "lastModified": 1731533336,
-        "narHash": "sha256-oRam5PS1vcrr5UPgALW0eo1m/5/pls27Z/pabHNy2Ms=",
-        "owner": "numtide",
-        "repo": "nix-filter",
-        "rev": "f7653272fd234696ae94229839a99b73c9ab7de0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "nix-filter",
         "type": "github"
       }
     },
@@ -198,7 +183,7 @@
     "nongnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-79bF06ha4RtAlDnrcLEbMRWaYHFwRwem/Cgzh1RQQTo=",
+        "narHash": "sha256-D+zgeqaaSbpDyIS26L12QKd0b7CuY2qDsa/f1c1ZWds=",
         "type": "file",
         "url": "https://elpa.nongnu.org/nongnu/archive-contents"
       },
@@ -229,7 +214,6 @@
         "gnu-elpa": "gnu-elpa",
         "gnu-elpa-archive": "gnu-elpa-archive",
         "melpa": "melpa",
-        "nix-filter": "nix-filter",
         "nixpkgs": "nixpkgs",
         "nongnu-elpa": "nongnu-elpa",
         "nongnu-elpa-archive": "nongnu-elpa-archive",
