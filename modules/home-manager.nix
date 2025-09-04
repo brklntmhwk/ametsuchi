@@ -49,10 +49,12 @@ in
 
     home.packages = with pkgs; [
       # Add font packages that will be used in your Emacs config.
-      hackgen-font
-      hackgen-nf-font
+      moralerspace-hwnf
+      sarasa-gothic
+      # hackgen-font
+      # hackgen-nf-font
       # nerd-fonts.symbols-only # Available from Nixpkgs 25.05
-      noto-fonts
+      # noto-fonts
       noto-fonts-emoji
     ];
 
