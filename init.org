@@ -2372,6 +2372,7 @@ boost eglot using emacs-lsp-booster
 #+begin_src emacs-lisp
 (use-package eglot-booster
   :ensure t
+  :if (executable-find "emacs-lsp-booster")
   :after eglot
   :hook (eglot-managed-mode-hook . eglot-booster-mode))
 #+end_src
