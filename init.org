@@ -3287,10 +3287,8 @@ View, capture, and archive Web pages in Org-mode
 Keyboard and mouse input; editor command loop.
 #+end_quote
 #+begin_src emacs-lisp
-(use-package keyboard
-  :custom
-  ;; Fix the copy issue on WSL with WSLg.
-  (select-active-regions nil))
+;; Fix the copy issue on WSL with WSLg.
+(setq select-active-regions nil)
 #+end_src
 **** terminal.c
 #+begin_quote
