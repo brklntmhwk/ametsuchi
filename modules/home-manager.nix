@@ -52,6 +52,8 @@ in
       hackgen-font
       hackgen-nf-font
       # nerd-fonts.symbols-only # Available from Nixpkgs 25.05
+      noto-fonts
+      noto-fonts-emoji
     ];
 
     # Generate a desktop file for emacsclient.
