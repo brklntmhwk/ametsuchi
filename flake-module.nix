@@ -64,8 +64,10 @@ in
         # TODO: add emacs envs with various emacs build versions
         emacs-sandboxed = pkgs.mkBwrapper {
           app = {
-            package = emacs-config.emacs;
+            package = emacs-config-no-pgtk.emacs;
             runScript = "emacs";
+            id = "emacs.desktop";
+            renameDesktopFile = false;
           };
         };
       };
