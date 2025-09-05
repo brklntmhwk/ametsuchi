@@ -26,6 +26,7 @@ in
     {
       config,
       emacs-config,
+      emacs-config-no-pgtk,
       pkgs,
       system,
       ...
