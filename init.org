@@ -614,6 +614,9 @@ multi-frame management independent of window systems
 #+begin_quote
 Highly accessible themes for GNU Emacs, conforming with the highest standard for colour contrast between background and foreground values (WCAG AAA).
 #+end_quote
+
+All faces from both built-in features and external packages are centrally managed and styled within this configuration. After all, that is precisely what a "theme" is meant to accomplish.
+
 #+begin_src emacs-lisp
 (use-package modus-themes
   :ensure t
