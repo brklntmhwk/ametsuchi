@@ -9,6 +9,7 @@ let
 
   overlays = [
     inputs.emacs-overlay.overlays.emacs
+    inputs.nix-bwrapper.overlays.default
   ];
 in
 {
@@ -42,9 +43,13 @@ in
       _module.args.emacs-config = lib'.mkEmacsConfig {
         inherit pkgs;
       };
+      _module.args.emacs-config-no-pgtk = lib'.mkEmacsConfig {
+        inherit pkgs;
+        emacsPackage = inputs.emacs-overlay.packages.${pkgs.system}.emacs-git;
+      };
 
       packages = {
-        inherit emacs-config;
+        inherit emacs-config emacs-config-no-pgtk;
 
         # https://github.com/akirak/emacs-config/commit/cd81f077e64e836bb8b42cfa7f4228a48c189826
         emacsclient =
@@ -56,6 +61,12 @@ in
             '';
 
         # TODO: add emacs envs with various emacs build versions
+        emacs-sandboxed = pkgs.mkBwrapper {
+          app = {
+            package = emacs-config.emacs;
+            runScript = "emacs";
+          };
+        };
       };
 
       apps = emacs-config.makeApps { lockDirName = "lock"; };
