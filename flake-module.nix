@@ -66,6 +66,7 @@ in
           app = {
             package = emacs-config-no-pgtk.emacs;
             runScript = "emacs";
+            execArgs = "--init-directory=$HOME/.local/share/emacs";
             id = "emacs.desktop";
             renameDesktopFile = false;
           };
