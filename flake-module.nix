@@ -69,6 +69,14 @@ in
             id = "emacs.desktop";
             renameDesktopFile = false;
           };
+          mounts = {
+            read = [
+              "$HOME/.local/state/emacs"
+            ];
+            readWrite = [
+              "$HOME/.local/share/emacs"
+            ];
+          };
         };
       };
 
