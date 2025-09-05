@@ -1013,7 +1013,7 @@ Insert paths into the minibuffer prompt in Emacs
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
   :config
-  ((add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)))
+  (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t))
 #+end_src
 ***** consult-gh
 #+begin_quote
