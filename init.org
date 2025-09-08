@@ -2875,7 +2875,14 @@ Dynamic task and appointment lists for Org
   :bind
   (:map mode-specific-map
         ("a" . org-agenda))
-  :hook (org-agenda-finalize-hook . hl-line-mode))
+  :hook (org-agenda-finalize-hook . hl-line-mode)
+  :config
+  ;; Unset `org-agenda-goto' because it's confusing set to TAB.
+  (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
+        '("TAB" "<tab>"))
+  ;; Set it to "o" because it's the only small letter key
+  ;; vacant in `org-agenda-mode-map'.
+  (keymap-set org-agenda-mode-map "o" #'org-agenda-goto))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
