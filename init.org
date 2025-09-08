@@ -159,15 +159,13 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 (defvar emacs-state-home
   (concat (xdg-state-home) "/emacs/"))
 
-(defvar emacs-documents-dir
-  (concat (or (xdg-user-dir "DOCUMENTS")
-              "~/Documents")
-          "/emacs/"))
+(defvar user-documents-dir
+  (or (xdg-user-dir "DOCUMENTS")
+      "~/Documents"))
 
-(defvar emacs-pictures-dir
-  (concat (or (xdg-user-dir "PICTURES")
-              "~/Pictures")
-          "/emacs/"))
+(defvar user-pictures-dir
+  (or (xdg-user-dir "PICTURES")
+      "~/Pictures"))
 #+end_src
 **** custom
 #+begin_quote
@@ -1024,7 +1022,7 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
   :if (executable-find "gh")
   :after consult
   :custom
-  (consult-gh-default-clone-directory (concat emacs-documents-dir "projects/"))
+  (consult-gh-default-clone-directory (concat user-documents-dir "projects/"))
   (consult-gh-issue-maxnum 50)
   (consult-gh-repo-maxnum 50)
   (consult-gh-show-preview t)
@@ -2023,7 +2021,7 @@ An extensible emacs dashboard
 (use-package dashboard
   :ensure t
   :custom
-  (dashboard-startup-banner (concat emacs-pictures-dir "dashboard-banner.png"))
+  (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
   (dashboard-banner-logo-title "Welcome to Ametsuchi.")
   ;; (dashboard-init-info nil)
   (dashboard-center-content t)
@@ -2807,7 +2805,7 @@ Outline-based notes management and organizer
   :defer 5
   :custom
   ;; Org files management
-  (org-default-notes-file (concat emacs-documents-dir "inbox.org"))
+  (org-default-notes-file (concat user-documents-dir "inbox.org"))
   ;; Agenda-related stuff
   (org-enforce-todo-dependencies t)
   (org-extend-today-until 4)
@@ -2869,7 +2867,7 @@ Dynamic task and appointment lists for Org
   ;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
   ;; (org-agenda-dim-blocked-tasks nil)
   (org-agenda-files (directory-files-recursively
-                      emacs-documents-dir "\\.org\\'"))
+                     user-documents-dir "\\.org\\'"))
   (org-agenda-inhibit-startup t)
   (org-agenda-restore-windows-after-quit t)
   ;; (org-agenda-use-tag-inheritance '(todo search agenda))
@@ -3034,7 +3032,7 @@ Drag and drop images to Emacs org-mode
   :ensure t
   :after org
   :custom
-  (org-download-image-dir emacs-pictures-dir)
+  (org-download-image-dir user-pictures-dir)
   ;; (org-download-edit-cmd "swappy %s")
   ;; (org-download-screenshot-method "grimblast copysave")
   (org-download-timestamp "%Y%m%d_%H%M%S_")
@@ -3093,7 +3091,7 @@ A simple org-mode based journaling mode
   :ensure t
   :after org
   :custom
-  (org-journal-dir (concat emacs-documents-dir "journal/"))
+  (org-journal-dir (concat user-documents-dir "journal/"))
   (org-journal-prefix-key nil)
   (org-journal-date-format "%a, %d %b")
   (org-journal-time-format "")
@@ -3328,7 +3326,7 @@ Emacs calibre client - A Document Management Solution in Emacs.
 (use-package calibredb
   :ensure t
   :custom
-  (calibredb-root-dir (concat emacs-documents-dir "calibre/"))
+  (calibredb-root-dir (concat user-documents-dir "calibre/"))
   (calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
   ;; (calibredb-device-dir "/TODO")
   (calibredb-download-dir nil)
