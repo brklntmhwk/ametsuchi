@@ -49,13 +49,13 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 :END:
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
 
-|                     | Name          | Alternatives                         |
+|                     | Name          | Alternatives                          |
 |---------------------+---------------+---------------------------------------|
 | Emacs installation  | emacs-overlay | Direct use of Nixpkgs                 |
-| Package build       | twist.nix    | package-build                        |
-| Package manager     | twist.el     | package.el, straight.el, elpaca, etc. |
-| Configuration Macro | use-package  | leaf.el, setup.el, etc.             |
-| Project's framework | flake-parts  | flake-utils, snowfall, denix, etc. |
+| Package build       | twist.nix     | package-build                         |
+| Package manager     | twist.el      | package.el, straight.el, elpaca, etc. |
+| Configuration Macro | use-package   | leaf.el, setup.el, etc.               |
+| Project's framework | flake-parts   | flake-utils, snowfall, denix, etc.    |
 
 ** Cosmological Principle
 :PROPERTIES:
