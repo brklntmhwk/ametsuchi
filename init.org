@@ -176,9 +176,7 @@ tools for declaring and initializing options
 #+begin_src emacs-lisp
 (use-package custom
   :custom
-  (custom-file (locate-user-emacs-file "custom.el"))
-  :config
-  (load custom-file :no-error-if-file-is-missing))
+  (custom-file (locate-user-emacs-file "custom.el")))
 #+end_src
 **** no-littering
 #+begin_quote
@@ -2713,6 +2711,7 @@ It's Magit! A Git Porcelain inside Emacs.
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-define-global-key-bindings nil)
+  ;; (magit-clone-default-directory "~/Documents/projects")
   :bind
   ((:map ctl-x-map
          :prefix-map magit-prefix-map
