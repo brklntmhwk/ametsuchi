@@ -2408,7 +2408,7 @@ Automatically apply AI-generated code changes in Emacs
   :after gptel
   :config
   (with-eval-after-load 'gptel-transient
-    (transient-append-suffix 'gptel-menu '(-1 -1)
+    (transient-append-suffix 'gptel-menu nil
       ["Elysium"
        ("q" "Elysium query" elysium-query)])))
 #+end_src
