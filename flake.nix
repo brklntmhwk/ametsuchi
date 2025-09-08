@@ -54,14 +54,16 @@
       url = "github:elpa-mirrors/nongnu";
       flake = false;
     };
-    gnu-elpa-archive = {
-      url = "file+https://elpa.gnu.org/packages/archive-contents";
-      flake = false;
-    };
-    nongnu-elpa-archive = {
-      url = "file+https://elpa.nongnu.org/nongnu/archive-contents";
-      flake = false;
-    };
+
+    # These archive registries cause NAR hash conflict too often.
+    # gnu-elpa-archive = {
+    #   url = "file+https://elpa.gnu.org/packages/archive-contents";
+    #   flake = false;
+    # };
+    # nongnu-elpa-archive = {
+    #   url = "file+https://elpa.nongnu.org/nongnu/archive-contents";
+    #   flake = false;
+    # };
 
     # Miscellaneous
     tree-sitter-astro = {
