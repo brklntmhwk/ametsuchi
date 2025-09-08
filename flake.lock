@@ -107,6 +107,18 @@
         "type": "github"
       }
     },
+    "gnu-elpa-archive": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-yNA/Ab1/eG8CxCYHK60xHCPvSTXi64A+WcPM+EU69+4=",
+        "type": "file",
+        "url": "https://elpa.gnu.org/packages/archive-contents"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://elpa.gnu.org/packages/archive-contents"
+      }
+    },
     "ixx": {
       "inputs": {
         "flake-utils": [
@@ -282,6 +294,18 @@
         "type": "github"
       }
     },
+    "nongnu-elpa-archive": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-93tG3e9JxtR0WEeDXlSGWnYmN7KvOF8zO3SSNRvn5Qk=",
+        "type": "file",
+        "url": "https://elpa.nongnu.org/nongnu/archive-contents"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://elpa.nongnu.org/nongnu/archive-contents"
+      }
+    },
     "nuschtosSearch": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -322,10 +346,12 @@
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
         "gnu-elpa": "gnu-elpa",
+        "gnu-elpa-archive": "gnu-elpa-archive",
         "melpa": "melpa",
         "nix-bwrapper": "nix-bwrapper",
         "nixpkgs": "nixpkgs_4",
         "nongnu-elpa": "nongnu-elpa",
+        "nongnu-elpa-archive": "nongnu-elpa-archive",
         "org-babel": "org-babel",
         "systems": "systems_2",
         "tree-sitter-astro": "tree-sitter-astro",
