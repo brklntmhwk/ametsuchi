@@ -2809,16 +2809,26 @@ Outline-based notes management and organizer
   ;; Agenda-related stuff
   (org-enforce-todo-dependencies t)
   (org-extend-today-until 4)
-  (org-use-effective-time t)
   (org-log-done 'time)
   (org-tags-exclude-from-inheritance '("crypt"))
+  (org-todo-keywords
+   '((sequence
+      "TODO(t)"
+      "ONGOING(o!)"
+      "|"
+      "DONE(d)"
+      "CANCELLED(c@)")
+     (type
+      "PAUSED(p@/!)"
+      "WAITING(w@/!)")))
   (org-track-ordered-property-with-tag t)
+  (org-use-effective-time t)
   ;; General workflow
   (org-cycle-separator-lines 0)
   (org-imenu-depth 6)
-  (org-use-speed-commands t)
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
+  (org-use-speed-commands t)
   ;; Appearance
   (org-ellipsis "  ")
   (org-fontify-done-headline t)
