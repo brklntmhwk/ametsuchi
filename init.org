@@ -161,11 +161,11 @@ Hot-reload Emacs Lisp packages configured with twist.nix
 
 (defvar user-documents-dir
   (or (xdg-user-dir "DOCUMENTS")
-      "~/Documents"))
+      "~/Documents/"))
 
 (defvar user-pictures-dir
   (or (xdg-user-dir "PICTURES")
-      "~/Pictures"))
+      "~/Pictures/"))
 #+end_src
 **** custom
 #+begin_quote
@@ -2876,7 +2876,8 @@ Dynamic task and appointment lists for Org
   ;; (org-agenda-custom-commands
   ;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
   ;; (org-agenda-dim-blocked-tasks nil)
-  (org-agenda-files user-documents-dir)
+  (org-agenda-files directory-files-recursively
+                    user-documents-dir "\\.org\\'")
   (org-agenda-inhibit-startup t)
   (org-agenda-restore-windows-after-quit t)
   ;; (org-agenda-use-tag-inheritance '(todo search agenda))
