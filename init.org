@@ -3263,14 +3263,23 @@ Automatic tables of contents for Org-mode files
 #+end_src
 **** org-modern
 #+begin_quote
-🦄 Modern Org Style
+Modern looks for Org
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-modern
   :ensure t
   :after org
   :custom
-  (org-modern-hide-stars nil)
+  (org-modern-hide-stars t)
+  (org-modern-star 'replace)
+  ;; Use chess pieces as bullets, reflecting piece hierarchy.
+  (org-modern-replace-stars
+   (concat (string #x265a) ; King
+           (string #x265b) ; Queen
+           (string #x265c) ; Rook
+           (string #x265d) ; Bishop
+           (string #x265e) ; Knight
+           (string #x265f))) ; Pawn
   :hook
   (org-mode-hook . org-modern-mode)
   (org-agenda-finalize . org-modern-agenda))
