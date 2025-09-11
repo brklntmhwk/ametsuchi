@@ -540,7 +540,12 @@ Buffer manipulation primitives for GNU Emacs.
 #+begin_quote
 Fontset handler.
 #+end_quote
+
+Fontset allows you to flexibly specify which font to be active for a specific target: Character, charset, or script.
+
 #+begin_src emacs-lisp
+;; fontaine does not seem to support fontset configuration, so implement it on your own.
+;; https://github.com/protesilaos/fontaine/commit/bf2a37b5cc7448d05f77a23879436b0f94eb29ff
 (defcustom my/fontset-config-alist
   '(((:scripts (emoji))
      :family "Noto Color Emoji"
@@ -2974,10 +2979,10 @@ Dynamic task and appointment lists for Org
         ("a" . org-agenda))
   :hook (org-agenda-finalize-hook . hl-line-mode)
   :config
-  ;; Unset `org-agenda-goto' because it's confusing.
+  ;; Unset `org-agenda-goto' because it is confusing.
   (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
         '("TAB" "<tab>"))
-  ;; Then override `delete-other-windows' because I don't use it.
+  ;; Then override `delete-other-windows' because I do not use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto))
 #+end_src
 ***** org-super-agenda
