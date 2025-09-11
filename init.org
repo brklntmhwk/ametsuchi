@@ -565,24 +565,23 @@ Fontset allows you to flexibly specify which font to be active for a specific ta
      :fontset t))
   "Alist of fontset configuration."
   :type '(alist
-          :key-type ((choice
-                      (list (const :charsets) (repeat symbol))
-                      (list (const :ranges) (repeat (cons integer integer)))
-                      (list (const :scripts) (repeat symbol))))
+          :key-type (choice
+                     (list (const :charsets) (repeat symbol))
+                     (list (const :ranges) (repeat (cons integer integer)))
+                     (list (const :scripts) (repeat symbol)))
           :value-type (plist
-                       :options
-                       (((choice
-                          (const :tag "Default fontset" t)
-                          (string :tag "Name of a fontset"))
-                         :fontset)
-                        (string
-                         :tag "Name of a font family"
-                         :family)
-                        ((choice
-                          (const nil)
-                          (const prepend)
-                          (const append))
-                         :add))))
+                       :options ((string
+                                  :tag "Name of a font family"
+                                  :family)
+                                 ((choice
+                                   (const :tag "Default fontset" t)
+                                   (string :tag "Name of a fontset"))
+                                  :fontset)
+                                 ((choice
+                                   (const nil)
+                                   (const prepend)
+                                   (const append))
+                                  :add))))
   :set (lambda (symbol value)
          (set symbol value)
          (when (or window-system (daemonp))
