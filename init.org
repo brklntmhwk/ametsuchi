@@ -3270,7 +3270,7 @@ Modern looks for Org
   :ensure t
   :after org
   :custom
-  (org-modern-hide-stars nil)
+  (org-modern-hide-stars 'leading)
   (org-modern-star 'replace)
   ;; (org-modern-star 'fold)
   ;; Use chess pieces as bullets, reflecting piece hierarchy.
