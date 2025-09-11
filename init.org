@@ -2967,7 +2967,7 @@ Dynamic task and appointment lists for Org
   ;; (org-agenda-custom-commands
   ;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
   ;; (org-agenda-dim-blocked-tasks nil)
-  (org-agenda-files '(user-documents-dir))
+  (org-agenda-files (list user-documents-dir))
   (org-agenda-inhibit-startup t)
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-start-on-weekday 1)
