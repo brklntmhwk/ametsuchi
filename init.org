@@ -625,7 +625,7 @@ SKIP-CHECK bypasses font availability checking."
             (defun my/server-setup-fontsets ()
               (my/apply-fontset-config nil t)
               (remove-hook 'server-after-make-frame-hook
-                           #'my/server-setup-fonts))))
+                           #'my/server-setup-fontsets))))
 #+end_src
 **** frame.c
 #+begin_quote
