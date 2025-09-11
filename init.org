@@ -2890,9 +2890,7 @@ Dynamic task and appointment lists for Org
   ;; Unset `org-agenda-goto' because it's confusing.
   (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
         '("TAB" "<tab>"))
-  ;; Set it to "o" because it's the only small letter key
-  ;; vacant in `org-agenda-mode-map'.
-  ;; (It's bound to `delete-other-windows' precisely, but I don't use it)
+  ;; Then override `delete-other-windows' because I don't use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto))
 #+end_src
 ***** org-super-agenda
@@ -3223,6 +3221,7 @@ Refile Org Subtrees
   (org-log-refile nil)
   (org-outline-path-complete-in-steps nil)
   (org-refile-allow-creating-parent-nodes 'confirm)
+  ;; Set the maxlevel to 99 to be able to refile to everywhere in the targeted file.
   (org-refile-targets
    '((nil :maxlevel . 99)
      (org-agenda-files :maxlevel . 99)))
