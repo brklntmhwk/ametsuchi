@@ -544,107 +544,107 @@ Fontset handler.
 Fontset allows you to flexibly specify which font to be active for a specific target: Character, charset, or script.
 
 #+begin_src emacs-lisp
-  ;; fontaine does not seem to support fontset configuration, so implement it on your own.
-  ;; https://github.com/protesilaos/fontaine/commit/bf2a37b5cc7448d05f77a23879436b0f94eb29ff
-  (defun my--apply-fontset (characters fontset family &optional add-method)
-    "Apply fontset configuration with strict type validation.
-  CHARACTERS is either a list of symbols (scripts/charsets) or a list of (FROM . TO) cons ranges."
-    (let ((font-spec (font-spec :family family)))
-      (unless (listp characters)
-        (error "Characters must be a list: %s" characters))
+;; fontaine does not seem to support fontset configuration, so implement it on your own.
+;; https://github.com/protesilaos/fontaine/commit/bf2a37b5cc7448d05f77a23879436b0f94eb29ff
+(defun my--apply-fontset (characters fontset family &optional add-method)
+  "Apply fontset configuration with strict type validation.
+CHARACTERS is either a list of symbols (scripts/charsets) or a list of (FROM . TO) cons ranges."
+  (let ((font-spec (font-spec :family family)))
+    (unless (listp characters)
+      (error "Characters must be a list: %s" characters))
 
-      (when (null characters)
-        (message "Empty character list for font: %s" family)
-        (cl-return-from my--apply-fontset))
+    (when (null characters)
+      (message "Empty character list for font: %s" family)
+      (cl-return-from my--apply-fontset))
 
-      (let ((first (car characters)))
-        (cond
-         ((symbolp first)
-          (dolist (sym characters)
-  					(unless (symbolp sym)
-  						(error "Expected symbol in character list, got %S (type: %s)"
-  									 sym (type-of sym)))
-            (set-fontset-font fontset sym font-spec nil add-method)))
-         ((and (consp first) (integerp (car first)) (integerp (cdr first)))
-          (dolist (range characters)
-            (unless (and (consp range)
-                         (integerp (car range))
-                         (integerp (cdr range)))
-              (error "Expected (FROM . TO) cons pair, got %S" range))
-            (let ((from (car range))
-                  (to (cdr range)))
-              (when (> from to)
-                (error "Invalid range order: %d > %d" from to))
-              (set-fontset-font fontset range font-spec nil add-method))))
-         (t
-          (error "Invalid character specification. Expected symbol or cons, got: %S (%s)"
-                 first (type-of first)))))))
+    (let ((first (car characters)))
+      (cond
+       ((symbolp first)
+        (dolist (sym characters)
+					(unless (symbolp sym)
+						(error "Expected symbol in character list, got %S (type: %s)"
+									 sym (type-of sym)))
+          (set-fontset-font fontset sym font-spec nil add-method)))
+       ((and (consp first) (integerp (car first)) (integerp (cdr first)))
+        (dolist (range characters)
+          (unless (and (consp range)
+                       (integerp (car range))
+                       (integerp (cdr range)))
+            (error "Expected (FROM . TO) cons pair, got %S" range))
+          (let ((from (car range))
+                (to (cdr range)))
+            (when (> from to)
+              (error "Invalid range order: %d > %d" from to))
+            (set-fontset-font fontset range font-spec nil add-method))))
+       (t
+        (error "Invalid character specification. Expected symbol or cons, got: %S (%s)"
+               first (type-of first)))))))
 
-  (defun my/apply-fontset-config (&optional fontsets skip-check)
-    "Apply font configuration.
-  FONTSETS defaults to `my/fontset-config-alist'.
-  SKIP-CHECK bypasses font availability checking."
-    (let ((available-fonts (font-family-list))
-          (fontsets (or fontsets my/fontset-config-alist)))
-      (cl-loop for (characters . plist) in fontsets
-               for family = (plist-get plist :family)
-               for fontset = (plist-get plist :fontset)
-               for add-method = (plist-get plist :add)
+(defun my/apply-fontset-config (&optional fontsets skip-check)
+  "Apply font configuration.
+FONTSETS defaults to `my/fontset-config-alist'.
+SKIP-CHECK bypasses font availability checking."
+  (let ((available-fonts (font-family-list))
+        (fontsets (or fontsets my/fontset-config-alist)))
+    (cl-loop for (characters . plist) in fontsets
+             for family = (plist-get plist :family)
+             for fontset = (plist-get plist :fontset)
+             for add-method = (plist-get plist :add)
 
-               when (or skip-check
-                        (member family available-fonts))
-               do (my--apply-fontset characters fontset family add-method)
-               else collect family into missing-fonts
-               finally (when missing-fonts
-                         (message "Missing fonts: %s"
-                                  (string-join missing-fonts ", "))))))
+             when (or skip-check
+                      (member family available-fonts))
+             do (my--apply-fontset characters fontset family add-method)
+             else collect family into missing-fonts
+             finally (when missing-fonts
+                       (message "Missing fonts: %s"
+                                (string-join missing-fonts ", "))))))
 
-  (defcustom my/fontset-config-alist
-    '(((emoji)
-       :family "Noto Color Emoji"
-       :fontset t
-       :add prepend)
-      ((han)
-       :family "Sarasa Mono SC"
-       :fontset t)
-      ((hangul)
-       :family "Sarasa Mono K"
-       :fontset t)
-      ((kana)
-       :family "Sarasa Mono J"
-       :fontset t)
-      ((symbol)
-       :family "Symbola"
-       :fontset t
-       :add append))
-    "Alist of fontset configuration."
-    :type '(alist
-            :key-type (choice (repeat symbol)
-                              (repeat (cons integer integer)))
-            :value-type (plist
-                         :options ((string
-                                    :tag "Name of a font family"
-                                    :family)
-                                   ((choice
-                                     (const :tag "Default fontset" t)
-                                     (string :tag "Name of a fontset"))
-                                    :fontset)
-                                   ((choice
-                                     (const nil)
-                                     (const prepend)
-                                     (const append))
-                                    :add))))
-    :set (lambda (symbol value)
-           (set symbol value)
-           (when (or window-system (daemonp))
-             (my/apply-fontset-config value (daemonp)))))
+(defcustom my/fontset-config-alist
+  '(((emoji)
+     :family "Noto Color Emoji"
+     :fontset t
+     :add prepend)
+    ((han)
+     :family "Sarasa Mono SC"
+     :fontset t)
+    ((hangul)
+     :family "Sarasa Mono K"
+     :fontset t)
+    ((kana)
+     :family "Sarasa Mono J"
+     :fontset t)
+    ((symbol)
+     :family "Symbola"
+     :fontset t
+     :add append))
+  "Alist of fontset configuration."
+  :type '(alist
+          :key-type (choice (repeat symbol)
+                            (repeat (cons integer integer)))
+          :value-type (plist
+                       :options ((string
+                                  :tag "Name of a font family"
+                                  :family)
+                                 ((choice
+                                   (const :tag "Default fontset" t)
+                                   (string :tag "Name of a fontset"))
+                                  :fontset)
+                                 ((choice
+                                   (const nil)
+                                   (const prepend)
+                                   (const append))
+                                  :add))))
+  :set (lambda (symbol value)
+         (set symbol value)
+         (when (or window-system (daemonp))
+           (my/apply-fontset-config value (daemonp)))))
 
-  (when (daemonp)
-    (add-hook 'server-after-make-frame-hook
-              (defun my/server-setup-fontsets ()
-                (my/apply-fontset-config nil t)
-                (remove-hook 'server-after-make-frame-hook
-                             #'my/server-setup-fontsets))))
+(when (daemonp)
+  (add-hook 'server-after-make-frame-hook
+            (defun my/server-setup-fontsets ()
+              (my/apply-fontset-config nil t)
+              (remove-hook 'server-after-make-frame-hook
+                           #'my/server-setup-fontsets))))
 #+end_src
 **** frame.c
 #+begin_quote
