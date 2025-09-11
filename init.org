@@ -3370,16 +3370,16 @@ Package to create links with auto backlinks
 Prettify headings and plain lists in Org mode
 #+end_quote
 #+begin_src emacs-lisp
-(use-package org-superstar
-  :ensure t
-  :after org
-  :custom
-  ;; TODO: Consider using chess pieces as bullets
-  ;; (org-superstar-headline-bullets-list
-  ;;  '(""))
-  (org-superstar-remove-leading-stars t)
-  (org-superstar-special-todo-items t)
-  :hook (org-mode-hook . org-superstar-mode))
+;; (use-package org-superstar
+;;   :ensure t
+;;   :after org
+;;   :custom
+;;   ;; Use chess pieces as bullets, reflecting piece hierarchy.
+;;   (org-superstar-headline-bullets-list
+;;    '(9818 9819 9820 9821 9822 9823))
+;;   (org-superstar-remove-leading-stars t)
+;;   (org-superstar-special-todo-items t)
+;;   :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 **** org-transclusion
 #+begin_quote
