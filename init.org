@@ -2813,10 +2813,11 @@ Outline-based notes management and organizer
   (org-tags-exclude-from-inheritance '("crypt"))
   (org-todo-keywords
    '((sequence
-      "TODO(t)"
+      "PENDING(t)"
+      "READY(r!)"
       "ONGOING(o!)"
       "|"
-      "DONE(d)"
+      "COMPLETED(x)"
       "CANCELLED(c@)")
      (type
       "PAUSED(p@/!)"
