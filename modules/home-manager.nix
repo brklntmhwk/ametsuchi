@@ -49,9 +49,10 @@ in
 
     home.packages = with pkgs; [
       # Add font packages that will be used in your Emacs config.
-      # moralerspace-hwnf
+      moralerspace-hwnf
       sarasa-gothic
       noto-fonts-emoji
+      symbola
     ];
 
     # Generate a desktop file for emacsclient.
