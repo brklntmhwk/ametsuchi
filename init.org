@@ -589,7 +589,7 @@ CONFIG-LIST defaults to `my/fontset-config-alist'.
 SKIP-CHECK bypasses font availability checking."
   (let ((available-fonts (font-family-list))
         (fontsets (or fontsets my/fontset-config-alist)))
-    (cl-loop for (target . plist) in fontsets
+    (cl-loop for (characters . plist) in fontsets
              for family = (plist-get plist :family)
              for fontset = (plist-get plist :fontset)
              for add-method = (plist-get plist :add)
