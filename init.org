@@ -19,10 +19,11 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 - [[#initialization][Initialization]]
   - [[#configuration-macro][Configuration Macro]]
   - [[#package-manager][Package Manager]]
+  - [[#library][Library]]
+  - [[#system][System]]
   - [[#data-management][Data Management]]
   - [[#performance-enhancement][Performance Enhancement]]
   - [[#custom-keymaps][Custom Keymaps]]
-  - [[#library][Library]]
   - [[#help][Help]]
   - [[#window-management][Window Management]]
   - [[#appearance][Appearance]]
@@ -138,6 +139,32 @@ Hot-reload Emacs Lisp packages configured with twist.nix
   :hook (emacs-startup-hook . twist-watch-mode)
   :bind
   (("<f12>" . twist-update)))
+#+end_src
+*** Library
+:PROPERTIES:
+:CUSTOM_ID: library
+:END:
+**** cl-lib
+#+begin_quote
+Common Lisp extensions for Emacs
+#+end_quote
+#+begin_src emacs-lisp
+;; Use macros only.
+(eval-when-compile
+  (require 'cl-lib))
+#+end_src
+*** System
+:PROPERTIES:
+:CUSTOM_ID: system
+:END:
+**** mule-cmds
+#+begin_quote
+commands for multilingual environment
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mule-cmds
+  :config
+  (set-language-environment "UTF-8"))
 #+end_src
 *** Data Management
 :PROPERTIES:
@@ -258,19 +285,6 @@ convenient way to repeat the previous command
 #+begin_src emacs-lisp
 (use-package repeat
   :hook (after-init-hook . repeat-mode))
-#+end_src
-*** Library
-:PROPERTIES:
-:CUSTOM_ID: library
-:END:
-**** cl-lib
-#+begin_quote
-Common Lisp extensions for Emacs
-#+end_quote
-#+begin_src emacs-lisp
-;; Use macros only.
-(eval-when-compile
-  (require 'cl-lib))
 #+end_src
 *** Help
 :PROPERTIES:
