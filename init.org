@@ -561,9 +561,9 @@ CHARACTERS is either a list of symbols (scripts/charsets) or a list of (FROM . T
       (cond
        ((symbolp first)
         (dolist (sym characters)
-					(unless (symbolp sym)
-						(error "Expected symbol in character list, got %S (type: %s)"
-									 sym (type-of sym)))
+          (unless (symbolp sym)
+            (error "Expected symbol in character list, got %S (type: %s)"
+                   sym (type-of sym)))
           (set-fontset-font fontset sym font-spec nil add-method)))
        ((and (consp first) (integerp (car first)) (integerp (cdr first)))
         (dolist (range characters)
