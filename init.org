@@ -751,7 +751,7 @@ All faces from both built-in features and external packages are centrally manage
   (defun my/modus-themes-custom-face ()
     (modus-themes-with-colors
       (custom-theme-set-faces
-       'modus-operandi
+       'modus-vivendi-tinted
        ;; ace-window
        `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
        `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
