@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: MIT
 
 #+begin_quote
-Ametsuchi is the universe -- It encompasses (almost) everything that forms my ideal Emacs workstation, a living cosmos where creativity, logic, and intuition intertwine.
+Ametsuchi is the universe ー It encompasses (almost) everything that forms my ideal Emacs workstation, a living cosmos where creativity, logic, and intuition intertwine.
 #+end_quote
 
 Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-toc][org-make-toc]]):
