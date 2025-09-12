@@ -2746,7 +2746,7 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+begin_src emacs-lisp
 (use-package blamer
   :ensure t
-  :defer 7
+  :defer 5
   :custom
   (blamer-idle-time 0.5)
   (blamer-max-commit-message-length 50)
