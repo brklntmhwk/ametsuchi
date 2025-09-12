@@ -175,6 +175,83 @@ Mouse wheel support
   :custom
   (mouse-wheel-tilt-scroll t))
 #+end_src
+*** Custom Keymaps
+:PROPERTIES:
+:CUSTOM_ID: custom-keymaps
+:END:
+**** bindings
+#+begin_quote
+define standard key bindings and some variables
+#+end_quote
+#+begin_src emacs-lisp
+(use-package bindings
+  :config
+  ;; Enable repetitive execution of `undo' by pressing slash key.
+  (keymap-set undo-repeat-map "/" #'undo))
+#+end_src
+**** system-meta-map
+#+begin_src emacs-lisp
+(defvar system-meta-prefix "C-z"
+  "Key prefix for `system-meta-map'.")
+
+(defvar-keymap system-meta-map
+  :doc "Keymap for system-related or meta actions."
+  :prefix 'system-meta-map-prefix)
+
+(keymap-global-set system-meta-prefix 'system-meta-map-prefix)
+#+end_src
+**** toggle-map
+Eight looks like going back and forth between two states as in its shape,"8".
+#+begin_src emacs-lisp
+(defvar toggle-prefix "<f8>"
+  "Key prefix for `toggle-map'.")
+
+(defvar-keymap toggle-map
+  :doc "Keymap for common toggle actions."
+  :prefix 'toggle-map-prefix
+  "*" '("Light/dark theme" . modus-themes-toggle)
+  "=" '("Calculator" . calc)
+  "b" '("Blamer" . blamer-mode)
+  "d" '("Debug on error" . toggle-debug-on-error)
+  "f" '("Fill column indicator" . display-fill-column-indicator-mode)
+  "h" '("Line highlight" . hl-line-mode)
+  "l" '("Line numbers" . global-display-line-numbers-mode)
+  "t" '("Truncate lines" . toggle-truncate-lines)
+  "v" '("Variable pitch" . variable-pitch-mode)
+  "w" '("Whitespace" . whitespace-mode)
+  "x" '("Syntax checker" . flymake-mode))
+
+(keymap-global-set toggle-prefix 'toggle-map-prefix)
+#+end_src
+**** repeat
+#+begin_quote
+convenient way to repeat the previous command
+#+end_quote
+#+begin_src emacs-lisp
+(use-package repeat
+  :hook (after-init-hook . repeat-mode))
+#+end_src
+*** Customization
+:PROPERTIES:
+:CUSTOM_ID: customization
+:END:
+**** custom
+#+begin_quote
+tools for declaring and initializing options
+#+end_quote
+#+begin_src emacs-lisp
+(use-package custom
+  :custom
+  (custom-file (locate-user-emacs-file "custom.el"))
+  :bind
+  (:map system-meta-map
+        :prefix-map custom-prefix-map
+        :prefix "c"
+        ("v" . customize-variable)
+        ("V" . customize-variable-other-window)
+        ("g" . customize-group)
+        ("G" . customize-group-other-window)))
+#+end_src
 *** Data Management
 :PROPERTIES:
 :CUSTOM_ID: data-management
@@ -259,41 +336,6 @@ The Garbage Collector Magic Hack
   (gcmh-verbose init-file-debug)
   :hook
   (after-init-hook . gcmh-mode))
-#+end_src
-*** Custom Keymaps
-:PROPERTIES:
-:CUSTOM_ID: custom-keymaps
-:END:
-**** toggle-map
-Eight looks like going back and forth between two states as in its shape,"8".
-#+begin_src emacs-lisp
-(defvar toggle-prefix "<f8>"
-  "Key prefix for `toggle-map'.")
-
-(defvar-keymap toggle-map
-  :doc "Keymap for common toggle actions."
-  :prefix 'toggle-map-prefix
-  "*" '("Light/dark theme" . modus-themes-toggle)
-  "=" '("Calculator" . calc)
-  "b" '("Blamer" . blamer-mode)
-  "d" '("Debug on error" . toggle-debug-on-error)
-  "f" '("Fill column indicator" . display-fill-column-indicator-mode)
-  "h" '("Line highlight" . hl-line-mode)
-  "l" '("Line numbers" . global-display-line-numbers-mode)
-  "t" '("Truncate lines" . toggle-truncate-lines)
-  "v" '("Variable pitch" . variable-pitch-mode)
-  "w" '("Whitespace" . whitespace-mode)
-  "x" '("Syntax checker" . flymake-mode))
-
-(keymap-global-set toggle-prefix 'toggle-map-prefix)
-#+end_src
-**** repeat
-#+begin_quote
-convenient way to repeat the previous command
-#+end_quote
-#+begin_src emacs-lisp
-(use-package repeat
-  :hook (after-init-hook . repeat-mode))
 #+end_src
 *** Help
 :PROPERTIES:
