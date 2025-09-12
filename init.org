@@ -280,15 +280,6 @@ tools for declaring and initializing options
   (or (xdg-user-dir "PICTURES")
       "~/Pictures/"))
 #+end_src
-**** custom
-#+begin_quote
-tools for declaring and initializing options
-#+end_quote
-#+begin_src emacs-lisp
-(use-package custom
-  :custom
-  (custom-file (locate-user-emacs-file "custom.el")))
-#+end_src
 **** no-littering
 #+begin_quote
 Help keeping ~/.config/emacs clean
