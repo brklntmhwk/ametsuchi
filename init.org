@@ -1,4 +1,4 @@
-* Ametsuchi (天地)
+* Ametsuchi 卍 天地
 :PROPERTIES:
 :TOC:      :include descendants :depth 2
 :END:
