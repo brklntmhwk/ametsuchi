@@ -2822,7 +2822,7 @@ It's Magit! A Git Porcelain inside Emacs.
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-define-global-key-bindings nil)
-  ;; (magit-clone-default-directory "~/Documents/projects")
+  (magit-clone-default-directory (concat user-documents-dir "projects/"))
   :bind
   ((:map ctl-x-map
          :prefix-map magit-prefix-map
