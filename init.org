@@ -1884,14 +1884,17 @@ Visualize the undo tree.
 (use-package vundo
   :ensure t
   :custom
+  (vundo-compact-display t)
   (vundo-glyph-alist vundo-unicode-symbols)
-  (vundo-popup-timeout 3.0)
+  (vundo-popup-timeout 2.0)
   (vundo-window-max-height 15)
   :bind
-  (("C-z" . vundo)
-   (:map vundo-mode-map
+  ((:map vundo-mode-map
          ("C-e" . vundo-confirm)))
-  :hook (after-init-hook . vundo-popup-mode))
+  :hook (after-init-hook . vundo-popup-mode)
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-general-map "C-/" #'vundo)))
 #+end_src
 **** ws-butler
 #+begin_quote
