@@ -1678,6 +1678,18 @@ Emacs Markdown Mode
         :map mode-specific-map
         ("'" . markdown-edit-code-block)))
 #+end_src
+**** misc
+#+begin_quote
+some nonstandard editing and utility commands for Emacs
+#+end_quote
+#+begin_src emacs-lisp
+(use-package misc
+  :custom
+  (duplicate-region-final-position -1)
+  :bind
+  (:map mode-specific-map
+        ("d" . duplicate-dwim)))
+#+end_src
 **** move-dup
 #+begin_quote
 Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
