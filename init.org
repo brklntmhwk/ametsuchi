@@ -166,6 +166,15 @@ commands for multilingual environment
   :config
   (set-language-environment "UTF-8"))
 #+end_src
+**** mwheel
+#+begin_quote
+Mouse wheel support
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mwheel
+  :custom
+  (mouse-wheel-tilt-scroll t))
+#+end_src
 *** Data Management
 :PROPERTIES:
 :CUSTOM_ID: data-management
