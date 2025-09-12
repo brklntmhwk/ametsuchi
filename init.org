@@ -3274,15 +3274,7 @@ Modern looks for Org
   :custom
   (org-modern-hide-stars 'leading)
   (org-modern-star 'replace)
-  ;; (org-modern-star 'fold)
   ;; Use chess pieces as bullets, reflecting piece hierarchy.
-  ;; (org-modern-fold-stars
-  ;;  '(((string #x265a) . (string #x2654)) ; King
-  ;;    ((string #x265b) . (string #x2655)) ; Queen
-  ;;    ((string #x265c) . (string #x2656)) ; Rook
-  ;;    ((string #x265d) . (string #x2657)) ; Bishop
-  ;;    ((string #x265e) . (string #x2658)) ; Knight
-  ;;    ((string #x265f) . (string #x2659)))) ; Pawn
   (org-modern-replace-stars
    (concat (string #x265a) ; King
            (string #x265b) ; Queen
