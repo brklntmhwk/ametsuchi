@@ -35,6 +35,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#file-and-directory][File and Directory]]
   - [[#development][Development]]
   - [[#version-control-system][Version Control System]]
+  - [[#browsing][Browsing]]
   - [[#terminal][Terminal]]
   - [[#email][Email]]
   - [[#org-mode][Org Mode]]
@@ -2933,6 +2934,52 @@ Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
   :custom
   (magit-todos-exclude-globs '(".git/"))
   :hook (magit-mode-hook . magit-todos-mode))
+#+end_src
+*** Browsing
+:PROPERTIES:
+:CUSTOM_ID: browsing
+:END:
+**** ace-link
+#+begin_quote
+Quickly follow links
+#+end_quote
+#+begin_src emacs-lisp
+(use-package ace-link
+  :ensure t
+  :after avy
+  :bind
+  ((:map eww-mode-map
+         ("o" . ace-link-eww))))
+#+end_src
+**** browse-url
+#+begin_quote
+pass a URL to a web browser
+#+end_quote
+#+begin_src emacs-lisp
+(use-package browse-url
+  :custom
+  (browse-url-browser-function 'browse-url-generic)
+  ;; (browse-url-browser-function 'eww-browse-url)
+  (browse-url-secondary-browser-function 'eww-browse-url)
+  (browse-url-generic-program "firefox"))
+#+end_src
+**** eww
+#+begin_quote
+Emacs Web Wowser
+#+end_quote
+#+begin_src emacs-lisp
+(use-package eww
+  :commands (eww eww-search-words)
+  :custom
+  (eww-auto-rename-buffer 'title)
+  ;; (eww-bookmarks-directory "~/")
+  ;; (eww-browse-url-new-window-is-tab nil)
+  (eww-download-directory user-downloads-dir)
+  (eww-history-limit 150)
+  :hook
+  (eww-after-render-hook . (lambda ()
+                             (eww-readable)
+                             (visual-line-mode))))
 #+end_src
 *** Terminal
 :PROPERTIES:
