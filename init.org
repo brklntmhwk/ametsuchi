@@ -1759,7 +1759,11 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
   (pixel-scroll-precision-momentum-seconds 0.5)
   (pixel-scroll-precision-initial-velocity-factor 0.000375)
   (pixel-scroll-precision-large-scroll-height 100)
-  :hook (after-init-hook . pixel-scroll-precision-mode))
+  :hook
+  (after-init-hook . pixel-scroll-precision-mode)
+  ((eww-mode-hook
+    find-file-hook
+    help-mode-hook) . pixel-scroll-precision-mode))
 #+end_src
 **** puni
 #+begin_quote
