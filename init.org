@@ -2107,6 +2107,30 @@ Emacs rainbow delimiters mode
     haskell-mode-hook
     lisp-mode-hook) . rainbow-delimiters-mode))
 #+end_src
+**** shr
+#+begin_quote
+Simple HTML Renderer
+#+end_quote
+#+begin_src emacs-lisp
+(use-package shr
+  :defer 3
+  :custom
+  (shr-bullet " - ")
+  ;; (shr-use-colors nil)
+  (shr-width nil))
+#+end_src
+**** shr-tag-pre-highlight
+#+begin_quote
+Syntax highlighting code block in HTML
+#+end_quote
+#+begin_src emacs-lisp
+(use-package shr-tag-pre-highlight
+  :ensure t
+  :after shr
+  :config
+  (add-to-list 'shr-external-rendering-functions
+               '(pre . shr-tag-pre-highlight)))
+#+end_src
 **** valign
 #+begin_quote
 Pixel-perfect visual alignment for Org and Markdown tables.
