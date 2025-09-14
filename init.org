@@ -277,6 +277,10 @@ tools for declaring and initializing options
   (or (xdg-user-dir "DOCUMENTS")
       "~/Documents/"))
 
+(defvar user-downloads-dir
+  (or (xdg-user-dir "DOWNLOADS")
+      "~/Downloads/"))
+
 (defvar user-pictures-dir
   (or (xdg-user-dir "PICTURES")
       "~/Pictures/"))
