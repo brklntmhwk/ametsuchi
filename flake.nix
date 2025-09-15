@@ -40,6 +40,10 @@
     org-babel.url = "github:emacs-twist/org-babel";
     twist.url = "github:emacs-twist/twist.nix";
     twist-overrides.url = "github:emacs-twist/overrides";
+    twist2elpa = {
+      url = "github:emacs-twist/twist2elpa";
+      inputs.twist.follows = "twist";
+    };
 
     # Package registries for Emacs-twist
     melpa = {

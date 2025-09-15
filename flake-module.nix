@@ -61,24 +61,38 @@ in
               ln -t $out/bin -s ${emacs-config.emacs}/bin/emacsclient
             '';
 
+        # https://github.com/akirak/emacs-config/commit/111167fa21e0179ec54de7ee062a3d8164926cae
+        elpa-archive = inputs.twist2elpa.lib.buildElpaArchiveAsTar {
+          asInitDirectory = true;
+          name = "elpa-archive-${builtins.substring 0 8 (inputs.self.lastModifiedDate)}"; # e.g., elpa-archive-19701231.tar
+        } emacs-config;
+
+        # https://github.com/akirak/emacs-config/commit/a6b5185ece1746b386c0c452605fa37d3fd30a54
+        init-file = pkgs.runCommandLocal "init.el" { } ''
+          for file in ${builtins.concatStringsSep " " emacs-config.initFiles}
+          do
+            cat "$file" >> "$out"
+          done
+        '';
+
         # TODO: add emacs envs with various emacs build versions
-        emacs-sandboxed = pkgs.mkBwrapper {
-          app = {
-            package = emacs-config-no-pgtk.emacs;
-            runScript = "emacs";
-            execArgs = "--init-directory=$HOME/.local/share/emacs";
-            id = "emacs.desktop";
-            renameDesktopFile = false;
-          };
-          mounts = {
-            read = [
-              "$HOME/.local/state/emacs"
-            ];
-            readWrite = [
-              "$HOME/.local/share/emacs"
-            ];
-          };
-        };
+        # emacs-sandboxed = pkgs.mkBwrapper {
+        #   app = {
+        #     package = emacs-config-no-pgtk.emacs;
+        #     runScript = "emacs";
+        #     execArgs = "--init-directory=$HOME/.local/share/emacs";
+        #     id = "emacs.desktop";
+        #     renameDesktopFile = false;
+        #   };
+        #   mounts = {
+        #     read = [
+        #       "$HOME/.local/state/emacs"
+        #     ];
+        #     readWrite = [
+        #       "$HOME/.local/share/emacs"
+        #     ];
+        #   };
+        # };
       };
 
       apps = emacs-config.makeApps { lockDirName = "lock"; };
