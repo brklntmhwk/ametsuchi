@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "ace-link": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1730468688,
+        "narHash": "sha256-m+8U3LyKwg0FvNfioQv3KFeyqPsDrCp8W4m2MprtuX0=",
+        "owner": "abo-abo",
+        "repo": "ace-link",
+        "rev": "d9bd4a25a02bdfde4ea56247daf3a9ff15632ea4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abo-abo",
+        "repo": "ace-link",
+        "type": "github"
+      }
+    },
     "ace-window": {
       "flake": false,
       "locked": {
@@ -1075,6 +1091,22 @@
         "type": "github"
       }
     },
+    "language-detection": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1479944923,
+        "narHash": "sha256-6t4CwZQPPepmq+p2lZ1ZMOE+uZLvTpRGevDAFlGNE10=",
+        "owner": "andreasjansson",
+        "repo": "language-detection.el",
+        "rev": "54a6ecf55304fba7d215ef38a4ec96daff2f35a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "andreasjansson",
+        "repo": "language-detection.el",
+        "type": "github"
+      }
+    },
     "link-hint": {
       "flake": false,
       "locked": {
@@ -1715,22 +1747,6 @@
         "type": "github"
       }
     },
-    "org-superstar": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1756585266,
-        "narHash": "sha256-r+c3iJuM6pliLAHh8GUuW0tdAVdYh0/SsfNQ2sFeXnI=",
-        "owner": "integral-dw",
-        "repo": "org-superstar-mode",
-        "rev": "be423ca3670ecbb9904b923c7a487c56c21380a8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "integral-dw",
-        "repo": "org-superstar-mode",
-        "type": "github"
-      }
-    },
     "org-transclusion": {
       "flake": false,
       "locked": {
@@ -2080,6 +2096,7 @@
     },
     "root": {
       "inputs": {
+        "ace-link": "ace-link",
         "ace-window": "ace-window",
         "activities": "activities",
         "aggressive-indent": "aggressive-indent",
@@ -2147,6 +2164,7 @@
         "inheritenv": "inheritenv",
         "jinx": "jinx",
         "just-mode": "just-mode",
+        "language-detection": "language-detection",
         "link-hint": "link-hint",
         "llama": "llama",
         "log4e": "log4e",
@@ -2187,7 +2205,6 @@
         "org-recur": "org-recur",
         "org-super-agenda": "org-super-agenda",
         "org-super-links": "org-super-links",
-        "org-superstar": "org-superstar",
         "org-transclusion": "org-transclusion",
         "org-web-tools": "org-web-tools",
         "osm": "osm",
@@ -2213,6 +2230,7 @@
         "s": "s",
         "separedit": "separedit",
         "show-font": "show-font",
+        "shr-tag-pre-highlight": "shr-tag-pre-highlight",
         "spinner": "spinner",
         "string-inflection": "string-inflection",
         "tablist": "tablist",
@@ -2280,6 +2298,22 @@
       "original": {
         "owner": "protesilaos",
         "repo": "show-font",
+        "type": "github"
+      }
+    },
+    "shr-tag-pre-highlight": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1746112152,
+        "narHash": "sha256-n4HmUlc2DZ4OgkiVxkC/u9eYqODdAzwhEvEpGz0H0jA=",
+        "owner": "xuchunyang",
+        "repo": "shr-tag-pre-highlight.el",
+        "rev": "02a93d48f030d71eba460bd09d091baedcad6626",
+        "type": "github"
+      },
+      "original": {
+        "owner": "xuchunyang",
+        "repo": "shr-tag-pre-highlight.el",
         "type": "github"
       }
     },

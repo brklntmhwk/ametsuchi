@@ -356,7 +356,8 @@
         "systems": "systems_2",
         "tree-sitter-astro": "tree-sitter-astro",
         "twist": "twist",
-        "twist-overrides": "twist-overrides"
+        "twist-overrides": "twist-overrides",
+        "twist2elpa": "twist2elpa"
       }
     },
     "systems": {
@@ -453,6 +454,26 @@
       "original": {
         "owner": "emacs-twist",
         "repo": "overrides",
+        "type": "github"
+      }
+    },
+    "twist2elpa": {
+      "inputs": {
+        "twist": [
+          "twist"
+        ]
+      },
+      "locked": {
+        "lastModified": 1756899343,
+        "narHash": "sha256-4epNYHqwqnKtge6jinsC0XIqSeJAWBomdU7XI8xJVzk=",
+        "owner": "emacs-twist",
+        "repo": "twist2elpa",
+        "rev": "036c05968c06f2e1af48e8dbeaa7eb4111d984c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacs-twist",
+        "repo": "twist2elpa",
         "type": "github"
       }
     }

@@ -1,6 +1,12 @@
 {
   description = "THIS IS AN AUTO-GENERATED FILE. PLEASE DON'T EDIT IT MANUALLY.";
   inputs = {
+    ace-link = {
+      flake = false;
+      owner = "abo-abo";
+      repo = "ace-link";
+      type = "github";
+    };
     ace-window = {
       flake = false;
       owner = "abo-abo";
@@ -404,6 +410,12 @@
       repo = "just-mode.el";
       type = "github";
     };
+    language-detection = {
+      flake = false;
+      owner = "andreasjansson";
+      repo = "language-detection.el";
+      type = "github";
+    };
     link-hint = {
       flake = false;
       owner = "noctuid";
@@ -642,12 +654,6 @@
       repo = "org-super-links";
       type = "github";
     };
-    org-superstar = {
-      flake = false;
-      owner = "integral-dw";
-      repo = "org-superstar-mode";
-      type = "github";
-    };
     org-transclusion = {
       flake = false;
       lastModified = 1716239161;
@@ -797,6 +803,12 @@
       flake = false;
       owner = "protesilaos";
       repo = "show-font";
+      type = "github";
+    };
+    shr-tag-pre-highlight = {
+      flake = false;
+      owner = "xuchunyang";
+      repo = "shr-tag-pre-highlight.el";
       type = "github";
     };
     spinner = {
