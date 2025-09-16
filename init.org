@@ -2120,7 +2120,7 @@ Simple HTML Renderer
   :defer 3
   :custom
   (shr-bullet " - ")
-  ;; (shr-use-colors nil)
+  (shr-use-colors nil)
   (shr-width nil))
 #+end_src
 **** shr-tag-pre-highlight
