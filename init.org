@@ -367,7 +367,9 @@ help commands for Emacs
 #+begin_src emacs-lisp
 (use-package help
   :custom
-  (help-window-keep-selected t))
+  (help-window-keep-selected t)
+  :hook
+  (help-mode-hook . (lambda () (setq-local line-spacing 0.4))))
 #+end_src
 **** helpful
 #+begin_quote
@@ -377,6 +379,8 @@ A better Emacs *help* buffer
 (use-package helpful
   :ensure t
   :defer 1
+  :hook
+  (helpful-mode-hook . (lambda () (setq-local line-spacing 0.4)))
   :bind
   (([remap describe-function] . helpful-callable)
    ([remap describe-command] . helpful-command)
@@ -3007,7 +3011,8 @@ Emacs Web Wowser
   :hook
   (eww-after-render-hook . (lambda ()
                              (eww-readable)
-                             (visual-line-mode))))
+                             (visual-line-mode)
+                             (setq-local line-spacing 0.4))))
 #+end_src
 *** Terminal
 :PROPERTIES:
@@ -3109,7 +3114,8 @@ Outline-based notes management and organizer
   :hook (org-mode-hook . my/org-mode-setup)
   :config
   (defun my/org-mode-setup ()
-    (setq-local tab-width 8)))
+    (setq-local tab-width 8)
+    (setq-local line-spacing 0.5)))
 #+end_src
 **** dslide
 #+begin_quote
@@ -3742,6 +3748,7 @@ Major mode for reading EPUBs in Emacs
   :config
   ;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
   (defun my/nov-mode-setup ()
+    (setq-local line-spacing 0.4)
     (when (require 'olivetti nil t)
       (olivetti-mode 1)
       (setq-local nov-text-width nil)
