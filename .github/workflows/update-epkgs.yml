@@ -1,12 +1,10 @@
 name: Update Emacs packages
-
 on:
   workflow_dispatch:
   workflow_call:
   schedule:
     # 9:00 p.m. UTC (6:00 a.m. JST) on the 10th and 24th of every month
     - cron: '0 21 10,24 * *'
-
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -22,6 +20,8 @@ jobs:
         run: |
           git config set --append user.name 'github-actions[bot]'
           git config set --append user.email '86272619+github-actions[bot]@users.noreply.github.com'
+      - name: Create bot branch for Emacs packages update
+        run: git switch -C bot/update/epkgs dev
       - name: Update deps of registries
         run: |
           for input in melpa gnu-elpa nongnu-elpa; do
@@ -44,3 +44,7 @@ jobs:
       - name: Check PR status
         if: steps.cpr.outputs.pull-request-operation == 'created'
         run: echo "A new PR was created. See ${{ steps.cpr.outputs.pull-request-url }}"
+      - name: Auto-merge pull request
+        run: gh pr merge --merge --auto "1"
+        env:
+          GH_TOKEN: ${{ secrets.PAT_FOR_PR }}
