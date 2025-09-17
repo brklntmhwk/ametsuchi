@@ -43,6 +43,6 @@ jobs:
         if: steps.cpr.outputs.pull-request-operation == 'created'
         run: echo "A new PR was created. See ${{ steps.cpr.outputs.pull-request-url }}"
       - name: Auto-merge pull request
-        run: gh pr merge --merge --auto "1"
+        run: gh pr merge --merge --auto ${{ steps.cpr.outputs.pull-request-number }}
         env:
           GH_TOKEN: ${{ secrets.PAT_FOR_PR }}
