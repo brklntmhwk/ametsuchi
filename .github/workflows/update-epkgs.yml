@@ -20,7 +20,7 @@ jobs:
         run: |
           git config set --append user.name 'github-actions[bot]'
           git config set --append user.email '86272619+github-actions[bot]@users.noreply.github.com'
-      - name: Create bot branch for Emacs packages update
+      - name: Create and switch to bot branch for Emacs packages update
         run: git switch -C bot/update/epkgs dev
       - name: Update deps of registries
         run: |
