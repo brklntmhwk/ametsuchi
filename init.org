@@ -2304,6 +2304,7 @@ directory-browsing commands
   :commands dired
   :custom
   (dired-auto-revert-buffer t)
+  (dired-create-destination-dirs 'ask)
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (delete-by-moving-to-trash t)
