@@ -2900,6 +2900,7 @@ Work with Git forges from the comfort of Magit
 #+begin_src emacs-lisp
 (use-package forge
   :ensure t
+  :demand t
   :after magit
   :custom
   (forge-database-file (concat emacs-data-home "forge/database.sqlite"))
