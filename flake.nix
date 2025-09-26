@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 {
-  description = "Ametsuchi is the universe ── It encompasses (almost) everything that composes my ideal workstation.";
+  description = ''
+    Ametsuchi is the universe ── It encompasses (almost) everything that forms
+    my ideal Emacs workstation, a living cosmos where creativity, logic,
+    and intuition intertwine.
+  '';
 
   nixConfig = {
     extra-substituters = [
@@ -21,8 +25,8 @@
 
     # Nix utils
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nix-filter.url = "github:numtide/nix-filter";
     systems.url = "github:nix-systems/default";
+    nix-bwrapper.url = "github:Naxdy/nix-bwrapper";
 
     # Emacs-overlay
     emacs-overlay = {
@@ -36,6 +40,10 @@
     org-babel.url = "github:emacs-twist/org-babel";
     twist.url = "github:emacs-twist/twist.nix";
     twist-overrides.url = "github:emacs-twist/overrides";
+    twist2elpa = {
+      url = "github:emacs-twist/twist2elpa";
+      inputs.twist.follows = "twist";
+    };
 
     # Package registries for Emacs-twist
     melpa = {
@@ -50,10 +58,12 @@
       url = "github:elpa-mirrors/nongnu";
       flake = false;
     };
+    # 0im2l6r0grjxq9z7fkck3kw2bjh9h2jhrpyrg7zyrsi3lngqkaihv
     gnu-elpa-archive = {
       url = "file+https://elpa.gnu.org/packages/archive-contents";
       flake = false;
     };
+    # 0689dqy033k61ghw61v3jlpqz1j5ynvhg12y207b7sp4jlzk7yi9
     nongnu-elpa-archive = {
       url = "file+https://elpa.nongnu.org/nongnu/archive-contents";
       flake = false;

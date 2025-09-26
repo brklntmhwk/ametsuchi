@@ -9,6 +9,7 @@ let
 
   overlays = [
     inputs.emacs-overlay.overlays.emacs
+    inputs.nix-bwrapper.overlays.default
   ];
 in
 {
@@ -25,6 +26,7 @@ in
     {
       config,
       emacs-config,
+      emacs-config-no-pgtk,
       pkgs,
       system,
       ...
@@ -36,15 +38,19 @@ in
         config.allowUnfreePredicate =
           pkg:
           builtins.elem (lib.getName pkg) [
-            # Add unfree packages that should be allowed to install here.
+            # Explicitly add unfree packages here.
           ];
       };
       _module.args.emacs-config = lib'.mkEmacsConfig {
         inherit pkgs;
       };
+      _module.args.emacs-config-no-pgtk = lib'.mkEmacsConfig {
+        inherit pkgs;
+        emacsPackage = inputs.emacs-overlay.packages.${pkgs.system}.emacs-git;
+      };
 
       packages = {
-        inherit emacs-config;
+        inherit emacs-config emacs-config-no-pgtk;
 
         # https://github.com/akirak/emacs-config/commit/cd81f077e64e836bb8b42cfa7f4228a48c189826
         emacsclient =
@@ -55,7 +61,38 @@ in
               ln -t $out/bin -s ${emacs-config.emacs}/bin/emacsclient
             '';
 
+        # https://github.com/akirak/emacs-config/commit/111167fa21e0179ec54de7ee062a3d8164926cae
+        elpa-archive = inputs.twist2elpa.lib.buildElpaArchiveAsTar {
+          asInitDirectory = true;
+          name = "elpa-archive-${builtins.substring 0 8 (inputs.self.lastModifiedDate)}"; # e.g., elpa-archive-19701231.tar
+        } emacs-config;
+
+        # https://github.com/akirak/emacs-config/commit/a6b5185ece1746b386c0c452605fa37d3fd30a54
+        init-file = pkgs.runCommandLocal "init.el" { } ''
+          for file in ${builtins.concatStringsSep " " emacs-config.initFiles}
+          do
+            cat "$file" >> "$out"
+          done
+        '';
+
         # TODO: add emacs envs with various emacs build versions
+        # emacs-sandboxed = pkgs.mkBwrapper {
+        #   app = {
+        #     package = emacs-config-no-pgtk.emacs;
+        #     runScript = "emacs";
+        #     execArgs = "--init-directory=$HOME/.local/share/emacs";
+        #     id = "emacs.desktop";
+        #     renameDesktopFile = false;
+        #   };
+        #   mounts = {
+        #     read = [
+        #       "$HOME/.local/state/emacs"
+        #     ];
+        #     readWrite = [
+        #       "$HOME/.local/share/emacs"
+        #     ];
+        #   };
+        # };
       };
 
       apps = emacs-config.makeApps { lockDirName = "lock"; };
