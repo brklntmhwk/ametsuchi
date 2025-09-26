@@ -59,6 +59,7 @@ This repository is my Emacs configuration suite built using [[https://github.com
 | Package manager     | twist.el      | package.el, straight.el, elpaca, etc. |
 | Configuration Macro | use-package   | leaf.el, setup.el, etc.               |
 | Project's framework | flake-parts   | flake-utils, snowfall, denix, etc.    |
+|                     |               |                                       |
 
 ** Cosmological Principle
 :PROPERTIES:
@@ -322,7 +323,7 @@ a source-level debugger for Emacs Lisp
 #+end_src
 **** gcmh
 #+begin_quote
-The Garbage Collector Magic Hack
+the Garbage Collector Magic Hack
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gcmh
@@ -373,7 +374,7 @@ help commands for Emacs
 #+end_src
 **** helpful
 #+begin_quote
-A better Emacs *help* buffer
+A better *help* buffer
 #+end_quote
 #+begin_src emacs-lisp
 (use-package helpful
@@ -446,7 +447,7 @@ browse UN*X manual pages `wo (without) man'
 :END:
 **** ace-window
 #+begin_quote
-Quickly switch windows in Emacs
+Quickly switch windows.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package ace-window
@@ -478,7 +479,7 @@ Quickly switch windows in Emacs
 #+end_src
 **** popper
 #+begin_quote
-Emacs minor-mode to summon and dismiss buffers easily.
+Summon and dismiss buffers as popups
 #+end_quote
 #+begin_src emacs-lisp
 (use-package popper
@@ -962,7 +963,7 @@ Buffer manipulation primitives for GNU Emacs.
 #+end_src
 **** breadcrumb
 #+begin_quote
-Emacs headerline indication of where you are in a large project
+project and imenu-based breadcrumb paths
 #+end_quote
 #+begin_src emacs-lisp
 (use-package breadcrumb
@@ -973,7 +974,7 @@ Emacs headerline indication of where you are in a large project
 #+end_src
 **** hide-mode-line
 #+begin_quote
-An Emacs plugin that hides (or masks) the current buffer's mode-line
+minor mode that hides/masks your modeline
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hide-mode-line
@@ -998,7 +999,7 @@ A minor-mode menu for the mode line
 #+end_src
 **** mlscroll
 #+begin_quote
-Lightweight scrollbar for the Emacs mode line
+A scroll bar for the modeline
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mlscroll
@@ -1054,7 +1055,7 @@ print current function in mode line
 :END:
 **** cape
 #+begin_quote
-🦸cape.el - Completion At Point Extensions
+Completion At Point Extensions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package cape
@@ -1129,7 +1130,7 @@ Preview completion with inline overlay
 #+end_src
 **** consult
 #+begin_quote
-🔍 consult.el - Consulting completing-read
+Consulting completing-read
 #+end_quote
 #+begin_src emacs-lisp
 (use-package consult
@@ -1264,7 +1265,7 @@ Xref integration for Consult
 #+end_src
 **** corfu
 #+begin_quote
-🏝️ corfu.el - COmpletion in Region FUnction
+COmpletion in Region FUnction
 #+end_quote
 #+begin_src emacs-lisp
 (use-package corfu
@@ -1321,7 +1322,7 @@ Candidate information popup for Corfu
 #+end_src
 **** embark
 #+begin_quote
-Emacs Mini-Buffer Actions Rooted in Keymaps
+Conveniently act on minibuffer completions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package embark
@@ -1374,7 +1375,7 @@ indentation commands for Emacs
 #+end_src
 **** marginalia
 #+begin_quote
-📜 marginalia.el - Marginalia in the minibuffer
+Enrich existing commands with completion annotations
 #+end_quote
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -1392,7 +1393,7 @@ Minibuffer and completion functions
 #+end_src
 **** orderless
 #+begin_quote
-Emacs completion style that matches multiple regexps in any order
+Completion style for matching regexps in any order
 #+end_quote
 #+begin_src emacs-lisp
 (use-package orderless
@@ -1404,7 +1405,7 @@ Emacs completion style that matches multiple regexps in any order
 #+end_src
 **** vertico
 #+begin_quote
-💫 vertico.el - VERTical Interactive COmpletion
+VERTical Interactive COmpletion
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico
@@ -1449,7 +1450,7 @@ Configure Vertico in different forms per command
 #+end_src
 ***** vertico-posframe
 #+begin_quote
-vertico-posframe is an vertico extension, which lets vertico use posframe to show its candidate menu.
+Using posframe to show Vertico
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vertico-posframe
@@ -1514,7 +1515,7 @@ automatic mode-dependent insertion of text into new files
 #+end_src
 **** avy
 #+begin_quote
-Jump to things in Emacs tree-style
+Jump to arbitrary positions in visible text and select text quickly.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package avy
@@ -1572,7 +1573,7 @@ Jump to things in Emacs tree-style
 #+end_src
 **** deadgrep
 #+begin_quote
-fast, friendly searching with ripgrep and Emacs
+fast, friendly searching with ripgrep
 #+end_quote
 #+begin_src emacs-lisp
 (use-package deadgrep
@@ -1607,7 +1608,7 @@ Automatically insert matching delimiters
 #+end_src
 **** grugru
 #+begin_quote
-Rotate text at point in Emacs.
+Rotate text at point
 #+end_quote
 #+begin_src emacs-lisp
 (use-package grugru
@@ -1673,7 +1674,7 @@ incremental search minor mode
 #+end_src
 **** jinx
 #+begin_quote
-🪄 Enchanted Spell Checker
+Enchanted Spell Checker
 #+end_quote
 #+begin_src emacs-lisp
 (use-package jinx
@@ -1689,7 +1690,7 @@ incremental search minor mode
 #+end_src
 **** link-hint
 #+begin_quote
-Pentadactyl-like Link Hinting in Emacs with Avy
+Use avy to open, copy, etc. visible links
 #+end_quote
 #+begin_src emacs-lisp
 (use-package link-hint
@@ -1701,7 +1702,7 @@ Pentadactyl-like Link Hinting in Emacs with Avy
 #+end_src
 **** markdown-mode
 #+begin_quote
-Emacs Markdown Mode
+Major mode for Markdown-formatted text
 #+end_quote
 #+begin_src emacs-lisp
 (use-package markdown-mode
@@ -1736,7 +1737,7 @@ some nonstandard editing and utility commands for Emacs
 #+end_src
 **** move-dup
 #+begin_quote
-Emacs minor mode for Eclipse-like moving and duplications of lines or selections with convenient key bindings.
+Eclipse-like moving and duplicating lines or rectangles
 #+end_quote
 #+begin_src emacs-lisp
 (use-package move-dup
@@ -1772,7 +1773,7 @@ NOTE: Key bindings related to scrolling are defined in the [[#window][window]] c
 #+end_src
 **** puni
 #+begin_quote
-Structured editing (soft deletion, expression navigating & manipulating) that supports many major modes out of the box.
+Parentheses Universalistic
 #+end_quote
 #+begin_src emacs-lisp
 (use-package puni
@@ -1848,7 +1849,7 @@ basic editing commands for Emacs
 #+end_src
 **** string-inflection
 #+begin_quote
-underscore -> UPCASE -> CamelCase conversion of names
+foo_bar => FOO_BAR => FooBar => fooBar => foo-bar => Foo_Bar => foo_bar conversion of names
 #+end_quote
 #+begin_src emacs-lisp
 (use-package string-inflection
@@ -1870,7 +1871,7 @@ text mode, and its idiosyncratic commands
 #+end_src
 **** tempel
 #+begin_quote
-🏛️ TempEl - Simple templates for Emacs
+Tempo templates/snippets with in-buffer field editing
 #+end_quote
 #+begin_src emacs-lisp
 (use-package tempel
@@ -1890,7 +1891,7 @@ text mode, and its idiosyncratic commands
 #+end_src
 **** visual-replace
 #+begin_quote
-A nicer interface for query-replace on Emacs
+A prompt for replace-string and query-replace
 #+end_quote
 #+begin_src emacs-lisp
 (use-package visual-replace
@@ -1926,7 +1927,7 @@ A nicer interface for query-replace on Emacs
 #+end_src
 **** vundo
 #+begin_quote
-Visualize the undo tree.
+Visual undo tree
 #+end_quote
 #+begin_src emacs-lisp
 (use-package vundo
@@ -1946,7 +1947,7 @@ Visualize the undo tree.
 #+end_src
 **** ws-butler
 #+begin_quote
-Unobtrusively trim extraneous white-space *ONLY* in lines edited.
+Unobtrusively remove trailing whitespace
 #+end_quote
 #+begin_src emacs-lisp
 (use-package ws-butler
@@ -1961,7 +1962,7 @@ Unobtrusively trim extraneous white-space *ONLY* in lines edited.
 :END:
 **** colorful-mode
 #+begin_quote
-🎨Preview any color in your buffer
+Preview any color in your buffer in real time
 #+end_quote
 
 By default, the following major modes are included in `global-colorful-modes`:
@@ -2024,7 +2025,7 @@ interface for display-line-numbers
 #+end_src
 **** goggles
 #+begin_quote
-goggles.el - Pulse modified region
+Pulse modified regions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package goggles
@@ -2038,7 +2039,7 @@ goggles.el - Pulse modified region
 #+end_src
 **** highlight-indent-guides
 #+begin_quote
-Emacs minor mode to highlight indentation
+Minor mode to highlight indentation
 #+end_quote
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
@@ -2065,7 +2066,7 @@ highlight the current line
 #+end_src
 **** hl-todo
 #+begin_quote
-Highlight TODO keywords
+Highlight TODO and similar keywords
 #+end_quote
 #+begin_src emacs-lisp
 (use-package hl-todo
@@ -2101,7 +2102,7 @@ highlight matching paren
 #+end_src
 **** rainbow-delimiters
 #+begin_quote
-Emacs rainbow delimiters mode
+Highlight brackets according to their depth
 #+end_quote
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
@@ -2138,7 +2139,7 @@ Syntax highlighting code block in HTML
 #+end_src
 **** valign
 #+begin_quote
-Pixel-perfect visual alignment for Org and Markdown tables.
+Visually align tables
 #+end_quote
 #+begin_src emacs-lisp
 (use-package valign
@@ -2149,7 +2150,7 @@ Pixel-perfect visual alignment for Org and Markdown tables.
 #+end_src
 **** visual-fill-column
 #+begin_quote
-Emacs mode for wrapping visual-line-mode buffers at fill-column.
+fill-column for visual-line-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package visual-fill-column
@@ -2195,7 +2196,7 @@ Lock files for editing.
 #+end_src
 **** activities
 #+begin_quote
-Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their windows, buffers)
+Save/restore sets of windows, tabs/frames, and their buffers
 #+end_quote
 #+begin_src emacs-lisp
 (use-package activities
@@ -2237,7 +2238,7 @@ Activities for Emacs (suspend and resume activities, i.e. frames/tabs and their 
 #+end_src
 **** dashboard
 #+begin_quote
-An extensible emacs dashboard
+A startup screen extracted from Spacemacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dashboard
@@ -2390,7 +2391,7 @@ Utilities and helpers for dired-hacks collection
 #+end_src
 ***** dired-open-with
 #+begin_quote
-An 'Open with' dialog for opening files in external applications from Dired.
+And "Open with" dialog for Dired
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-open-with
@@ -2434,7 +2435,7 @@ Insert subdirectories in a tree-like fashion
 #+end_src
 **** envrc
 #+begin_quote
-Emacs support for direnv which operates buffer-locally
+Support for `direnv' that operates buffer-locally
 #+end_quote
 #+begin_src emacs-lisp
 (use-package envrc
@@ -2517,7 +2518,7 @@ process Emacs shell arguments
 :END:
 **** aggressive-indent-mode
 #+begin_quote
-Emacs minor mode that keeps your code always indented. More reliable than electric-indent-mode.
+Minor mode to aggressively keep your code always indented
 #+end_quote
 #+begin_src emacs-lisp
 (use-package aggressive-indent
@@ -2542,7 +2543,7 @@ run compiler as inferior of Emacs, parse error messages
 #+end_src
 **** dumb-jump
 #+begin_quote
-an Emacs "jump to definition" package for 50+ languages
+Jump to definition for 50+ languages without configuration
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dumb-jump
@@ -2554,7 +2555,7 @@ an Emacs "jump to definition" package for 50+ languages
 #+end_src
 **** eglot
 #+begin_quote
-A client for Language Server Protocol servers
+The Emacs Client for LSP servers
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eglot
@@ -2620,7 +2621,7 @@ Show function arglist or variable docstring in echo area
 #+end_src
 **** elysium
 #+begin_quote
-Automatically apply AI-generated code changes in Emacs
+Automatically apply LLM-created code-suggestions
 #+end_quote
 #+begin_src emacs-lisp
 (use-package elysium
@@ -2690,7 +2691,7 @@ tree-sitter utilities
 **** Language-specific modes
 ***** astro-ts-mode
 #+begin_quote
-Emacs major mode for Astro templates
+Major mode for editing Astro templates
 #+end_quote
 #+begin_src emacs-lisp
 (use-package astro-ts-mode
@@ -2738,7 +2739,7 @@ Emacs Lisp mode
 #+end_src
 ***** just-mode
 #+begin_quote
-Emacs mode for justfiles
+Justfile editing mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package just-mode
@@ -2758,7 +2759,7 @@ Major mode for editing Lua files
 #+end_src
 ***** nix-ts-mode
 #+begin_quote
-An Emacs major mode for editing Nix expressions, powered by tree-sitter
+Major mode for Nix expressions, powered by tree-sitter
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nix-ts-mode
@@ -2836,7 +2837,7 @@ tree-sitter support for YAML
 #+end_src
 ***** zig-ts-mode
 #+begin_quote
-Emacs Zig Tree Sitter Mode
+major mode for editing web templates
 #+end_quote
 #+begin_src emacs-lisp
 (use-package zig-ts-mode
@@ -2851,7 +2852,7 @@ Emacs Zig Tree Sitter Mode
 :END:
 **** blamer
 #+begin_quote
-A git blame plugin for emacs inspired by VS Code's GitLens plugin
+Show git blame info about current line
 #+end_quote
 #+begin_src emacs-lisp
 (use-package blamer
@@ -2874,7 +2875,7 @@ A git blame plugin for emacs inspired by VS Code's GitLens plugin
 #+end_src
 **** diff-hl
 #+begin_quote
-Emacs package for highlighting uncommitted changes
+Highlight uncommitted changes using VC
 #+end_quote
 #+begin_src emacs-lisp
 (use-package diff-hl
@@ -2905,7 +2906,7 @@ Work with Git forges from the comfort of Magit
 #+end_src
 **** git-auto-commit-mode
 #+begin_quote
-Automatically commit to git after each save
+Emacs Minor mode to automatically commit and push
 #+end_quote
 #+begin_src emacs-lisp
 (use-package git-auto-commit-mode
@@ -2924,7 +2925,7 @@ Edit Git commit messages
 #+end_src
 **** magit
 #+begin_quote
-It's Magit! A Git Porcelain inside Emacs.
+A Git porcelain inside Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package magit
@@ -2958,7 +2959,7 @@ Use Delta when displaying diffs in Magit
 #+end_src
 ***** magit-todos
 #+begin_quote
-Show source files' TODOs (and FIXMEs, etc) in Magit status buffer
+Show source file TODOs in Magit
 #+end_quote
 #+begin_src emacs-lisp
 (use-package magit-todos
@@ -3038,7 +3039,7 @@ Emulate A Terminal, in a region, in a buffer and in Eshell
 #+end_src
 **** exec-path-from-shell
 #+begin_quote
-Make Emacs use the $PATH set up by the user's shell
+Get environment variables such as $PATH from the shell
 #+end_quote
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
@@ -3120,7 +3121,7 @@ Outline-based notes management and organizer
 #+end_src
 **** dslide
 #+begin_quote
-Present anything Emacs can do with programmable, extensible, configurable slides & presentation steps made from org mode headings
+Domain Specific sLIDEs. Programmable Presentation
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dslide
@@ -3181,7 +3182,7 @@ Supercharge your Org daily/weekly agenda by grouping items
 #+end_src
 **** org-anki
 #+begin_quote
-Sync org notes to Anki via AnkiConnect
+Synchronize org-mode entries to Anki
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-anki
@@ -3203,7 +3204,7 @@ Sync org notes to Anki via AnkiConnect
 #+end_src
 **** org-appear
 #+begin_quote
-Toggle visibility of hidden Org mode element parts upon entering and leaving an element
+Auto-toggle Org elements
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-appear
@@ -3212,7 +3213,7 @@ Toggle visibility of hidden Org mode element parts upon entering and leaving an 
 #+end_src
 **** org-autolist
 #+begin_quote
-Making it even easier to edit lists in org-mode!
+Improved list management in org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-autolist
@@ -3243,7 +3244,7 @@ Working with Code Blocks in Org
 #+end_src
 **** org-bookmark-heading
 #+begin_quote
-Emacs bookmark support for Org-mode
+Emacs bookmark support for Org mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-bookmark-heading
@@ -3312,7 +3313,7 @@ Public Key Encryption for Org Entries
 #+end_src
 **** org-download
 #+begin_quote
-Drag and drop images to Emacs org-mode
+Image drag-and-drop for Org-mode.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-download
@@ -3371,7 +3372,7 @@ Dynamic indentation for Org
 #+end_src
 **** org-journal
 #+begin_quote
-A simple org-mode based journaling mode
+a simple org-mode based journaling mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-journal
@@ -3446,7 +3447,7 @@ Modern looks for Org
 #+end_src
 **** org-nix-shell
 #+begin_quote
-Use buffer-local nix-shell environments in org-mode.
+Org local nix-shell
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-nix-shell
@@ -3455,7 +3456,7 @@ Use buffer-local nix-shell environments in org-mode.
 #+end_src
 **** org-pomodoro
 #+begin_quote
-pomodoro technique for org-mode
+Pomodoro implementation for org-mode.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-pomodoro
@@ -3469,7 +3470,7 @@ pomodoro technique for org-mode
 #+end_src
 **** org-ql
 #+begin_quote
-A searching tool for Org-mode, including custom query languages, commands, saved searches and agenda-like views, etc.
+Org Query Language, search command, and agenda-like view
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-ql
@@ -3481,7 +3482,7 @@ A searching tool for Org-mode, including custom query languages, commands, saved
 #+end_src
 **** org-recur
 #+begin_quote
-Simple recurring org-mode tasks.
+Recurring org-mode tasks
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-recur
@@ -3521,7 +3522,7 @@ Source code examples in Org
 #+end_src
 **** org-super-links
 #+begin_quote
-Package to create links with auto backlinks
+Make super links
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-super-links
@@ -3536,7 +3537,7 @@ Package to create links with auto backlinks
 #+end_src
 **** org-transclusion
 #+begin_quote
-Emacs package to enable transclusion with Org Mode
+Transclude text content via links
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-transclusion
@@ -3548,7 +3549,7 @@ Emacs package to enable transclusion with Org Mode
 #+end_src
 **** org-web-tools
 #+begin_quote
-View, capture, and archive Web pages in Org-mode
+Display and capture web content with Org-mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-web-tools
@@ -3601,7 +3602,7 @@ calendar functions
 #+end_src
 **** calibredb
 #+begin_quote
-Emacs calibre client - A Document Management Solution in Emacs. 
+Yet another calibre client
 #+end_quote
 #+begin_src emacs-lisp
 (use-package calibredb
@@ -3638,9 +3639,9 @@ Show Epkg information in completion annotations
   (cl-pushnew 'epkg-marginalia-annotate-package
               (alist-get 'package marginalia-annotator-registry)))
 #+end_src
-**** go-translate
+**** gt
 #+begin_quote
-Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, ChatGPT, StarDict, Youdao and so on.
+Translation framework, configurable and scalable
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gt
@@ -3665,7 +3666,7 @@ Translator on Emacs. Supports multiple engines such as Google, Bing, deepL, Chat
 #+end_src
 **** gptel
 #+begin_quote
-A simple LLM client for Emacs
+Interact with ChatGPT or other LLMs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel
@@ -3727,7 +3728,7 @@ Refactoring functions for gptel
 #+end_src
 **** mastodon
 #+begin_quote
-Emacs client for fediverse servers that implement the Mastodon API.
+Client for fediverse services using the Mastodon API
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mastodon
@@ -3735,7 +3736,7 @@ Emacs client for fediverse servers that implement the Mastodon API.
 #+end_src
 **** nov
 #+begin_quote
-Major mode for reading EPUBs in Emacs
+Featureful EPUB reader mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nov
@@ -3759,7 +3760,7 @@ Major mode for reading EPUBs in Emacs
 #+end_src
 **** osm
 #+begin_quote
-🌍 osm.el - OpenStreetMap viewer for Emacs
+OpenStreetMap viewer
 #+end_quote
 #+begin_src emacs-lisp
 (use-package osm
@@ -3784,7 +3785,7 @@ Major mode for reading EPUBs in Emacs
 #+end_src
 **** pdf-tools
 #+begin_quote
-Emacs support library for PDF files.
+Support library for PDF documents.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package pdf-tools
@@ -3793,7 +3794,7 @@ Emacs support library for PDF files.
 #+end_src
 **** prodigy
 #+begin_quote
-Manage external services from within Emacs
+Manage external services
 #+end_quote
 #+begin_src emacs-lisp
 (use-package prodigy
