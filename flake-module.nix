@@ -38,7 +38,7 @@ in
         config.allowUnfreePredicate =
           pkg:
           builtins.elem (lib.getName pkg) [
-            # Add unfree packages that should be allowed to install here.
+            # Explicitly add unfree packages here.
           ];
       };
       _module.args.emacs-config = lib'.mkEmacsConfig {
