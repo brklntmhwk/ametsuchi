@@ -2303,11 +2303,12 @@ directory-browsing commands
 (use-package dired
   :commands dired
   :custom
+  (dired-auto-revert-buffer t)
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (delete-by-moving-to-trash t)
   (dired-dwim-target t)
-  (dired-listing-switches "-alh")
+  (dired-listing-switches "-alh --group-directories-first")
   :bind
   ;; replace `dired-do-man' with a more frequently used one.
   ((:map dired-mode-map
