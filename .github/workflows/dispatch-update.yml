@@ -1,0 +1,23 @@
+name: "Dispatch flakes update to other workflows and external repositories"
+on:
+  pull_request:
+    types:
+      - closed
+jobs:
+  propagate-flakes-update:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.base_ref == 'dev' &&
+      github.head_ref == 'bot/update/flake-lock' &&
+      github.event.pull_request.head.repo.id == github.event.pull_request.base.repo.id
+    strategy:
+      matrix:
+        repo:
+          - brklntmhwk/yakumo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ matrix.repo }}
+          event-type: flakes-update
