@@ -370,7 +370,7 @@ help commands for Emacs
   :custom
   (help-window-keep-selected t)
   :hook
-  (help-mode-hook . (lambda () (setq-local line-spacing 0.4))))
+  (help-mode-hook . (lambda () (setq-local line-spacing 0.3))))
 #+end_src
 **** helpful
 #+begin_quote
@@ -593,7 +593,7 @@ Buffer manipulation primitives for GNU Emacs.
 (setq-default buffer-file-coding-system 'utf-8 ; `undecided-unix' by default
               cursor-type 'bar ; t by default
               fill-column 85 ; 70 by default
-              line-spacing 2  ; 1 by default
+              line-spacing 1  ; 1 by default
               tab-width 2 ; 8 by default
               indicate-empty-lines t ; nil by default
               indicate-buffer-boundaries 'left ; nil by default
@@ -1717,7 +1717,7 @@ Major mode for Markdown-formatted text
   ("README\\.md\\'" . gfm-mode)
   :hook
   (markdown-mode-hook . dprint-on-save-mode)
-  (markdown-mode-hook . (lambda () (setq-local line-spacing 0.5)))
+  (markdown-mode-hook . (lambda () (setq-local line-spacing 0.3)))
   :bind
   (:map markdown-mode-map
         :map mode-specific-map
@@ -3120,7 +3120,7 @@ Outline-based notes management and organizer
   :config
   (defun my/org-mode-setup ()
     (setq-local tab-width 8)
-    (setq-local line-spacing 0.5)))
+    (setq-local line-spacing 0.3)))
 #+end_src
 **** dslide
 #+begin_quote
