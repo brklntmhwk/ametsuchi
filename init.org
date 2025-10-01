@@ -2936,7 +2936,7 @@ A Git porcelain inside Emacs
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-define-global-key-bindings nil)
-  (magit-clone-default-directory (concat user-documents-dir "projects/"))
+  (magit-clone-default-directory "projects/")
   :bind
   ((:map ctl-x-map
          :prefix-map magit-prefix-map
