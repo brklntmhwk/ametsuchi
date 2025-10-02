@@ -3090,11 +3090,12 @@ Outline-based notes management and organizer
       "READY(r!)"
       "ONGOING(o!)"
       "|"
-      "COMPLETED(x)"
+      "COMPLETED(x!)"
       "CANCELLED(c@)")
      (type
       "PAUSED(p@/!)"
-      "WAITING(w@/!)")))
+      "WAITING(w@/!)"
+      "|")))
   (org-track-ordered-property-with-tag t)
   (org-use-effective-time t)
   ;; General workflow
