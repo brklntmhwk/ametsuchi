@@ -3349,6 +3349,7 @@ The habit tracking code for Org
 #+begin_src emacs-lisp
 (use-package org-habit
   :after org-agenda
+  :demand t
   :custom
   (org-habit-graph-column 35)
   (org-habit-following-days 7)
