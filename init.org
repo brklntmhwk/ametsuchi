@@ -3083,6 +3083,10 @@ Outline-based notes management and organizer
   (org-enforce-todo-dependencies t)
   (org-extend-today-until 4)
   (org-log-done 'time) ; Always leave completed date and time on record
+  (org-tag-alist
+   '(("@others" . ?o)
+     ("@self" . ?s)
+     ("@work" . ?w)))
   (org-tags-exclude-from-inheritance '("crypt"))
   (org-todo-keywords
    '((sequence
