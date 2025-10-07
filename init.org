@@ -3293,10 +3293,12 @@ The time clocking code for Org mode
 #+begin_src emacs-lisp
 (use-package org-clock
   :after org
+  :commands org-clock-in
   :custom
   (org-clock-auto-clockout-timer (* 60 20))
   (org-clock-history-length 30)
   (org-clock-in-resume t)
+  (org-clock-into-drawer t) ; Make it look tidier
   (org-clock-mode-line-total 'today)
   (org-clock-out-remove-zero-time-clocks t)
   (org-clock-persist t)
