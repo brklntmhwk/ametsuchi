@@ -3819,7 +3819,10 @@ Manage external services
 #+end_quote
 #+begin_src emacs-lisp
 (use-package prodigy
-  :ensure t)
+  :ensure t
+  :bind
+  (:map system-meta-map
+        ("z" . prodigy)))
 #+end_src
 *** Personal
 :PROPERTIES:
