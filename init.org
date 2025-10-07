@@ -2712,8 +2712,9 @@ tree-sitter support for Dockerfiles
   "\\.dockerfile\\'"
   "[/\\]\\(?:Containerfile\\|Dockerfile\\)\\(?:\\.[^/\\]*\\)?\\'"
   :hook
-  (dockerfile-ts-mode-hook . eglot-ensure)
-  (dockerfile-ts-mode-hook . dprint-on-save-mode))
+  (dockerfile-ts-mode-hook . (lambda ()
+                               (eglot-ensure)
+                               (dprint-on-save-mode))))
 #+end_src
 ***** elisp-mode
 #+begin_quote
@@ -2757,8 +2758,9 @@ Major mode for editing Lua files
 (use-package lua-ts-mode
   :mode "\\.lua\\'"
   :hook
-  (lua-ts-mode-hook . eglot-ensure)
-  (lua-ts-mode-hook . stylua-on-save-mode))
+  (lua-ts-mode-hook . (lambda ()
+                        (eglot-ensure)
+                        (stylua-on-save-mode))))
 #+end_src
 ***** nix-ts-mode
 #+begin_quote
@@ -2769,8 +2771,9 @@ Major mode for Nix expressions, powered by tree-sitter
   :ensure t
   :mode "\\.nix\\'"
   :hook
-  (nix-ts-mode-hook . eglot-ensure)
-  (nix-ts-mode-hook . nixfmt-on-save-mode))
+  (nix-ts-mode-hook . (lambda ()
+                        (eglot-ensure)
+                        (nixfmt-on-save-mode))))
 #+end_src
 ***** nix-mode
 #+begin_quote
@@ -2799,8 +2802,9 @@ tree-sitter support for TOML
 (use-package toml-ts-mode
   :mode "\\.toml\\'"
   :hook
-  (toml-ts-mode-hook . eglot-ensure)
-  (toml-ts-mode-hook . dprint-on-save-mode))
+  (toml-ts-mode-hook . (lambda ()
+                         (eglot-ensure)
+                         (dprint-on-save-mode))))
 #+end_src
 ***** typescript-ts-mode
 #+begin_quote
@@ -2835,8 +2839,9 @@ tree-sitter support for YAML
 (use-package yaml-ts-mode
   :mode "\\.ya?ml\\'"
   :hook
-  (yaml-ts-mode-hook . eglot-ensure)
-  (yaml-ts-mode-hook . yamlfmt-on-save-mode))
+  (yaml-ts-mode-hook . (lambda ()
+                         (eglot-ensure)
+                         (yamlfmt-on-save-mode))))
 #+end_src
 ***** zig-ts-mode
 #+begin_quote
