@@ -3087,8 +3087,9 @@ Outline-based notes management and organizer
   (org-default-notes-file (concat user-documents-dir "inbox.org"))
   ;; Agenda-related stuff
   (org-enforce-todo-dependencies t)
-  (org-extend-today-until 4)
+  (org-extend-today-until 4) ; 4 a.m.
   (org-log-done 'time) ; Always leave completed date and time on record
+  (org-log-into-drawer t) ; Make it look tidier
   (org-tag-alist
    '(("@others" . ?o)
      ("@self" . ?s)
