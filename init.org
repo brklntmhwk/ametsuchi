@@ -2245,12 +2245,11 @@ A startup screen extracted from Spacemacs
   :ensure t
   :custom
   (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
-  (dashboard-banner-logo-title "Welcome to Ametsuchi.")
+  (dashboard-banner-logo-title nil)
   ;; (dashboard-init-info nil)
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
   (dashboard-page-separator "\n\f\f\n")
-  ;; (dashboard-set-navigator t)
   (dashboard-set-footer nil)
   (dashboard-set-file-icons t)
   (dashboard-set-heading-icons t)
@@ -2284,6 +2283,8 @@ A startup screen extracted from Spacemacs
     (dashboard-refresh-buffer))
   (mapc (lambda (k) (keymap-unset dashboard-mode-map k))
         '("j" "k" "{" "}"))
+  (keymap-set dashboard-mode-map "n" #'dashboard-next-line)
+  (keymap-set dashboard-mode-map "p" #'dashboard-previous-line)
   (with-eval-after-load 'transient
     (transient-define-prefix my/dashboard-mode-transient ()
       "Prefix for dashboard launch menu."
