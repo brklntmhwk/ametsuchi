@@ -3698,7 +3698,7 @@ Interact with ChatGPT or other LLMs
   (gptel-log-level 'info)
   :bind
   (:map mode-specific-map
-        ("\\" . gptel-menu))
+        ("g" . gptel-menu))
   :config
   (setq gptel-model 'gemma3:4b
         gptel-backend (gptel-make-ollama "Ollama"
