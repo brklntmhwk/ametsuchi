@@ -3482,7 +3482,7 @@ Pomodoro implementation for org-mode.
 (use-package org-pomodoro
   :ensure t
   :after org-agenda
-  :commands (org-pomodoro)
+  :commands org-pomodoro
   :custom
   (org-pomodoro-length 25)
   (org-pomodoro-short-break-length 5)
@@ -3747,7 +3747,7 @@ Quick LLM lookups in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel-quick
-  :after (gptel)
+  :after gptel
   :config
   (with-eval-after-load 'embark
     (keymap-set embark-general-map "?" #'gptel-quick)))
