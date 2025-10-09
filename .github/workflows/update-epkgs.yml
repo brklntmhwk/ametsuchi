@@ -29,10 +29,10 @@ jobs:
           for input in melpa gnu-elpa nongnu-elpa; do
               nix flake update $input
           done
-      - name: Update lock entries
-        run: nix run .#lock --impure
       - name: Update ELPA packages
         run: nix run .#update --impure
+      - name: Update lock entries
+        run: nix run .#lock --impure
       - name: Create PR
         id: cpr
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
