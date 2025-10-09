@@ -58,12 +58,10 @@
       url = "github:elpa-mirrors/nongnu";
       flake = false;
     };
-    # 0im2l6r0grjxq9z7fkck3kw2bjh9h2jhrpyrg7zyrsi3lngqkaihv
     gnu-elpa-archive = {
       url = "file+https://elpa.gnu.org/packages/archive-contents";
       flake = false;
     };
-    # 0689dqy033k61ghw61v3jlpqz1j5ynvhg12y207b7sp4jlzk7yi9
     nongnu-elpa-archive = {
       url = "file+https://elpa.nongnu.org/nongnu/archive-contents";
       flake = false;
