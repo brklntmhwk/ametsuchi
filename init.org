@@ -3818,6 +3818,7 @@ Quick LLM lookups in Emacs
 #+begin_src emacs-lisp
 (use-package gptel-quick
   :after gptel
+  :demand t
   :config
   (with-eval-after-load 'embark
     (keymap-set embark-general-map "?" #'gptel-quick)))
@@ -3829,6 +3830,7 @@ Refactoring functions for gptel
 #+begin_src emacs-lisp
 (use-package gptel-rewrite
   :after gptel
+  :demand t
   :custom
   (‎gptel-rewrite-default-action‎ 'dispatch)
   :config
