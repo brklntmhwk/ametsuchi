@@ -827,6 +827,8 @@ All faces from both built-in features and external packages are centrally manage
        `(goggles-added ((,c :background ,bg-added-refine)))
        `(goggles-changed ((,c :background ,bg-changed-refine)))
        `(goggles-removed ((,c :background ,bg-removed-refine)))
+       ;; org-super-agenda
+       `(org-super-agenda-header ((,c :height 1.5)))
        ;; vertico-posframe
        `(vertico-posframe-border-2 ((,c :background ,bg-added-refine)))
        `(vertico-posframe-border-3 ((,c :background ,bg-added-fringe)))
@@ -3161,11 +3163,13 @@ Dynamic task and appointment lists for Org
 (use-package org-agenda
   :after org
   :custom
-  ;; (org-agenda-compact-blocks t)
-  ;; (org-agenda-custom-commands
-  ;;  '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))))
-  ;; (org-agenda-dim-blocked-tasks nil)
-  (org-agenda-files (list user-documents-dir))
+  (org-agenda-block-separator 95) ; Underscore in ASCII
+  (org-agenda-dim-blocked-tasks nil)
+  (org-agenda-files
+   (seq-filter
+    (lambda (file)
+      (not (string-match-p "/archive/" file)))
+    (directory-files-recursively user-documents-dir "\\.org$")))
   (org-agenda-inhibit-startup t)
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-start-on-weekday 1)
@@ -3180,7 +3184,69 @@ Dynamic task and appointment lists for Org
   (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
         '("TAB" "<tab>"))
   ;; Then override `delete-other-windows' because I do not use it.
-  (keymap-set org-agenda-mode-map "o" #'org-agenda-goto))
+  (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
+  ;; Add custom agenda commands and their views.
+  (setq org-agenda-custom-commands
+        '(("@" "The Agenda Dashboard"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-overriding-header "Daily")
+                        (org-agenda-log-mode-items '(closed clock state))
+                        (org-super-agenda-groups
+                         '((:name ""
+                                  :time-grid t
+                                  :date today
+                                  :deadline past
+                                  :deadline today
+                                  :scheduled today)))))
+            (agenda "" ((org-agenda-span 6)
+                        (org-agenda-overriding-header "Weekly")
+                        (org-agenda-log-mode-items '(closed clock))
+                        (org-agenda-start-day "+1d")
+                        (org-super-agenda-groups
+                         '((:name ""
+                                  :time-grid t
+                                  :anything)))))
+            (alltodo "" ((org-agenda-overriding-header "By Priority")
+                         (org-super-agenda-groups
+                          '((:name "Now!"
+                                   :priority "A")
+                            (:name "Soon."
+                                   :priority "B")
+                            (:name "Someday..."
+                                   :priority "C")
+                            (:discard (:anything))))))
+            (alltodo "" ((org-agenda-overriding-header "By Tag")
+                         (org-super-agenda-groups
+                          '((:discard (:tag ("ORDERED")))
+                            (:auto-tags)
+                            (:discard (:anything))))))
+            (alltodo "" ((org-agenda-overriding-header "By Effort")
+                         (org-super-agenda-groups
+                          '((:name "Sprint"
+                                   :effort< "1h")
+                            (:name "Run"
+                                   :effort< "1w")
+                            (:name "Marathon"
+                                   :effort> "1w")
+                            (:discard (:anything)))))))
+           ((org-agenda-files
+             (seq-filter
+              (lambda (file)
+                (and
+                 (not (string-match-p "/archive/" file))
+                 (not (string-match-p "/work/" file))))
+              (directory-files-recursively user-documents-dir "\\.org$")))))
+          ("w" "The Workplace Agenda"
+           ((agenda "" ((org-agenda-span 11)
+                        (org-agenda-overriding-header "Timeline")
+                        (org-agenda-start-day "-5d")
+                        (org-agenda-log-mode-items '(closed clock state))
+                        (org-super-agenda-groups
+                         '((:name ""
+                                  :time-grid t
+                                  :anything))))))
+           ((org-agenda-files
+             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$")))))))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
@@ -3194,8 +3260,8 @@ Supercharge your Org daily/weekly agenda by grouping items
   (org-super-agenda-groups
    '((:name "Timeline"
             :time-grid t)))
-  :config
-  (org-super-agenda-mode 1))
+  :hook
+  (org-agenda-mode-hook . org-super-agenda-mode))
 #+end_src
 **** org-anki
 #+begin_quote
