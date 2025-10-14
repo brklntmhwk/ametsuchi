@@ -2092,6 +2092,18 @@ Highlight TODO and similar keywords
                 (">" . hl-todo-next)
                 ("<" . hl-todo-previous))))
 #+end_src
+**** origami
+#+begin_quote
+Flexible text folding
+#+end_quote
+#+begin_src emacs-lisp
+(use-package origami
+  :ensure t
+  :bind
+  (:map org-super-agenda-header-map
+        ("TAB" . origami-toggle-node))
+  :hook (org-agenda-mode-hook . origami-mode))
+#+end_src
 **** paren
 #+begin_quote
 highlight matching paren
