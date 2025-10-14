@@ -2246,17 +2246,19 @@ A startup screen extracted from Spacemacs
 (use-package dashboard
   :ensure t
   :custom
-  (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
+  (dashboard-agenda-item-icon "∴")
+  (dashboard-agenda-action #'dashboard-agenda--visit-file)
   (dashboard-banner-logo-title nil)
-  ;; (dashboard-init-info nil)
   (dashboard-center-content t)
-  (dashboard-vertically-center-content t)
+  ;; (dashboard-init-info nil)
   (dashboard-page-separator "\n\f\f\n")
-  (dashboard-set-footer nil)
+  (dashboard-projects-backend 'project-el)
   (dashboard-set-file-icons t)
+  (dashboard-set-footer nil)
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
-  (dashboard-projects-backend 'project-el)
+  (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
+  (dashboard-vertically-center-content t)
   (dashboard-items
    '((agenda . 10)
      (projects . 5)
@@ -3175,6 +3177,11 @@ Dynamic task and appointment lists for Org
       (not (string-match-p "/archive/" file)))
     (directory-files-recursively user-documents-dir "\\.org$")))
   (org-agenda-inhibit-startup t)
+  (org-agenda-prefix-format
+   '((agenda . " %i %-12:c%?-12t% s")
+     (todo . " %i %-12:c%?-10e% s")
+     (tags  . " %i %-12:c")
+     (search . " %i %-12:c")))
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-start-on-weekday 1)
   (org-agenda-use-tag-inheritance '(todo search agenda))
@@ -3196,21 +3203,44 @@ Dynamic task and appointment lists for Org
                         (org-agenda-overriding-header "Daily")
                         (org-agenda-log-mode-items '(closed clock state))
                         (org-super-agenda-groups
-                         '((:name ""
-                                  :time-grid t
+                         '((:name "Timeline"
+                                  :time-grid t)
+                           (:name "Today"
                                   :date today
-                                  :deadline past
                                   :deadline today
-                                  :scheduled today)))))
+                                  :scheduled today)
+                           (:name "Overdue"
+                                  :deadline past
+                                  :scheduled past)))))
             (agenda "" ((org-agenda-span 6)
                         (org-agenda-overriding-header "Weekly")
                         (org-agenda-log-mode-items '(closed clock))
                         (org-agenda-start-day "+1d")
                         (org-super-agenda-groups
-                         '((:name ""
+                         '((:name "Timeline"
                                   :time-grid t
-                                  :anything)))))
-            (alltodo "" ((org-agenda-overriding-header "By Priority")
+                                  :anything))))))
+           ((org-agenda-files
+             (seq-filter
+              (lambda (file)
+                (and
+                 (not (string-match-p "/archive/" file))
+                 (not (string-match-p "/work/" file))))
+              (directory-files-recursively user-documents-dir "\\.org$")))
+            (org-agenda-start-with-log-mode t)))
+          ("w" "The Workplace Agenda"
+           ((agenda "" ((org-agenda-span 11)
+                        (org-agenda-overriding-header "Timeline")
+                        (org-agenda-start-day "-5d")
+                        (org-agenda-log-mode-items '(closed clock state))
+                        (org-super-agenda-groups
+                         '((:name "Timeline"
+                                  :time-grid t
+                                  :anything))))))
+           ((org-agenda-files
+             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))))
+          ("x" "The Miscellaneous Task Views"
+           ((alltodo "" ((org-agenda-overriding-header "By Priority")
                          (org-super-agenda-groups
                           '((:name "Now!"
                                    :priority "A")
@@ -3226,31 +3256,13 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Effort")
                          (org-super-agenda-groups
-                          '((:name "Sprint"
+                          '((:name "Sprint (x <= 1h)"
                                    :effort< "1h")
-                            (:name "Run"
+                            (:name "Run (1h < x <= 1w)"
                                    :effort< "1w")
-                            (:name "Marathon"
+                            (:name "Marathon (1w < x)"
                                    :effort> "1w")
-                            (:discard (:anything)))))))
-           ((org-agenda-files
-             (seq-filter
-              (lambda (file)
-                (and
-                 (not (string-match-p "/archive/" file))
-                 (not (string-match-p "/work/" file))))
-              (directory-files-recursively user-documents-dir "\\.org$")))))
-          ("w" "The Workplace Agenda"
-           ((agenda "" ((org-agenda-span 11)
-                        (org-agenda-overriding-header "Timeline")
-                        (org-agenda-start-day "-5d")
-                        (org-agenda-log-mode-items '(closed clock state))
-                        (org-super-agenda-groups
-                         '((:name ""
-                                  :time-grid t
-                                  :anything))))))
-           ((org-agenda-files
-             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$")))))))
+                            (:discard (:anything)))))))))))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
@@ -3261,11 +3273,8 @@ Supercharge your Org daily/weekly agenda by grouping items
   :ensure t
   :after org-agenda
   :custom
-  (org-super-agenda-groups
-   '((:name "Timeline"
-            :time-grid t)))
-  :hook
-  (org-agenda-mode-hook . org-super-agenda-mode))
+  (org-super-agenda-header-prefix "◆ ")
+  :hook (org-agenda-mode-hook . org-super-agenda-mode))
 #+end_src
 **** org-anki
 #+begin_quote
