@@ -110,7 +110,7 @@
     "gnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-X60DKUgmowtxv302s8JE9rVncUbuflmkyGAA3ZSDB9U=",
+        "narHash": "sha256-SP2z75y0TKDSnOauGCzNgZKUJ3Tb4DXiivCZRYuzYzA=",
         "type": "file",
         "url": "https://elpa.gnu.org/packages/archive-contents"
       },
