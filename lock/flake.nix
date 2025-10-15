@@ -666,6 +666,12 @@
       repo = "org-web-tools";
       type = "github";
     };
+    origami = {
+      flake = false;
+      owner = "gregsexton";
+      repo = "origami.el";
+      type = "github";
+    };
     osm = {
       flake = false;
       owner = "minad";
