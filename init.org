@@ -3268,14 +3268,17 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Effort")
                          (org-super-agenda-groups
-                          '((:name "Sprint (x <= 1h)"
-                                   :effort< "1h")
-                            (:name "Run (1h < x <= 1w)"
-                                   :effort< "1w")
-                            (:name "Marathon (1w < x)"
-                                   :effort> "1w")
+                          '((:name "Sprint (x <= 30min)"
+                                   :effort< "30min")
+                            (:name "Short Run (30min < x <= 3h)"
+                                   :effort< "3h")
+                            (:name "Long Run (3h < x <= 3d)"
+                                   :effort< "3d")
+                            (:name "Marathon (3d < x)"
+                                   :effort> "3d")
                             (:discard (:anything)))))))))))
 #+end_src
+***** org-super-agenda
 ***** org-super-agenda
 #+begin_quote
 Supercharge your Org daily/weekly agenda by grouping items
