@@ -3279,7 +3279,6 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything)))))))))))
 #+end_src
 ***** org-super-agenda
-***** org-super-agenda
 #+begin_quote
 Supercharge your Org daily/weekly agenda by grouping items
 #+end_quote
