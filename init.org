@@ -59,7 +59,6 @@ This repository is my Emacs configuration suite built using [[https://github.com
 | Package manager     | twist.el      | package.el, straight.el, elpaca, etc. |
 | Configuration Macro | use-package   | leaf.el, setup.el, etc.               |
 | Project's framework | flake-parts   | flake-utils, snowfall, denix, etc.    |
-|                     |               |                                       |
 
 ** Cosmological Principle
 :PROPERTIES:
@@ -347,8 +346,6 @@ Transient user interfaces for various modes
 (use-package casual
   :ensure t
   :after transient
-  :config
-  (require 'casual-image)
   :bind
   ((:map calc-mode-map
          ("C-:" . casual-calc-tmenu))
@@ -357,7 +354,8 @@ Transient user interfaces for various modes
    (:map image-mode-map
          ("C-:" . casual-image-tmenu)))
   :config
-  (with-eval-after-load 'dired
+  (require 'casual-image)
+  (with-eval-after-load 'casual-dired
     (transient-replace-suffix 'casual-dired-tmenu "F"
       '("N" "File" dired-create-empty-file))))
 #+end_src
@@ -3791,7 +3789,7 @@ Interact with ChatGPT or other LLMs
   (:map mode-specific-map
         ("g" . gptel-menu))
   :config
-  (setq gptel-model 'gpt-5
+  (setq gptel-model 'gpt-5-nano
         gptel-backend (gptel-make-openai "OpenAI"
                         :key (lambda () (gptel-api-key-from-auth-source "api.openai.com"))
                         :stream t
