@@ -23,7 +23,6 @@ jobs:
         run: |
           git config set --append user.name 'github-actions[bot]'
           git config set --append user.email '86272619+github-actions[bot]@users.noreply.github.com'
-      - run: git switch -C ${{ env.BOT_BRANCH }} ${{ env.DEV_BRANCH }}
       - name: Update deps of registries
         run: |
           for input in melpa gnu-elpa nongnu-elpa; do
