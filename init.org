@@ -3215,24 +3215,24 @@ Dynamic task and appointment lists for Org
   (setq org-agenda-custom-commands
         '(("@" "The Agenda Dashboard"
            ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "Daily")
+                        (org-agenda-overriding-header "")
                         (org-agenda-log-mode-items '(closed clock state))
                         (org-super-agenda-groups
-                         '((:name "Timeline"
+                         '((:name ""
                                   :time-grid t)
-                           (:name "Today"
+                           (:name "◆ Today"
                                   :date today
                                   :deadline today
                                   :scheduled today)
-                           (:name "Overdue"
+                           (:name "◆ Overdue"
                                   :deadline past
                                   :scheduled past)))))
             (agenda "" ((org-agenda-span 6)
-                        (org-agenda-overriding-header "Weekly")
+                        (org-agenda-overriding-header "")
                         (org-agenda-log-mode-items '(closed clock))
                         (org-agenda-start-day "+1d")
                         (org-super-agenda-groups
-                         '((:name "Timeline"
+                         '((:name ""
                                   :time-grid t
                                   :anything))))))
            ((org-agenda-files
@@ -3249,7 +3249,7 @@ Dynamic task and appointment lists for Org
                         (org-agenda-start-day "-5d")
                         (org-agenda-log-mode-items '(closed clock state))
                         (org-super-agenda-groups
-                         '((:name "Timeline"
+                         '((:name ""
                                   :time-grid t
                                   :anything))))))
            ((org-agenda-files
@@ -3288,7 +3288,7 @@ Supercharge your Org daily/weekly agenda by grouping items
   :ensure t
   :after org-agenda
   :custom
-  (org-super-agenda-header-prefix "◆ ")
+  (org-super-agenda-header-prefix "")
   :hook (org-agenda-mode-hook . org-super-agenda-mode))
 #+end_src
 **** org-anki
