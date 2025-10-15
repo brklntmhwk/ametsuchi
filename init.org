@@ -3713,7 +3713,9 @@ calendar functions
   :custom
   (calendar-mark-holidays-flag t)
   (calendar-date-style 'european)
-  (calendar-week-start-day 1))
+  (calendar-week-start-day 1)
+  :bind
+  (("<f9>" . calendar)))
 #+end_src
 **** calibredb
 #+begin_quote
