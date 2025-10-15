@@ -825,8 +825,13 @@ All faces from both built-in features and external packages are centrally manage
        `(goggles-added ((,c :background ,bg-added-refine)))
        `(goggles-changed ((,c :background ,bg-changed-refine)))
        `(goggles-removed ((,c :background ,bg-removed-refine)))
+       ;; org-agenda
+       `(org-agenda-date ((,c :height 1.1)))
+       `(org-agenda-date-today ((,c :height 1.1)))
+       `(org-agenda-date-weekend ((,c :height 1.1)))
+       `(org-agenda-date-weekend-today ((,c :height 1.1)))
        ;; org-super-agenda
-       `(org-super-agenda-header ((,c :height 1.5)))
+       `(org-super-agenda-header ((,c :foreground ,fg-alt)))
        ;; vertico-posframe
        `(vertico-posframe-border-2 ((,c :background ,bg-added-refine)))
        `(vertico-posframe-border-3 ((,c :background ,bg-added-fringe)))
@@ -3179,7 +3184,7 @@ Dynamic task and appointment lists for Org
 (use-package org-agenda
   :after org
   :custom
-  (org-agenda-block-separator 95) ; Underscore in ASCII
+  (org-agenda-block-separator 42) ; Asterisk in ASCII
   (org-agenda-dim-blocked-tasks nil)
   (org-agenda-files
    (seq-filter
