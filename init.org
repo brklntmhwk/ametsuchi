@@ -3211,30 +3211,34 @@ Dynamic task and appointment lists for Org
         '("TAB" "<tab>"))
   ;; Then override `delete-other-windows' because I do not use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
+  ;;
+  (defun my/org-agenda-common-agenda-sections ()
+    "Return a list of common agenda sections."
+    `((agenda "" ((org-agenda-span 'day)
+                  (org-agenda-overriding-header "")
+                  (org-agenda-log-mode-items '(closed clock state))
+                  (org-super-agenda-groups
+                   '((:name ""
+                            :time-grid t)
+                     (:name "◆ Today"
+                            :date today
+                            :deadline today
+                            :scheduled today)
+                     (:name "◆ Overdue"
+                            :deadline past
+                            :scheduled past)))))
+      (agenda "" ((org-agenda-span 6)
+                  (org-agenda-overriding-header "")
+                  (org-agenda-log-mode-items '(closed clock))
+                  (org-agenda-start-day "+1d")
+                  (org-super-agenda-groups
+                   '((:name ""
+                            :time-grid t
+                            :anything)))))))
   ;; Add custom agenda commands and their views.
   (setq org-agenda-custom-commands
-        '(("@" "The Agenda Dashboard"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "")
-                        (org-agenda-log-mode-items '(closed clock state))
-                        (org-super-agenda-groups
-                         '((:name ""
-                                  :time-grid t)
-                           (:name "◆ Today"
-                                  :date today
-                                  :deadline today
-                                  :scheduled today)
-                           (:name "◆ Overdue"
-                                  :deadline past
-                                  :scheduled past)))))
-            (agenda "" ((org-agenda-span 6)
-                        (org-agenda-overriding-header "")
-                        (org-agenda-log-mode-items '(closed clock))
-                        (org-agenda-start-day "+1d")
-                        (org-super-agenda-groups
-                         '((:name ""
-                                  :time-grid t
-                                  :anything))))))
+        `(("@" "The Agenda Dashboard"
+           ,(my/org-agenda-common-agenda-sections)
            ((org-agenda-files
              (seq-filter
               (lambda (file)
@@ -3244,14 +3248,7 @@ Dynamic task and appointment lists for Org
               (directory-files-recursively user-documents-dir "\\.org$")))
             (org-agenda-start-with-log-mode t)))
           ("w" "The Workplace Agenda"
-           ((agenda "" ((org-agenda-span 11)
-                        (org-agenda-overriding-header "Timeline")
-                        (org-agenda-start-day "-5d")
-                        (org-agenda-log-mode-items '(closed clock state))
-                        (org-super-agenda-groups
-                         '((:name ""
-                                  :time-grid t
-                                  :anything))))))
+           ,(my/org-agenda-common-agenda-sections)
            ((org-agenda-files
              (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))))
           ("x" "The Miscellaneous Task Views"
