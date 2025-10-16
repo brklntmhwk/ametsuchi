@@ -3127,8 +3127,8 @@ Outline-based notes management and organizer
    '(("@CALL" . ?c)
      ("@ERRAND" . ?e)
      ("@INPERSON" . ?i)
-     ("@PING" . ?p)
-     ("@SELF" . ?s)))
+     ("@PING" . ?m)
+     ("@PROJECT" . ?p)))
   (org-tags-exclude-from-inheritance '("crypt"))
   (org-todo-keywords
    '((sequence
