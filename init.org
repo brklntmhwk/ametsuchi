@@ -3214,8 +3214,11 @@ Dynamic task and appointment lists for Org
   (org-agenda-use-tag-inheritance '(todo search agenda))
   (org-agenda-window-setup 'current-window)
   :bind
-  (:map mode-specific-map
-        ("a" . org-agenda))
+  ((:map mode-specific-map
+         ("a" . org-agenda))
+   (:repeat-map org-agenda-repeat-map
+                ("n" . org-agenda-next-date-line)
+                ("p" . org-agenda-previous-date-line)))
   :hook (org-agenda-finalize-hook . hl-line-mode)
   :config
   ;; Unset `org-agenda-goto' because it is confusing.
