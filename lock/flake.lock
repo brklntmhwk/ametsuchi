@@ -1347,6 +1347,22 @@
         "type": "github"
       }
     },
+    "multiple-cursors": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1759783107,
+        "narHash": "sha256-bY8bVoCGSd/+jQM21nhG5+kKedaLbPGFz7Kjw9xpjcg=",
+        "owner": "magnars",
+        "repo": "multiple-cursors.el",
+        "rev": "9017f3be6b00c1d82e33409db4a178133fb39d47",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magnars",
+        "repo": "multiple-cursors.el",
+        "type": "github"
+      }
+    },
     "nerd-icons": {
       "flake": false,
       "locked": {
@@ -2196,6 +2212,7 @@
         "modus-themes": "modus-themes",
         "moody": "moody",
         "move-dup": "move-dup",
+        "multiple-cursors": "multiple-cursors",
         "nerd-icons": "nerd-icons",
         "nerd-icons-completion": "nerd-icons-completion",
         "nerd-icons-corfu": "nerd-icons-corfu",
