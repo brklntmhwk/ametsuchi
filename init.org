@@ -3226,7 +3226,7 @@ Dynamic task and appointment lists for Org
         '("TAB" "<tab>"))
   ;; Then override `delete-other-windows' because I do not use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
-  ;;
+  ;; Stick to DRY
   (defun my/org-agenda-common-agenda-sections ()
     "Return a list of common agenda sections."
     `((agenda "" ((org-agenda-span 'day)
@@ -3252,7 +3252,7 @@ Dynamic task and appointment lists for Org
                             :anything)))))))
   ;; Add custom agenda commands and their views.
   (setq org-agenda-custom-commands
-        `(("@" "The Agenda Dashboard"
+        `(("@" "Private Agenda"
            ,(my/org-agenda-common-agenda-sections)
            ((org-agenda-files
              (seq-filter
@@ -3261,11 +3261,24 @@ Dynamic task and appointment lists for Org
                  (not (string-match-p "/archive/" file))
                  (not (string-match-p "/work/" file))))
               (directory-files-recursively user-documents-dir "\\.org$")))
-            (org-agenda-start-with-log-mode t)))
-          ("w" "The Workplace Agenda"
+            (org-agenda-start-with-log-mode t)
+            (org-agenda-block-separator nil)))
+          ;; https://github.com/alphapapa/org-ql/blob/master/examples.org#stuck-projects-block-agenda
+          ("t" "Throwback View"
+           ((agenda "" ((org-agenda-span 30)
+                        (org-agenda-start-day "-29d")
+                        (org-agenda-overriding-header nil)
+                        (org-agenda-log-mode-items '(closed clock state))
+                        (org-super-agenda-groups
+                         '((:name ""
+                                  :log t)
+                           (:discard (:anything)))))))
+           ((org-agenda-start-with-log-mode t)))
+          ("w" "Workplace Agenda"
            ,(my/org-agenda-common-agenda-sections)
            ((org-agenda-files
-             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))))
+             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))
+            (org-agenda-block-separator nil)))
           ("x" "The Miscellaneous Task Views"
            ((alltodo "" ((org-agenda-overriding-header "By Priority")
                          (org-super-agenda-groups
@@ -3291,7 +3304,13 @@ Dynamic task and appointment lists for Org
                                    :effort< "3d")
                             (:name "Marathon (3d < x)"
                                    :effort> "3d")
-                            (:discard (:anything)))))))))))
+                            (:discard (:anything))))))
+            (org-ql-block '(and (tags "@PROJECT")
+                                (not (done))
+                                (not (descendants (todo "READY")))
+                                (not (descendants (scheduled))))
+                          ((org-ql-block-header "Stuck Projects")
+                           (org-ql-indent-levels t))))))))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
