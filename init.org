@@ -1754,6 +1754,18 @@ Eclipse-like moving and duplicating lines or rectangles
    ("C-M-n" . move-dup-duplicate-down))
   :hook (after-init-hook . global-move-dup-mode))
 #+end_src
+**** multiple-cursors
+#+begin_quote
+Multiple cursors for emacs.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  (("C-d" . mc/mark-next-like-this)
+   ("C-S-d" . mc/mark-previous-like-this)
+   ("M-d" . mc/mark-all-like-this)))
+#+end_src
 **** pixel-scroll
 #+begin_quote
 Scroll a line smoothly
@@ -1799,7 +1811,7 @@ Parentheses Universalistic
                 ("<left>" . puni-contract-region)))
   :config
   (mapc (lambda (k) (keymap-unset puni-mode-map k))
-        '("C-M-a" "C-M-e" "C-M-f" "C-M-b")))
+        '("C-M-a" "C-M-e" "C-M-f" "C-M-b" "C-d" "M-d")))
 #+end_src
 **** replace
 #+begin_quote
