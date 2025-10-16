@@ -505,6 +505,12 @@
       repo = "move-dup";
       type = "github";
     };
+    multiple-cursors = {
+      flake = false;
+      owner = "magnars";
+      repo = "multiple-cursors.el";
+      type = "github";
+    };
     nerd-icons = {
       flake = false;
       owner = "rainstormstudio";
