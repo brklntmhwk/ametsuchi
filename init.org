@@ -3382,14 +3382,86 @@ Fast note taking in Org
 #+begin_src emacs-lisp
 (use-package org-capture
   :after org
-  :custom
-  (org-capture-templates
-   `(("i" "Inbox" entry
-      (file "")
-      "* %?\n%U\n\n  %i")))
   :bind
   (:map mode-specific-map
-        ("c" . org-capture)))
+        ("c" . org-capture))
+  :config
+  (require 'org-journal)
+  (defun my/org-capture-find-latest-journal-entry ()
+    "Return the position of today's entry in the latest yearly journal file.
+If today's journal heading exists, place point at the end of the subtree.
+If not, create it using `org-journal-new-entry' before placing point."
+    (let* ((journal-dir (file-name-as-directory org-journal-dir))
+           (org-files (directory-files journal-dir t "^[0-9]+\\.org$"))
+           (latest-file (car (sort org-files
+                                   (lambda (a b)
+                                     (> (string-to-number (file-name-base a))
+                                        (string-to-number (file-name-base b))))))))
+      (if (not latest-file)
+          (user-error "No yearly journal files found in %s" journal-dir)
+        (set-buffer (or (org-find-base-buffer-visiting latest-file)
+                        (progn (org-capture-put :new-buffer t)
+                               (find-file-noselect latest-file))))
+        (org-capture-put-target-region-and-position)
+        (widen)
+        (let* ((today-string (format-time-string org-journal-date-format))
+               (today-heading-re
+                (format "^%s%s"
+                        (regexp-quote org-journal-date-prefix)
+                        (regexp-quote today-string))))
+          (goto-char (point-min))
+          (if (re-search-forward today-heading-re nil t)
+              (progn
+                (org-end-of-subtree)
+                (unless (bolp) (insert "\n")))
+            (goto-char (point-max))
+            (unless (bolp) (insert "\n"))
+            (org-journal-new-entry t)))
+        (cons latest-file (point)))))
+  (setq org-capture-templates
+        `(("a" "Anki Basic" entry
+           (file+headline "" "Anki")
+           ,(concat
+             "* %? %^g\n"
+             ":PROPERTIES:\n"
+             ":ANKI_NOTE_TYPE: Basic\n"
+             ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
+             ":END:\n"
+             "Answer")
+           :prepend t)
+          ("c" "Anki Cloze" entry
+           (file+headline "" "Anki")
+           ,(concat
+             "* {{c1::%?}} %^g\n"
+             ":PROPERTIES:\n"
+             ":ANKI_NOTE_TYPE: Cloze\n"
+             ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
+             ":END:\n")
+           :prepend t)
+          ("d" "Draft" plain
+           (file+headline "" "Drafts")
+           "%U %?"
+           :empty-lines 1
+           :prepend t)
+          ("j" "Journal" item
+           (function my/org-capture-find-latest-journal-entry)
+           "%U %?")
+          ("p" "Project" entry
+           (file+headline "" "Projects")
+           ,(concat
+             "* PENDING %? :@PROJECT:\n"
+             ":LOGBOOK:\n"
+             "- Created at      %U\n"
+             ":END:")
+           :prepend t)
+          ("t" "Todo" entry
+           (file+headline "" "Tasks")
+           ,(concat
+             "* PENDING %?\nSCHEDULED: %t\n"
+             ":LOGBOOK:\n"
+             "- Created at      %U\n"
+             ":END:")
+           :prepend t))))
 #+end_src
 **** org-clock
 #+begin_quote
