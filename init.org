@@ -3157,7 +3157,7 @@ Outline-based notes management and organizer
   :config
   (defun my/org-mode-setup ()
     (setq-local tab-width 8)
-    (setq-local line-spacing 0.3)))
+    (setq-local line-spacing 0.2)))
 #+end_src
 **** dslide
 #+begin_quote
@@ -3518,6 +3518,7 @@ Public Key Encryption for Org Entries
   :hook (org-mode-hook . my/org-encrypt-entries)
   :config
   (defun my/org-encrypt-entries ()
+    (setq-local buffer-auto-save-file-name nil)
     (add-hook 'before-save-hook #'org-encrypt-entries nil t)))
 #+end_src
 **** org-download
