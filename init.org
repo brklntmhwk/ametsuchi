@@ -3403,38 +3403,30 @@ Fast note taking in Org
   (:map mode-specific-map
         ("c" . org-capture))
   :config
-  (require 'org-journal)
-  (defun my/org-capture-find-latest-journal-entry ()
+  (require 'org-reverse-datetree)
+  (defun my/org-capture-find-latest-datetree-entry ()
     "Return the position of today's entry in the latest yearly journal file.
 If today's journal heading exists, place point at the end of the subtree.
-If not, create it using `org-journal-new-entry' before placing point."
-    (let* ((journal-dir (file-name-as-directory org-journal-dir))
+If not, create it using `org-reverse-datetree-goto-date-in-file' before placing point."
+    (let* ((journal-dir (file-name-as-directory (concat user-documents-dir "journal/")))
            (org-files (directory-files journal-dir t "^[0-9]+\\.org$"))
            (latest-file (car (sort org-files
                                    (lambda (a b)
                                      (> (string-to-number (file-name-base a))
                                         (string-to-number (file-name-base b))))))))
-      (if (not latest-file)
-          (user-error "No yearly journal files found in %s" journal-dir)
-        (set-buffer (or (org-find-base-buffer-visiting latest-file)
-                        (progn (org-capture-put :new-buffer t)
-                               (find-file-noselect latest-file))))
-        (org-capture-put-target-region-and-position)
-        (widen)
-        (let* ((today-string (format-time-string org-journal-date-format))
-               (today-heading-re
-                (format "^%s%s"
-                        (regexp-quote org-journal-date-prefix)
-                        (regexp-quote today-string))))
-          (goto-char (point-min))
-          (if (re-search-forward today-heading-re nil t)
-              (progn
-                (org-end-of-subtree)
-                (unless (bolp) (insert "\n")))
-            (goto-char (point-max))
-            (unless (bolp) (insert "\n"))
-            (org-journal-new-entry t)))
-        (cons latest-file (point)))))
+      (unless (file-exists-p latest-file)
+        (with-temp-buffer
+          (insert (format "* %s\n"
+                          (format-time-string org-reverse-datetree-year-format)))
+          (write-file latest-file))
+        (message "Created new yearly journal file: %s" latest-file))
+      (set-buffer (or (org-find-base-buffer-visiting latest-file)
+                      (progn (org-capture-put :new-buffer t)
+                             (find-file-noselect latest-file))))
+      (org-capture-put-target-region-and-position)
+      (widen)
+      (org-reverse-datetree-goto-date-in-file nil)
+      (cons latest-file (point))))
   (setq org-capture-templates
         `(("a" "Anki Basic" entry
            (file ,(concat user-documents-dir "anki.org"))
@@ -3463,7 +3455,7 @@ If not, create it using `org-journal-new-entry' before placing point."
            :empty-lines-after 1
            :prepend t)
           ("j" "Journal" item
-           (function my/org-capture-find-latest-journal-entry)
+           (function my/org-capture-find-latest-datetree-entry)
            "%U %?")
           ("p" "Project" entry
            (file "")
@@ -3594,6 +3586,7 @@ a simple org-mode based journaling mode
 #+end_quote
 #+begin_src emacs-lisp
 (use-package org-journal
+  :disabled
   :ensure t
   :after org
   :custom
@@ -3725,6 +3718,29 @@ Refile Org Subtrees
    '((nil :maxlevel . 99)
      (org-agenda-files :maxlevel . 99)))
   (org-refile-use-outline-path 'file))
+#+end_src
+**** org-reverse-datetree
+#+begin_quote
+Create reverse date trees in org-mode
+#+end_quote
+#+begin_src emacs-lisp
+(use-package org-reverse-datetree
+  :ensure t
+  :after org
+  :bind
+  ((:map org-mode-map
+         ("C-c C-x M-j" . org-reverse-datetree-calendar))
+   (:map calendar-mode-map
+         ("]" . org-reverse-datetree-calendar-next)
+         ("[" . org-reverse-datetree-calendar-previous)
+         ("RET" . org-reverse-datetree-display-entry)))
+  :config
+  ;; Put numerical or zero-prefixed values at the beginning
+  ;; since date-tree headings are ordered lexicographically.
+  (setq-default org-reverse-datetree-level-formats
+                '("%Y"
+                  "W%W"
+                  "%m-%d, %a")))
 #+end_src
 **** org-src
 #+begin_quote
