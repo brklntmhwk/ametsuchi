@@ -414,19 +414,6 @@ Transient commands
      ("*" "Light/dark theme" modus-themes-toggle)])
   (keymap-set toggle-map "?" '("Transient help" . my/toggle-transient)))
 #+end_src
-***** transient-posframe
-#+begin_quote
-Using posframe to show transient
-#+end_quote
-#+begin_src emacs-lisp
-;; (use-package transient-posframe
-;;      :ensure t
-;;      :after transient
-;;      :custom
-;;      (transient-posframe-border-width 3)
-;;      :config
-;;      (transient-posframe-mode 1))
-#+end_src
 **** woman
 #+begin_quote
 browse UN*X manual pages `wo (without) man'
