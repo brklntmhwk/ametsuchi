@@ -3264,23 +3264,15 @@ Dynamic task and appointment lists for Org
               (directory-files-recursively user-documents-dir "\\.org$")))
             (org-agenda-start-with-log-mode t)
             (org-agenda-block-separator nil)))
-          ;; https://github.com/alphapapa/org-ql/blob/master/examples.org#stuck-projects-block-agenda
-          ("t" "Throwback View"
-           ((agenda "" ((org-agenda-span 30)
-                        (org-agenda-start-day "-29d")
-                        (org-agenda-overriding-header nil)
-                        (org-agenda-log-mode-items '(closed clock state))
-                        (org-super-agenda-groups
-                         '((:name ""
-                                  :log t)
-                           (:discard (:anything)))))))
-           ((org-agenda-start-with-log-mode t)))
-          ("w" "Workplace Agenda"
-           ,(my/org-agenda-common-agenda-sections)
-           ((org-agenda-files
-             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))
-            (org-agenda-block-separator nil)))
-          ("x" "The Miscellaneous Task Views"
+          ;; ("l" "Throwback Views"
+          ;;  ((org-ql-block '(or (closed :from -30 :to today)
+          ;;                      (clocked :from -30 :to today)
+          ;;                      (ts :from -30 :to today))
+          ;;                 ((org-ql-block-header "Over the last 30 days")
+          ;;                  (org-ql-indent-levels t)
+          ;;                  (org-super-agenda-groups
+          ;;                   '((:auto-ts reverse)))))))
+          ("t" "Miscellaneous Task Views"
            ((alltodo "" ((org-agenda-overriding-header "By Priority")
                          (org-super-agenda-groups
                           '((:name "Now!"
@@ -3292,7 +3284,7 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Tag")
                          (org-super-agenda-groups
-                          '((:discard (:tag ("ORDERED")))
+                          '((:discard (:tag ("ORDERED" "@PROJECT")))
                             (:auto-tags)
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Effort")
@@ -3306,12 +3298,27 @@ Dynamic task and appointment lists for Org
                             (:name "Marathon (3d < x)"
                                    :effort> "3d")
                             (:discard (:anything))))))
+            (org-ql-block '(and (level 2 6)
+                                (todo)
+                                (ancestors (tags "@PROJECT")))
+                          ((org-ql-block-header "By Project")
+                           (org-ql-indent-levels t)
+                           (org-super-agenda-groups
+                            '((:auto-outline-path)))))
+            ;; https://github.com/alphapapa/org-ql/blob/master/examples.org#stuck-projects-block-agenda
             (org-ql-block '(and (tags "@PROJECT")
                                 (not (done))
                                 (not (descendants (todo "READY")))
                                 (not (descendants (scheduled))))
                           ((org-ql-block-header "Stuck Projects")
-                           (org-ql-indent-levels t))))))))
+                           (org-ql-indent-levels t)
+                           (org-super-agenda-groups
+                            '((:auto-ts)))))))
+          ("w" "Workplace Agenda"
+           ,(my/org-agenda-common-agenda-sections)
+           ((org-agenda-files
+             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))
+            (org-agenda-block-separator nil))))))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
