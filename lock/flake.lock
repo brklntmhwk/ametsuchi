@@ -1731,6 +1731,22 @@
         "type": "github"
       }
     },
+    "org-reverse-datetree": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756724989,
+        "narHash": "sha256-4wbvUNrM4yiFmlV2hLn0VuDIoPt/OAkotEQszYP7AOI=",
+        "owner": "akirak",
+        "repo": "org-reverse-datetree",
+        "rev": "23c4063850f9bab47daac37e81ed366bdc8f769c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akirak",
+        "repo": "org-reverse-datetree",
+        "type": "github"
+      }
+    },
     "org-super-agenda": {
       "flake": false,
       "locked": {
@@ -2236,6 +2252,7 @@
         "org-pomodoro": "org-pomodoro",
         "org-ql": "org-ql",
         "org-recur": "org-recur",
+        "org-reverse-datetree": "org-reverse-datetree",
         "org-super-agenda": "org-super-agenda",
         "org-super-links": "org-super-links",
         "org-transclusion": "org-transclusion",

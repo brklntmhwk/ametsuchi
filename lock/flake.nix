@@ -648,6 +648,12 @@
       repo = "org-recur";
       type = "github";
     };
+    org-reverse-datetree = {
+      flake = false;
+      owner = "akirak";
+      repo = "org-reverse-datetree";
+      type = "github";
+    };
     org-super-agenda = {
       flake = false;
       owner = "alphapapa";
