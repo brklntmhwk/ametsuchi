@@ -3125,11 +3125,12 @@ Outline-based notes management and organizer
   (org-log-into-drawer t) ; Make it look tidier
   (org-tag-alist
    '(("@CALL" . ?c)
+     ("@DRAFT" . ?d)
      ("@ERRAND" . ?e)
      ("@INPERSON" . ?i)
      ("@PING" . ?m)
      ("@PROJECT" . ?p)))
-  (org-tags-exclude-from-inheritance '("crypt"))
+  (org-tags-exclude-from-inheritance '("crypt" "@PROJECT"))
   (org-todo-keywords
    '((sequence
       "PENDING(t)"
@@ -3442,7 +3443,7 @@ If not, create it using `org-journal-new-entry' before placing point."
         (cons latest-file (point)))))
   (setq org-capture-templates
         `(("a" "Anki Basic" entry
-           (file+headline "" "Anki")
+           (file ,(concat user-documents-dir "anki.org"))
            ,(concat
              "* %? %^g\n"
              ":PROPERTIES:\n"
@@ -3450,39 +3451,43 @@ If not, create it using `org-journal-new-entry' before placing point."
              ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
              ":END:\n"
              "Answer")
+           :empty-lines-after 1
            :prepend t)
           ("c" "Anki Cloze" entry
-           (file+headline "" "Anki")
+           (file ,(concat user-documents-dir "anki.org"))
            ,(concat
              "* {{c1::%?}} %^g\n"
              ":PROPERTIES:\n"
              ":ANKI_NOTE_TYPE: Cloze\n"
              ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
              ":END:\n")
+           :empty-lines-after 1
            :prepend t)
-          ("d" "Draft" plain
-           (file+headline "" "Drafts")
-           "%U %?"
-           :empty-lines 1
+          ("d" "Draft" entry
+           (file "")
+           "* %U %? :@DRAFT:"
+           :empty-lines-after 1
            :prepend t)
           ("j" "Journal" item
            (function my/org-capture-find-latest-journal-entry)
            "%U %?")
           ("p" "Project" entry
-           (file+headline "" "Projects")
+           (file "")
            ,(concat
              "* PENDING %? :@PROJECT:\n"
              ":LOGBOOK:\n"
              "- Created at      %U\n"
              ":END:")
+           :empty-lines-after 1
            :prepend t)
           ("t" "Todo" entry
-           (file+headline "" "Tasks")
+           (file "")
            ,(concat
              "* PENDING %?\nSCHEDULED: %t\n"
              ":LOGBOOK:\n"
              "- Created at      %U\n"
              ":END:")
+           :empty-lines-after 1
            :prepend t))))
 #+end_src
 **** org-clock
