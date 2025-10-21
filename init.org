@@ -3682,6 +3682,8 @@ Org Query Language, search command, and agenda-like view
 (use-package org-ql
   :ensure t
   :after org
+  :custom
+  (org-ql-view-display-buffer-action '(display-buffer-same-window . nil))
   :bind
   (:map org-mode-map
         ("C-c C-x /" . org-ql-sparse-tree)))
