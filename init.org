@@ -3409,24 +3409,18 @@ Fast note taking in Org
 If today's journal heading exists, place point at the end of the subtree.
 If not, create it using `org-reverse-datetree-goto-date-in-file' before placing point."
     (let* ((journal-dir (file-name-as-directory (concat user-documents-dir "journal/")))
-           (org-files (directory-files journal-dir t "^[0-9]+\\.org$"))
-           (latest-file (car (sort org-files
-                                   (lambda (a b)
-                                     (> (string-to-number (file-name-base a))
-                                        (string-to-number (file-name-base b))))))))
+           (year (format-time-string "%Y"))
+           (latest-file (expand-file-name (format "%s.org" year) journal-dir)))
       (unless (file-exists-p latest-file)
-        (with-temp-buffer
-          (insert (format "* %s\n"
-                          (format-time-string org-reverse-datetree-year-format)))
-          (write-file latest-file))
+        (with-temp-buffer (write-file latest-file))
         (message "Created new yearly journal file: %s" latest-file))
       (set-buffer (or (org-find-base-buffer-visiting latest-file)
                       (progn (org-capture-put :new-buffer t)
                              (find-file-noselect latest-file))))
       (org-capture-put-target-region-and-position)
       (widen)
-      (org-reverse-datetree-goto-date-in-file nil)
-      (cons latest-file (point))))
+      (org-reverse-datetree-goto-date-in-file)
+      (cons latest-file (point)))
   (setq org-capture-templates
         `(("a" "Anki Basic" entry
            (file ,(concat user-documents-dir "anki.org"))
@@ -3454,9 +3448,9 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
            "* %U %? :@DRAFT:"
            :empty-lines-after 1
            :prepend t)
-          ("j" "Journal" item
+          ("j" "Journal" entry
            (function my/org-capture-find-latest-datetree-entry)
-           "%U %?")
+           "* %U %?")
           ("p" "Project" entry
            (file "")
            ,(concat
