@@ -3569,7 +3569,7 @@ Global identifiers for Org entries
   :after org
   :custom
   (org-id-locations-file (concat emacs-cache-home "org-id-locations"))
-  (org-id-link-to-org-use-id t)
+  (org-id-link-to-org-use-id 'create-if-interactive)
   (org-id-search-archives nil))
 #+end_src
 **** org-indent
