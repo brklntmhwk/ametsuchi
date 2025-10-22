@@ -820,6 +820,8 @@ All faces from both built-in features and external packages are centrally manage
        `(org-agenda-date-weekend-today ((,c :height 1.1)))
        ;; org-super-agenda
        `(org-super-agenda-header ((,c :foreground ,fg-alt)))
+       ;; org-transclusion
+       `(org-transclusion-fringe ((,c :foreground ,bg-added-fringe :background ,bg-added-fringe)))
        ;; vertico-posframe
        `(vertico-posframe-border-2 ((,c :background ,bg-added-refine)))
        `(vertico-posframe-border-3 ((,c :background ,bg-added-fringe)))
