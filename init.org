@@ -2997,7 +2997,9 @@ Quickly follow links
   :after avy
   :bind
   ((:map eww-mode-map
-         ("o" . ace-link-eww))))
+         ("o" . ace-link-eww))
+   (:map org-mode-map
+         ("C-c C-x O" . ace-link-org))))
 #+end_src
 **** browse-url
 #+begin_quote
@@ -3677,8 +3679,10 @@ Org Query Language, search command, and agenda-like view
   :custom
   (org-ql-view-display-buffer-action '(display-buffer-same-window . nil))
   :bind
-  (:map org-mode-map
-        ("C-c C-x /" . org-ql-sparse-tree)))
+  ((:map mode-specific-map
+         ("q" . org-ql-view))
+   (:map org-mode-map
+         ("C-c C-x /" . org-ql-sparse-tree))))
 #+end_src
 **** org-recur
 #+begin_quote
@@ -3752,11 +3756,12 @@ Make super links
   :ensure t
   :bind
   ((:map org-mode-map
-         :prefix-map org-super-links-map
-         :prefix "C-c C-x s"
-         ;; ("d" . org-super-links-delete-link)
-         ("l" . org-super-links-insert-link)
-         ("s" . org-super-links-store-link))))
+         ("C-c C-x L" . org-super-links-link)
+         ("C-c C-x M-l" . org-super-links-insert-link)
+         ("C-c C-x M-s" . org-super-links-store-link)))
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-org-link-map "s" #'org-super-links-store-link)))
 #+end_src
 **** org-transclusion
 #+begin_quote
