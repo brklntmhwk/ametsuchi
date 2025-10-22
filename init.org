@@ -3435,6 +3435,11 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
            "* %U %? :@DRAFT:"
            :empty-lines-after 1
            :prepend t)
+          ("i" "Interruption" entry
+           (file "")
+           "* %U %?"
+           :clock-in t
+           :clock-resume t)
           ("j" "Journal" entry
            (function my/org-capture-find-latest-datetree-entry)
            "* %U %?")
