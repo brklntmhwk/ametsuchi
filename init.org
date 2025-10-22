@@ -3411,7 +3411,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
       (org-capture-put-target-region-and-position)
       (widen)
       (org-reverse-datetree-goto-date-in-file)
-      (cons latest-file (point)))
+      (cons latest-file (point))))
   (setq org-capture-templates
         `(("a" "Anki Basic" entry
            (file ,(concat user-documents-dir "anki.org"))
