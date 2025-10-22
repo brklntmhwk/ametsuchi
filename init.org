@@ -3984,102 +3984,17 @@ Translation framework, configurable and scalable
   :custom
   (gt-langs '(en es ja))
   (gt-polyglot-p t)
-  (gt-default-translator
-   (gt-translator
-    :taker (list
-            (gt-taker :pick nil :if 'selection)
-            ;; (gt-taker :text 'buffer :pick 'paragraph)
-            (gt-taker :text 'word))
-    :engines (gt-google-engine)
-    ;; :engines (list
-    ;;                                  (gt-google-engine :if 'word)
-    ;;                                  (gt-deepl-engine :if 'not-word))
-    :render (gt-buffer-render)))
   :bind
-  ((:map mode-specific-map
-         ("q" . gt-do-translate))))
-#+end_src
-**** gptel
-#+begin_quote
-Interact with ChatGPT or other LLMs
-#+end_quote
-#+begin_src emacs-lisp
-(use-package gptel
-  :ensure t
-  :custom
-  (gptel-default-mode 'org-mode)
-  (gptel-use-header-line t)
-  (gptel-log-level 'info)
-  :bind
-  (:map mode-specific-map
-        ("g" . gptel-menu))
+  ((:map search-map
+         ("M-q" . gt-translate)))
   :config
-  (setq gptel-model 'gpt-5-nano
-        gptel-backend (gptel-make-openai "OpenAI"
-                        :key (lambda () (gptel-api-key-from-auth-source "api.openai.com"))
-                        :stream t
-                        :models '(gpt-5
-                                  gpt-5-chat
-                                  gpt-5-mini
-                                  gpt-5-nano)))
-  ;; (setq gptel-model 'gemma3:4b
-  ;;       gptel-backend (gptel-make-ollama "Ollama"
-  ;;                       :host "localhost:11434"
-  ;;                       :stream t
-  ;;                       :models '(deepseek-r1:8b
-  ;;                                 gemma3:4b
-  ;;                                 llama3.2:3b
-  ;;                                 mistral:7b
-  ;;                                 phi4:14b
-  ;;                                 qwen3:4b)))
-  (gptel-make-openai "OpenRouter"
-    :host "openrouter.ai"
-    :endpoint "/api/v1/chat/completions"
-    :key (lambda () (gptel-api-key-from-auth-source "openrouter.ai"))
-    :stream t
-    :models '(google/gemma-3-4b-it:free
-              google/gemma-3-12b-it:free
-              deepseek/deepseek-chat-v3-0324:free
-              meta-llama/llama-3.2-3b-instruct:free
-              qwen/qwen3-4b:free)))
-#+end_src
-***** gptel-org
-#+begin_quote
-Org functions for gptel
-#+end_quote
-#+begin_src emacs-lisp
-(use-package gptel-org
-  :after gptel
-  :bind
-  (:map org-mode-map
-        ("C-c C-x `" . gptel-org-set-topic)
-        ("C-c C-x =" . gptel-org-set-properties)))
-#+end_src
-***** gptel-quick
-#+begin_quote
-Quick LLM lookups in Emacs
-#+end_quote
-#+begin_src emacs-lisp
-(use-package gptel-quick
-  :after gptel
-  :demand t
-  :config
-  (with-eval-after-load 'embark
-    (keymap-set embark-general-map "?" #'gptel-quick)))
-#+end_src
-***** gptel-rewrite
-#+begin_quote
-Refactoring functions for gptel
-#+end_quote
-#+begin_src emacs-lisp
-(use-package gptel-rewrite
-  :after gptel
-  :demand t
-  :custom
-  (‎gptel-rewrite-default-action‎ 'dispatch)
-  :config
-  (with-eval-after-load 'embark
-    (keymap-set embark-region-map "!" #'gptel-rewrite)))
+  (setq gt-default-translator
+        (gt-translator
+         :taker '((gt-taker :pick nil :if 'selection)
+                  (gt-taker :text 'word))
+         :engines '((gt-google-engine :if 'word)
+                    (gt-deepl-engine :if 'not-word))
+         :render (gt-buffer-render))))
 #+end_src
 **** mastodon
 #+begin_quote
