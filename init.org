@@ -39,6 +39,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#terminal][Terminal]]
   - [[#email][Email]]
   - [[#org-mode][Org Mode]]
+  - [[#ai-integration][AI Integration]]
   - [[#miscellaneous][Miscellaneous]]
   - [[#personal][Personal]]
 - [[#license][License]]
@@ -2640,20 +2641,6 @@ Show function arglist or variable docstring in echo area
   (eldoc-echo-area-use-multiline-p nil)
   :hook (after-init-hook . global-eldoc-mode))
 #+end_src
-**** elysium
-#+begin_quote
-Automatically apply LLM-created code-suggestions
-#+end_quote
-#+begin_src emacs-lisp
-(use-package elysium
-  :ensure t
-  :after gptel
-  :config
-  (with-eval-after-load 'gptel-transient
-    (transient-append-suffix 'gptel-menu nil
-      ["Elysium"
-       ("q" "Elysium query" elysium-query)])))
-#+end_src
 **** flymake
 #+begin_quote
 a universal on-the-fly syntax checker
@@ -3792,6 +3779,120 @@ Display and capture web content with Org-mode
          :prefix "C-c C-x w"
          ("y" . org-web-tools-insert-link-for-url)
          ("Y" . org-web-tools-insert-web-page-as-entry))))
+#+end_src
+*** AI Integration
+:PROPERTIES:
+:CUSTOM_ID: ai-integration
+:END:
+**** eca
+#+begin_quote
+AI pair programming via ECA (Editor Code Assistant)
+#+end_quote
+#+begin_src emacs-lisp
+(use-package eca
+  :ensure t
+  :bind
+  (:map mode-specific-map
+        ("e" . eca)
+        ("M-e" . eca-transient-menu)))
+#+end_src
+**** elysium
+#+begin_quote
+Automatically apply LLM-created code-suggestions
+#+end_quote
+#+begin_src emacs-lisp
+(use-package elysium
+  :ensure t
+  :after gptel
+  :demand t
+  :config
+  (transient-append-suffix 'gptel-menu nil
+      ["Elysium"
+       ("q" "Elysium query" elysium-query)]))
+#+end_src
+**** gptel
+#+begin_quote
+Interact with ChatGPT or other LLMs
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gptel
+  :ensure t
+  :custom
+  (gptel-default-mode 'org-mode)
+  (gptel-use-header-line t)
+  (gptel-log-level 'info)
+  :bind
+  (:map mode-specific-map
+        ("g" . gptel-menu))
+  :config
+  (setq gptel-model 'gpt-4o
+        gptel-backend (gptel-make-openai "OpenAI"
+                        :key (lambda () (gptel-api-key-from-auth-source "api.openai.com"))
+                        :stream t
+                        :models '(gpt-4o
+                                  gpt-5
+                                  gpt-5-chat
+                                  gpt-5-mini
+                                  gpt-5-nano)))
+  ;; (setq gptel-model 'gemma3:4b
+  ;;       gptel-backend (gptel-make-ollama "Ollama"
+  ;;                       :host "localhost:11434"
+  ;;                       :stream t
+  ;;                       :models '(deepseek-r1:8b
+  ;;                                 gemma3:4b
+  ;;                                 llama3.2:3b
+  ;;                                 mistral:7b
+  ;;                                 phi4:14b
+  ;;                                 qwen3:4b)))
+  (gptel-make-openai "OpenRouter"
+    :host "openrouter.ai"
+    :endpoint "/api/v1/chat/completions"
+    :key (lambda () (gptel-api-key-from-auth-source "openrouter.ai"))
+    :stream t
+    :models '(google/gemma-3-4b-it:free
+              google/gemma-3-12b-it:free
+              deepseek/deepseek-chat-v3-0324:free
+              meta-llama/llama-3.2-3b-instruct:free
+              qwen/qwen3-4b:free)))
+#+end_src
+***** gptel-org
+#+begin_quote
+Org functions for gptel
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gptel-org
+  :after gptel
+  :bind
+  (:map org-mode-map
+        ("C-c C-x `" . gptel-org-set-topic)
+        ("C-c C-x =" . gptel-org-set-properties)))
+#+end_src
+***** gptel-quick
+#+begin_quote
+Quick LLM lookups in Emacs
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gptel-quick
+  :ensure t
+  :after gptel
+  :commands gptel-quick
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-general-map "?" #'gptel-quick)))
+#+end_src
+***** gptel-rewrite
+#+begin_quote
+Refactoring functions for gptel
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gptel-rewrite
+  :after gptel
+  :demand t
+  :custom
+  (‎gptel-rewrite-default-action‎ 'dispatch)
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-region-map "!" #'gptel-rewrite)))
 #+end_src
 *** Miscellaneous
 :PROPERTIES:
