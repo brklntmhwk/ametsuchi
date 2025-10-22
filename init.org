@@ -3888,7 +3888,6 @@ Quick LLM lookups in Emacs
 #+end_quote
 #+begin_src emacs-lisp
 (use-package gptel-quick
-  :ensure t
   :after gptel
   :commands gptel-quick
   :config
