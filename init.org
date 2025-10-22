@@ -3771,9 +3771,12 @@ Transclude text content via links
 (use-package org-transclusion
   :ensure t
   :after org
-  ;; :custom
-  ;; (org-transclusion-add-all-on-activate t)
-  :hook (org-mode-hook . org-transclusion-mode))
+  :custom
+  (org-transclusion-add-all-on-activate t)
+  :hook (org-mode-hook . org-transclusion-mode)
+  :config
+  (with-eval-after-load 'embark
+    (keymap-set embark-org-link-map "t" #'org-transclusion-make-from-link)))
 #+end_src
 **** org-web-tools
 #+begin_quote
