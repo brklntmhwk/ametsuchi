@@ -57,5 +57,13 @@ in
 
     # Generate a desktop file for emacsclient.
     services.emacs.client.enable = cfg.serviceIntegration.enable;
+
+    # Deploy data files.
+    xdg.dataFile = {
+      "emacs/templates" = {
+        source = ../templates;
+        recursive = true;
+      };
+    };
   };
 }
