@@ -1884,8 +1884,7 @@ Tempo templates/snippets with in-buffer field editing
 (use-package tempel
   :ensure t
   :custom
-  ;; (tempel-path (concat emacs-data-home "templates/*.eld"))
-  (tempel-path (expand-file-name "templates/*.eld" emacs-data-home))
+  (tempel-path (concat emacs-data-home "templates/*.eld"))
   :bind
   (("M-+" . tempel-complete)
    ("M-*" . tempel-insert)
