@@ -3106,8 +3106,9 @@ Outline-based notes management and organizer
      ("@ERRAND" . ?e)
      ("@INPERSON" . ?i)
      ("@PING" . ?m)
-     ("@PROJECT" . ?p)))
-  (org-tags-exclude-from-inheritance '("crypt" "@PROJECT"))
+     ("@PROJECT" . ?p)
+     ("@CRYPT" . ?*)))
+  (org-tags-exclude-from-inheritance '("@CRYPT" "@PROJECT"))
   (org-todo-keywords
    '((sequence
       "PENDING(t)"
@@ -3504,6 +3505,7 @@ Public Key Encryption for Org Entries
 (use-package org-crypt
   :custom
   (org-crypt-key nil)
+  (org-crypt-tag-matcher "@CRYPT")
   :hook (org-mode-hook . my/org-encrypt-entries)
   :config
   (defun my/org-encrypt-entries ()
