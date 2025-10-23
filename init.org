@@ -1440,8 +1440,8 @@ Configure Vertico in different forms per command
      (consult-line (:not posframe))
      (consult-ripgrep (:not posframe))
      (t posframe)))
-  :config
-  (vertico-multiform-mode 1))
+  :hook
+  (vertico-mode-hook . vertico-multiform-mode))
 #+end_src
 ***** vertico-posframe
 #+begin_quote
@@ -2291,7 +2291,6 @@ A startup screen extracted from Spacemacs
    (:map dashboard-mode-map
          ("?" . my/dashboard-mode-transient)))
   :hook
-  ;; (window-setup-hook . dashboard-open)
   (after-init-hook . dashboard-refresh-buffer)
   (server-after-make-frame-hook . dashboard-refresh-buffer)
   (dashboard-mode-hook . (lambda ()
@@ -3994,6 +3993,7 @@ Show Epkg information in completion annotations
 (use-package epkg-marginalia
   :ensure t
   :after (epkg marginalia)
+  :demand t
   :config
   (cl-pushnew 'epkg-marginalia-annotate-package
               (alist-get 'package marginalia-annotator-registry)))
