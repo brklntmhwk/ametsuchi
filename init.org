@@ -3870,6 +3870,16 @@ Interact with ChatGPT or other LLMs
               meta-llama/llama-3.2-3b-instruct:free
               qwen/qwen3-4b:free)))
 #+end_src
+***** gptel-magit
+#+begin_quote
+Generate commit messages for magit using gptel
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gptel-magit
+  :ensure t
+  :after magit
+  :hook (magit-mode-hook . gptel-magit-install))
+#+end_src
 ***** gptel-org
 #+begin_quote
 Org functions for gptel
