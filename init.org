@@ -4004,10 +4004,10 @@ Translation framework, configurable and scalable
   :config
   (setq gt-default-translator
         (gt-translator
-         :taker '((gt-taker :pick nil :if 'selection)
-                  (gt-taker :text 'word))
-         :engines '((gt-google-engine :if 'word)
-                    (gt-deepl-engine :if 'not-word))
+         :taker (list (gt-taker :pick nil :if 'selection)
+                      (gt-taker :text 'word))
+         :engines (list (gt-google-engine :if 'word)
+                        (gt-deepl-engine :if 'not-word))
          :render (gt-buffer-render))))
 #+end_src
 **** mastodon
