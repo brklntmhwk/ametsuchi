@@ -3822,9 +3822,8 @@ Automatically apply LLM-created code-suggestions
   :after gptel
   :demand t
   :config
-  (transient-append-suffix 'gptel-menu nil
-      ["Elysium"
-       ("q" "Elysium query" elysium-query)]))
+  (transient-append-suffix 'gptel-menu '(-1 0)
+    '("q" "Elysium query" elysium-query)))
 #+end_src
 **** gptel
 #+begin_quote
