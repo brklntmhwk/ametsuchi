@@ -963,6 +963,22 @@
         "type": "github"
       }
     },
+    "gptel-magit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1747729990,
+        "narHash": "sha256-AoWGHeO6CPQCuyASOh+xo6FzC2h9Nwdq1nEDNaU0WMs=",
+        "owner": "ragnard",
+        "repo": "gptel-magit",
+        "rev": "f27c01821b67ed99ddf705c2b995f78b71394d8b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ragnard",
+        "repo": "gptel-magit",
+        "type": "github"
+      }
+    },
     "grugru": {
       "flake": false,
       "locked": {
@@ -2236,6 +2252,7 @@
         "gntp": "gntp",
         "goggles": "goggles",
         "gptel": "gptel",
+        "gptel-magit": "gptel-magit",
         "grugru": "grugru",
         "gt": "gt",
         "helpful": "helpful",
