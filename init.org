@@ -3108,14 +3108,14 @@ Outline-based notes management and organizer
   (org-log-done 'time) ; Always leave completed date and time on record
   (org-log-into-drawer t) ; Make it look tidier
   (org-tag-alist
-   '(("@CALL" . ?c)
-     ("@DRAFT" . ?d)
-     ("@ERRAND" . ?e)
-     ("@INPERSON" . ?i)
-     ("@PING" . ?m)
-     ("@PROJECT" . ?p)
-     ("@CRYPT" . ?*)))
-  (org-tags-exclude-from-inheritance '("@CRYPT" "@PROJECT"))
+   '(("CALL" . ?c)
+     ("DRAFT" . ?d)
+     ("ERRAND" . ?e)
+     ("INPERSON" . ?i)
+     ("PING" . ?m)
+     ("PROJECT" . ?p)
+     ("CRYPT" . ?*)))
+  (org-tags-exclude-from-inheritance '("CRYPT" "PROJECT"))
   (org-todo-keywords
    '((sequence
       "PENDING(t)"
@@ -3269,7 +3269,7 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Tag")
                          (org-super-agenda-groups
-                          '((:discard (:tag ("ORDERED" "@PROJECT")))
+                          '((:discard (:tag ("ORDERED" "PROJECT")))
                             (:auto-tags)
                             (:discard (:anything))))))
             (alltodo "" ((org-agenda-overriding-header "By Effort")
@@ -3285,13 +3285,13 @@ Dynamic task and appointment lists for Org
                             (:discard (:anything))))))
             (org-ql-block '(and (level 2 6)
                                 (todo)
-                                (ancestors (tags "@PROJECT")))
+                                (ancestors (tags "PROJECT")))
                           ((org-ql-block-header "By Project")
                            (org-ql-indent-levels t)
                            (org-super-agenda-groups
                             '((:auto-outline-path)))))
             ;; https://github.com/alphapapa/org-ql/blob/master/examples.org#stuck-projects-block-agenda
-            (org-ql-block '(and (tags "@PROJECT")
+            (org-ql-block '(and (tags "PROJECT")
                                 (not (done))
                                 (not (descendants (todo "READY")))
                                 (not (descendants (scheduled))))
@@ -3443,7 +3443,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
            :prepend t)
           ("d" "Draft" entry
            (file "")
-           "* %U %? :@DRAFT:"
+           "* %U %? :DRAFT:"
            :empty-lines-after 1
            :prepend t)
           ("i" "Interruption" entry
@@ -3457,7 +3457,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
           ("p" "Project" entry
            (file "")
            ,(concat
-             "* PENDING %? :@PROJECT:\n"
+             "* PENDING %? :PROJECT:\n"
              ":LOGBOOK:\n"
              "- Created at      %U\n"
              ":END:")
@@ -3512,7 +3512,7 @@ Public Key Encryption for Org Entries
 (use-package org-crypt
   :custom
   (org-crypt-key nil)
-  (org-crypt-tag-matcher "@CRYPT")
+  (org-crypt-tag-matcher "CRYPT")
   :hook (org-mode-hook . my/org-encrypt-entries)
   :config
   (defun my/org-encrypt-entries ()
