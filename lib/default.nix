@@ -46,7 +46,18 @@ in
         initParser = inputs.twist.lib.parseUsePackages {
           inherit (inputs.nixpkgs) lib;
         } { };
-        inputOverrides = import ../twist/inputs.nix;
+        inputOverrides = (import ../twist/inputs.nix) // {
+          brk = _: _: {
+            src = inputs.nix-filter.lib {
+              root = inputs.self;
+              include = [ "lisp" ];
+            };
+          };
+        };
+        localPackages = [
+          # Exclude these packages from the lock file
+          "brk"
+        ];
         lockDir = ../lock;
         nativeCompileAheadDefault = true;
         registries = [
