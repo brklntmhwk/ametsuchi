@@ -302,6 +302,14 @@ Help keeping ~/.config/emacs clean
 :PROPERTIES:
 :CUSTOM_ID: performance-enhancement
 :END:
+**** Initialization time
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs initialized in %.03fs with %d garbage collection(s)."
+                     (float-time (time-subtract after-init-time before-init-time)
+                                 gcs-done))))
+#+end_src
 **** banchmark-init
 #+begin_quote
 Benchmarks for require and load calls
