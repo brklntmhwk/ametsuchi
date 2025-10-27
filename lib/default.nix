@@ -50,7 +50,7 @@ in
           brk = _: _: {
             src = inputs.nix-filter.lib {
               root = inputs.self;
-              include = [ "lisp" ];
+              include = [ "elisp" ];
             };
           };
         };
