@@ -1,0 +1,1 @@
+(brk :fetcher github :repo "brklntmhwk/ametsuchi" :files ("elisp/*.el"))
