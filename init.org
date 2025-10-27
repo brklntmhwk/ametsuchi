@@ -410,7 +410,7 @@ Transient commands
   (transient-values-file (concat emacs-data-home "transient/values.el"))
   (transient-levels-file (concat emacs-data-home "transient/levels.el"))
   :config
-  (transient-define-prefix my/toggle-transient ()
+  (transient-define-prefix brk/toggle-transient ()
     "Prefix for `toggle-map'"
     [("d" "Debug on error" toggle-debug-on-error)
      ("f" "Fill column indicator" display-fill-column-indicator-mode)
@@ -421,7 +421,7 @@ Transient commands
      ("w" "Whitespace" whitespace-mode)
      ("x" "Syntax checker" flymake-mode)
      ("*" "Light/dark theme" modus-themes-toggle)])
-  (keymap-set toggle-map "?" '("Transient help" . my/toggle-transient)))
+  (keymap-set toggle-map "?" '("Transient help" . brk/toggle-transient)))
 #+end_src
 **** woman
 #+begin_quote
@@ -542,17 +542,17 @@ GNU Emacs window commands aside from those written in C
   (recenter-positions '(top middle bottom))
   (switch-to-buffer-obey-display-actions t)
   :bind
-  ([remap scroll-up-command] . my/scroll-half-window-height-forward)
-  ([remap scroll-down-command] . my/scroll-half-window-height-backward)
+  ([remap scroll-up-command] . brk/scroll-half-window-height-forward)
+  ([remap scroll-down-command] . brk/scroll-half-window-height-backward)
   :config
   (defun scroll-half-window-height ()
     (/ (window-body-height) 2))
-  (defun my/scroll-half-window-height-forward (&optional arg)
+  (defun brk/scroll-half-window-height-forward (&optional arg)
     (interactive "P")
     (if (numberp arg)
         (pixel-scroll-up arg)
       (pixel-scroll-up (scroll-half-window-height))))
-  (defun my/scroll-half-window-height-backward (&optional arg)
+  (defun brk/scroll-half-window-height-backward (&optional arg)
     (interactive "P")
     (if (numberp arg)
         (pixel-scroll-down arg)
@@ -641,12 +641,12 @@ CHARACTERS is either a list of symbols (scripts/charsets) or a list of (FROM . T
         (error "Invalid character specification. Expected symbol or cons, got: %S (%s)"
                first (type-of first)))))))
 
-(defun my/apply-fontset-config (&optional fontsets skip-check)
+(defun brk/apply-fontset-config (&optional fontsets skip-check)
   "Apply font configuration.
-FONTSETS defaults to `my/fontset-config-alist'.
+FONTSETS defaults to `brk/fontset-config-alist'.
 SKIP-CHECK bypasses font availability checking."
   (let ((available-fonts (font-family-list))
-        (fontsets (or fontsets my/fontset-config-alist)))
+        (fontsets (or fontsets brk/fontset-config-alist)))
     (cl-loop for (characters . plist) in fontsets
              for family = (plist-get plist :family)
              for fontset = (plist-get plist :fontset)
@@ -660,7 +660,7 @@ SKIP-CHECK bypasses font availability checking."
                        (message "Missing fonts: %s"
                                 (string-join missing-fonts ", "))))))
 
-(defcustom my/fontset-config-alist
+(defcustom brk/fontset-config-alist
   '(((emoji)
      :family "Noto Color Emoji"
      :fontset t
@@ -698,14 +698,14 @@ SKIP-CHECK bypasses font availability checking."
   :set (lambda (symbol value)
          (set symbol value)
          (when (or window-system (daemonp))
-           (my/apply-fontset-config value (daemonp)))))
+           (brk/apply-fontset-config value (daemonp)))))
 
 (when (daemonp)
   (add-hook 'server-after-make-frame-hook
-            (defun my/server-setup-fontsets ()
-              (my/apply-fontset-config nil t)
+            (defun brk/server-setup-fontsets ()
+              (brk/apply-fontset-config nil t)
               (remove-hook 'server-after-make-frame-hook
-                           #'my/server-setup-fontsets))))
+                           #'brk/server-setup-fontsets))))
 #+end_src
 **** frame.c
 #+begin_quote
@@ -719,20 +719,20 @@ Generic frame functions.
 Display generation from window structure and buffer text.
 #+end_quote
 #+begin_src emacs-lisp
-(defconst my/base-frame-title-format
+(defconst brk/base-frame-title-format
   '(" - GNU Emacs"
     (emacs-version (" " emacs-version))
     (system-name (" on " system-name))))
 
-(defconst my/default-frame-title-format
+(defconst brk/default-frame-title-format
   (cons '("%b")
-        my/base-frame-title-format))
+        brk/base-frame-title-format))
 
 (setq-default bidi-inhibit-bpa t
               bidi-display-reordering 'left-to-right
               bidi-paragraph-direction 'left-to-right
               display-line-numbers-width 4
-              frame-title-format my/default-frame-title-format
+              frame-title-format brk/default-frame-title-format
               scroll-conservatively 1)
 #+end_src
 **** fontaine
@@ -807,7 +807,7 @@ All faces from both built-in features and external packages are centrally manage
    '((bg-mode-line-active bg-magenta-nuanced)))
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
   :init
-  (defun my/modus-themes-custom-face ()
+  (defun brk/modus-themes-custom-face ()
     (modus-themes-with-colors
       (custom-set-faces
        ;; ace-window
@@ -849,7 +849,7 @@ All faces from both built-in features and external packages are centrally manage
        `(whitespace-line ((,c :background ,slate :foreground ,fg-main)))
        `(whitespace-missing-newline-at-eof ((,c :background ,slate :foreground ,fg-main)))
        `(whitespace-trailing ((,c :background ,slate :foreground ,fg-main))))))
-  (add-hook 'modus-themes-after-load-theme-hook #'my/modus-themes-custom-face)
+  (add-hook 'modus-themes-after-load-theme-hook #'brk/modus-themes-custom-face)
   :config
   (modus-themes-load-theme 'modus-vivendi-tinted))
 #+end_src
@@ -1083,27 +1083,27 @@ Completion At Point Extensions
                 ("&" . cape-sgml)
                 ("\\" . cape-tex)))
   :hook
-  (eglot-managed-mode-hook . my/setup-cape-eglot-capf)
-  (text-mode-hook . my/setup-cape-text-mode-capf)
-  (prog-mode-hook . my/setup-cape-prog-mode-capf)
+  (eglot-managed-mode-hook . brk/setup-cape-eglot-capf)
+  (text-mode-hook . brk/setup-cape-text-mode-capf)
+  (prog-mode-hook . brk/setup-cape-prog-mode-capf)
   :config
   (setq-default completion-at-point-functions
                 (append (default-value 'completion-at-point-functions)
                         (list #'cape-file #'cape-dabbrev)))
-  (defun my/setup-cape-eglot-capf()
+  (defun brk/setup-cape-eglot-capf()
     (setq-local completion-at-point-functions
                 (list (cape-capf-super
                        #'cape-file
                        (cape-capf-buster #'eglot-completion-at-point #'string-prefix-p)
                        #'cape-keyword
                        :with #'tempel-complete))))
-  (defun my/setup-cape-prog-mode-capf()
+  (defun brk/setup-cape-prog-mode-capf()
     (add-hook 'completion-at-point-functions #'cape-file nil t))
-  (defun my/setup-cape-text-mode-capf()
+  (defun brk/setup-cape-text-mode-capf()
     (add-hook 'completion-at-point-functions #'cape-file nil t)
     (add-hook 'completion-at-point-functions #'cape-dict 10 t))
   (with-eval-after-load 'transient
-    (transient-define-prefix my/cape-capf-transient ()
+    (transient-define-prefix brk/cape-capf-transient ()
       "Prefix for cape capfs."
       [("a" "abbrev" cape-abbrev)
        ("d" "dabbrev" cape-dabbrev)
@@ -1116,7 +1116,7 @@ Completion At Point Extensions
        ("w" "dict" cape-dict)
        ("&" "sgml" cape-sgml)
        ("\\" "tex" cape-tex)])
-    (keymap-set cape-capf-prefix-map "?" #'my/cape-capf-transient)))
+    (keymap-set cape-capf-prefix-map "?" #'brk/cape-capf-transient)))
 #+end_src
 **** completion-preview
 #+begin_quote
@@ -1284,7 +1284,7 @@ COmpletion in Region FUnction
     eshell-mode-hook
     prog-mode-hook
     text-mode-hook) . corfu-mode)
-  (minibuffer-setup-hook . my/corfu-enable-in-minibuffer)
+  (minibuffer-setup-hook . brk/corfu-enable-in-minibuffer)
   :bind
   (:map corfu-map
         ("SPC" . corfu-insert-separator)
@@ -1294,7 +1294,7 @@ COmpletion in Region FUnction
         ([backtab] . corfu-previous)
         ("C-e" . corfu-complete))
   :config
-  (defun my/corfu-enable-in-minibuffer ()
+  (defun brk/corfu-enable-in-minibuffer ()
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
     (when (where-is-internal #'completion-at-point (list (current-local-map)))
       (corfu-mode 1))))
@@ -1553,18 +1553,18 @@ Jump to arbitrary positions in visible text and select text quickly.
   :config
   (with-eval-after-load 'helpful
     ;; https://karthinks.com/software/avy-can-do-anything/#look-up-the-documentation-for-a-symbol
-    (defun my/avy-action-helpful (pt)
+    (defun brk/avy-action-helpful (pt)
       (save-excursion
         (goto-char pt)
         (helpful-at-point))
       (select-window
        (cdr (ring-ref avy-ring 0)))
       t)
-    (setf (alist-get ?H avy-dispatch-alist) #'my/avy-action-helpful))
+    (setf (alist-get ?H avy-dispatch-alist) #'brk/avy-action-helpful))
 
   (with-eval-after-load 'embark
     ;; https://karthinks.com/software/avy-can-do-anything/#avy-plus-embark-any-action-anywhere
-    (defun my/avy-action-embark (pt)
+    (defun brk/avy-action-embark (pt)
       (unwind-protect
           (save-excursion
             (goto-char pt)
@@ -1572,7 +1572,7 @@ Jump to arbitrary positions in visible text and select text quickly.
         (select-window
          (cdr (ring-ref avy-ring 0))))
       t)
-    (setf (alist-get ?. avy-dispatch-alist) #'my/avy-action-embark)))
+    (setf (alist-get ?. avy-dispatch-alist) #'brk/avy-action-embark)))
 #+end_src
 **** deadgrep
 #+begin_quote
@@ -1919,7 +1919,7 @@ A prompt for replace-string and query-replace
   ([remap query-replace] . visual-replace)
   :config
   (with-eval-after-load 'transient
-    (transient-define-prefix my/visual-replace-mode-transient ()
+    (transient-define-prefix brk/visual-replace-mode-transient ()
       "Prefix for `visual-replace-mode-map'."
       ["Basic operation"
        ("a" "apply one repeat" visual-replace-apply-one-repeat)
@@ -1937,7 +1937,7 @@ A prompt for replace-string and query-replace
        ("f" "switch to full scope" visual-replace-switch-to-full-scope)
        ("p" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
        ("r" "switch to region scope" visual-replace-switch-to-region-scope)])
-    (keymap-set visual-replace-mode-map "?" #'my/visual-replace-mode-transient)))
+    (keymap-set visual-replace-mode-map "?" #'brk/visual-replace-mode-transient)))
 #+end_src
 **** vundo
 #+begin_quote
@@ -2023,10 +2023,10 @@ interface for display-line-numbers
   :init
   (global-display-line-numbers-mode 1)
   :config
-  (defun my/display-line-numbers-fixed-width ()
+  (defun brk/display-line-numbers-fixed-width ()
     (when (< display-line-numbers-width 5)
       (setq display-line-numbers-width 5)))
-  (add-hook 'display-line-numbers-mode-hook #'my/display-line-numbers-fixed-width)
+  (add-hook 'display-line-numbers-mode-hook #'brk/display-line-numbers-fixed-width)
   (dolist (mode '(dashboard-mode-hook
                   dired-mode-hook
                   eat-mode-hook
@@ -2244,7 +2244,7 @@ Save/restore sets of windows, tabs/frames, and their buffers
   :hook (after-init-hook . activities-tabs-mode)
   :config
   (with-eval-after-load 'consult
-    (defun my/activities-local-buffer-p (buffer)
+    (defun brk/activities-local-buffer-p (buffer)
       "Returns non-nil if BUFFER is present in `activities-current'."
       (when (activities-current)
         (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
@@ -2256,7 +2256,7 @@ Save/restore sets of windows, tabs/frames, and their buffers
               :history buffer-name-history
               :default t
               :items ,(lambda () (consult--buffer-query
-                                  :predicate #'my/activities-local-buffer-p
+                                  :predicate #'brk/activities-local-buffer-p
                                   :sort 'visibility
                                   :as #'buffer-name))
               :state ,#'consult--buffer-state))
@@ -2313,7 +2313,7 @@ A startup screen extracted from Spacemacs
   (keymap-set dashboard-mode-map "n" #'dashboard-next-line)
   (keymap-set dashboard-mode-map "p" #'dashboard-previous-line)
   (with-eval-after-load 'transient
-    (transient-define-prefix my/dashboard-mode-transient ()
+    (transient-define-prefix brk/dashboard-mode-transient ()
       "Prefix for dashboard launch menu."
       [("m" "Mastodon" mastodon)
        ("o" "OpenStreetMap" osm)
@@ -2490,11 +2490,11 @@ file input and output commands
   (view-read-only t)
   :config
   (with-eval-after-load 'embark
-    (defun my/find-file-vertically (file)
+    (defun brk/find-file-vertically (file)
       "Open FILE in a new vertically split window."
       (select-window (split-window-right))
       (find-file file))
-    (keymap-set embark-file-map "M-RET" #'my/find-file-vertically)))
+    (keymap-set embark-file-map "M-RET" #'brk/find-file-vertically)))
 #+end_src
 **** project
 #+begin_quote
@@ -2503,12 +2503,12 @@ Operations on the current project
 #+begin_src emacs-lisp
 (use-package project
   :config
-  (defun my/project-try-nix-store (dir)
+  (defun brk/project-try-nix-store (dir)
     (save-match-data
       (when (string-match (rx bol "/nix/store/" (+ (not "/")) "/")
                           dir)
         (list 'nix-store (match-string 0 dir)))))
-  (add-hook 'project-find-functions #'my/project-try-nix-store)
+  (add-hook 'project-find-functions #'brk/project-try-nix-store)
   (cl-defmethod project-root ((project (head nix-store)))
     (cadr project)))
 #+end_src
@@ -2567,9 +2567,9 @@ run compiler as inferior of Emacs, parse error messages
   :config
   ;; http://stackoverflow.com/a/13408008/1219634
   (require 'ansi-color)
-  (defun my/colorize-compilation-buffer ()
+  (defun brk/colorize-compilation-buffer ()
     (ansi-color-apply-on-region compilation-filter-start (point)))
-  (add-hook 'compilation-filter-hook #'my/colorize-compilation-buffer))
+  (add-hook 'compilation-filter-hook #'brk/colorize-compilation-buffer))
 #+end_src
 **** dumb-jump
 #+begin_quote
@@ -2596,7 +2596,7 @@ The Emacs Client for LSP servers
   (eglot-confirm-server-edits nil)
   (eglot-extend-to-xref t)
   :hook
-  (eglot-managed-mode-hook . my/setup-eglot-buffer)
+  (eglot-managed-mode-hook . brk/setup-eglot-buffer)
   :bind
   (:map eglot-mode-map
         :map mode-specific-map
@@ -2608,7 +2608,7 @@ The Emacs Client for LSP servers
         ("L r" . eglot-rename)
         ("L Q" . eglot-shutdown))
   :config
-  (defun my/setup-eglot-buffer ()
+  (defun brk/setup-eglot-buffer ()
     (if (eglot-managed-p)
         (add-hook 'before-save-hook #'eglot-format-buffer nil t)
       (remove-hook 'before-save-hook #'eglot-format-buffer t)))
@@ -3154,9 +3154,9 @@ Outline-based notes management and organizer
   (org-tags-column -80)
   ;; Misc
   (org-bookmark-names-plist nil)
-  :hook (org-mode-hook . my/org-mode-setup)
+  :hook (org-mode-hook . brk/org-mode-setup)
   :config
-  (defun my/org-mode-setup ()
+  (defun brk/org-mode-setup ()
     (setq-local tab-width 8)
     (setq-local line-spacing 0.2)))
 #+end_src
@@ -3216,7 +3216,7 @@ Dynamic task and appointment lists for Org
   ;; Then override `delete-other-windows' because I do not use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
   ;; Stick to DRY
-  (defun my/org-agenda-common-agenda-sections ()
+  (defun brk/org-agenda-common-agenda-sections ()
     "Return a list of common agenda sections."
     `((agenda "" ((org-agenda-span 'day)
                   (org-agenda-overriding-header "")
@@ -3242,7 +3242,7 @@ Dynamic task and appointment lists for Org
   ;; Add custom agenda commands and their views.
   (setq org-agenda-custom-commands
         `(("@" "Private Agenda"
-           ,(my/org-agenda-common-agenda-sections)
+           ,(brk/org-agenda-common-agenda-sections)
            ((org-agenda-files
              (seq-filter
               (lambda (file)
@@ -3303,7 +3303,7 @@ Dynamic task and appointment lists for Org
                            (org-super-agenda-groups
                             '((:auto-ts)))))))
           ("w" "Workplace Agenda"
-           ,(my/org-agenda-common-agenda-sections)
+           ,(brk/org-agenda-common-agenda-sections)
            ((org-agenda-files
              (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))
             (org-agenda-block-separator nil))))))
@@ -3405,7 +3405,7 @@ Fast note taking in Org
         ("c" . org-capture))
   :config
   (require 'org-reverse-datetree)
-  (defun my/org-capture-find-latest-datetree-entry ()
+  (defun brk/org-capture-find-latest-datetree-entry ()
     "Return the position of today's entry in the latest yearly journal file.
 If today's journal heading exists, place point at the end of the subtree.
 If not, create it using `org-reverse-datetree-goto-date-in-file' before placing point."
@@ -3455,7 +3455,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
            :clock-in t
            :clock-resume t)
           ("j" "Journal" entry
-           (function my/org-capture-find-latest-datetree-entry)
+           (function brk/org-capture-find-latest-datetree-entry)
            "* %U %?")
           ("p" "Project" entry
            (file "")
@@ -3516,9 +3516,9 @@ Public Key Encryption for Org Entries
   :custom
   (org-crypt-key nil)
   (org-crypt-tag-matcher "CRYPT")
-  :hook (org-mode-hook . my/org-encrypt-entries)
+  :hook (org-mode-hook . brk/org-encrypt-entries)
   :config
-  (defun my/org-encrypt-entries ()
+  (defun brk/org-encrypt-entries ()
     (setq-local buffer-auto-save-file-name nil)
     (add-hook 'before-save-hook #'org-encrypt-entries nil t)))
 #+end_src
@@ -4051,10 +4051,10 @@ Featureful EPUB reader mode
   (nov-text-width 82)
   ;; File name where last reading places are saved to and restored from.
   (nov-save-place-file (concat emacs-cache-home "nov-places"))
-  :hook (nov-mode-hook . my/nov-mode-setup)
+  :hook (nov-mode-hook . brk/nov-mode-setup)
   :config
   ;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
-  (defun my/nov-mode-setup ()
+  (defun brk/nov-mode-setup ()
     (setq-local line-spacing 0.4)
     (when (require 'olivetti nil t)
       (olivetti-mode 1)
