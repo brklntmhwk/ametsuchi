@@ -946,7 +946,7 @@ Buffer manipulation primitives for GNU Emacs.
 #+begin_src emacs-lisp
 (setq-default header-line-format
               '("" header-line-indent
-                (:eval (breadcrumb--header-line))
+                (:eval (bc--header-line))
                 " "
                 (mode-line-misc-info mode-line-misc-info)))
 
