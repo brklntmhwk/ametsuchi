@@ -2274,37 +2274,43 @@ A startup screen extracted from Spacemacs
   (dashboard-agenda-action #'dashboard-agenda--visit-file)
   (dashboard-banner-logo-title nil)
   (dashboard-center-content t)
-  ;; (dashboard-init-info nil)
+  (dashboard-navigation-cycle t)
   (dashboard-page-separator "\n\f\f\n")
   (dashboard-projects-backend 'project-el)
   (dashboard-set-file-icons t)
-  (dashboard-set-footer nil)
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
   (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
+  (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-newline
+                               dashboard-insert-init-info
+                               dashboard-items))
   (dashboard-vertically-center-content t)
   (dashboard-items
-   '((agenda . 10)
+   '((my-agenda . 10)
      (projects . 5)
      (bookmarks . 10)
      (recents . 15)))
   (dashboard-item-shortcuts
-   '((agenda . "a")
+   '((my-agenda . "a")
      (bookmarks . "s")
      (projects . "j")
      (recents . "r")
      (registers . "e")))
   :bind
-  (("<f5>" . my/home)
+  (("<f5>" . brk/home)
    (:map dashboard-mode-map
-         ("?" . my/dashboard-mode-transient)))
+         ("?" . brk/dashboard-mode-transient)))
   :hook
   (after-init-hook . dashboard-refresh-buffer)
   (server-after-make-frame-hook . dashboard-refresh-buffer)
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
   :config
-  (defun my/home ()
+  (require 'brk-dashboard)
+  (add-to-list 'dashboard-item-generators
+               '(my-agenda . brk-dashboard-insert-my-agenda-section))
+  (defun brk/home ()
     (interactive)
     (delete-other-windows)
     (dashboard-refresh-buffer))
