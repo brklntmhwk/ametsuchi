@@ -238,6 +238,11 @@ convenient way to repeat the previous command
 :PROPERTIES:
 :CUSTOM_ID: customization
 :END:
+**** brk
+#+begin_src emacs-lisp
+(use-package brk
+  :ensure t)
+#+end_src
 **** custom
 #+begin_quote
 tools for declaring and initializing options
