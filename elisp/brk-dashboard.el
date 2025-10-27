@@ -30,79 +30,79 @@
 
 ;;; Code:
 
-(require 'dashboard)
+;; (require 'dashboard)
 
-;; TODO: Revisit and improve action and widget params.
-(defun brk-dashboard-insert-my-agenda-section (list-size)
-  "Insert LIST-SIZE number of agenda entries into the dashboard."
-  (dashboard-insert-section
-   "Appointment(s) for today"
-   (brk-dashboard--my-agenda-items)
-   list-size
-   'my-agenda
-   (dashboard-get-shortcut 'my-agenda)
-   `(lambda (&rest _)
-      (find-file ,el))
-   (format "%s" (car el))))
+;; ;; TODO: Revisit and improve action and widget params.
+;; (defun brk-dashboard-insert-my-agenda-section (list-size)
+;;   "Insert LIST-SIZE number of agenda entries into the dashboard."
+;;   (dashboard-insert-section
+;;    "Appointment(s) for today"
+;;    (brk-dashboard--my-agenda-items)
+;;    list-size
+;;    'my-agenda
+;;    (dashboard-get-shortcut 'my-agenda)
+;;    `(lambda (&rest _)
+;;       (find-file ,el))
+;;    (format "%s" (car el))))
 
-(defun brk-dashboard--my-agenda-items ()
-  (require 'org-ql)
-  (let* ((today (brk-dashboard--adjusted-today))
-         (tomorrow (decoded-time-add today (make-decoded-time :day 1)))
-         (files (org-agenda-files))
-         (regexp (brk-dashboard--org-timestamp-regexp-for-decoded-dates
-                  (list today tomorrow))))
-    (if files
-        (org-ql-select files
-          `(and (regexp ,regexp)
-                (not (done))
-                (not (tags "ARCHIVE")))
-          :action `(lambda ()
-                     (save-excursion
-                       (let* ((el (org-element-at-point-no-context))
-                              (bound (org-element-end el))
-                              timestamps)
-                         (when (re-search-forward ,regexp bound t nil)
-                           (push (org-timestamp-from-string (match-string 0))
-                                 timestamps))
-                         (thread-first
-                           el
-                           (org-element-put-property :active-timestamp
-                                                     (thread-last
-                                                       timestamps
-                                                       (seq-sort-by #'org-timestamp-to-time
-                                                                    #'time-less-p)
-                                                       (car))))))))
-      (seq-sort-by (lambda (el)
-                     (org-timestamp-to-time (org-element-property :active-timestamp el)))
-                   #'time-less-p))))
+;; (defun brk-dashboard--my-agenda-items ()
+;;   (require 'org-ql)
+;;   (let* ((today (brk-dashboard--adjusted-today))
+;;          (tomorrow (decoded-time-add today (make-decoded-time :day 1)))
+;;          (files (org-agenda-files))
+;;          (regexp (brk-dashboard--org-timestamp-regexp-for-decoded-dates
+;;                   (list today tomorrow))))
+;;     (if files
+;;         (org-ql-select files
+;;           `(and (regexp ,regexp)
+;;                 (not (done))
+;;                 (not (tags "ARCHIVE")))
+;;           :action `(lambda ()
+;;                      (save-excursion
+;;                        (let* ((el (org-element-at-point-no-context))
+;;                               (bound (org-element-end el))
+;;                               timestamps)
+;;                          (when (re-search-forward ,regexp bound t nil)
+;;                            (push (org-timestamp-from-string (match-string 0))
+;;                                  timestamps))
+;;                          (thread-first
+;;                            el
+;;                            (org-element-put-property :active-timestamp
+;;                                                      (thread-last
+;;                                                        timestamps
+;;                                                        (seq-sort-by #'org-timestamp-to-time
+;;                                                                     #'time-less-p)
+;;                                                        (car))))))))
+;;       (seq-sort-by (lambda (el)
+;;                      (org-timestamp-to-time (org-element-property :active-timestamp el)))
+;;                    #'time-less-p))))
 
-(defun brk-dashboard--adjusted-today ()
-  (let* ((now (decode-time))
-         (hour (decoded-time-hour now))
-         (adjusted-today
-          (if (and org-extend-today-until
-                   (< (hour org-extend-today-until)))
-              (decoded-time-add now (make-decoded-time :day -1))
-            (now))))
-    (setf (decoded-time-hour adjusted-today) org-extend-today-until
-          (decoded-time-minute adjusted-today) 0
-          (decoded-time-second adjusted-today) 0)
-    adjusted-today))
+;; (defun brk-dashboard--adjusted-today ()
+;;   (let* ((now (decode-time))
+;;          (hour (decoded-time-hour now))
+;;          (adjusted-today
+;;           (if (and org-extend-today-until
+;;                    (< (hour org-extend-today-until)))
+;;               (decoded-time-add now (make-decoded-time :day -1))
+;;             (now))))
+;;     (setf (decoded-time-hour adjusted-today) org-extend-today-until
+;;           (decoded-time-minute adjusted-today) 0
+;;           (decoded-time-second adjusted-today) 0)
+;;     adjusted-today))
 
-(defun brk-dashboard--org-timestamp-regexp-for-decoded-dates (decoded-dates)
-  "Return a regexp that matches an active Org timestamp
-whose date part equals any of the DECODED-DATES."
-  (let ((date-strings (mapcar (lambda (dt)
-                                (format-time-string "%F" (encode-time dt)))
-                              decoded-dates)))
-    (rx-to-string
-     `(seq
-       "<"
-       (or ,@(mapcar #'regexp-quote date-strings))
-       (optional
-        (seq " " (*? (not (any ">")))))
-       ">"))))
+;; (defun brk-dashboard--org-timestamp-regexp-for-decoded-dates (decoded-dates)
+;;   "Return a regexp that matches an active Org timestamp
+;; whose date part equals any of the DECODED-DATES."
+;;   (let ((date-strings (mapcar (lambda (dt)
+;;                                 (format-time-string "%F" (encode-time dt)))
+;;                               decoded-dates)))
+;;     (rx-to-string
+;;      `(seq
+;;        "<"
+;;        (or ,@(mapcar #'regexp-quote date-strings))
+;;        (optional
+;;         (seq " " (*? (not (any ">")))))
+;;        ">"))))
 
-(provide 'brk-dashboard)
+;; (provide 'brk-dashboard)
 ;;; brk-dashboard.el ends here
