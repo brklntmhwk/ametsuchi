@@ -362,6 +362,12 @@
       repo = "gptel";
       type = "github";
     };
+    gptel-magit = {
+      flake = false;
+      owner = "ragnard";
+      repo = "gptel-magit";
+      type = "github";
+    };
     grugru = {
       flake = false;
       owner = "ROCKTAKEY";
