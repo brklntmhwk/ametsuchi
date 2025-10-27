@@ -2286,10 +2286,10 @@ A startup screen extracted from Spacemacs
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
   (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
-  (dashboard-startupify-list '(dashboard-insert-banner
-                               dashboard-insert-newline
-                               dashboard-insert-init-info
-                               dashboard-items))
+  ;; (dashboard-startupify-list '(dashboard-insert-banner
+  ;;                              dashboard-insert-newline
+  ;;                              dashboard-insert-init-info
+  ;;                              dashboard-items))
   (dashboard-vertically-center-content t)
   (dashboard-items
    '((agenda . 10)
