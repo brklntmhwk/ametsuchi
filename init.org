@@ -239,6 +239,9 @@ convenient way to repeat the previous command
 :CUSTOM_ID: customization
 :END:
 **** brk
+#+begin_quote
+A collection of opinionated and/or custom elisp code
+#+end_quote
 #+begin_src emacs-lisp
 (use-package brk
   :ensure t)

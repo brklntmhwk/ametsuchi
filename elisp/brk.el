@@ -1,4 +1,4 @@
-;;; brk.el ---  -*- lexical-binding: t -*-
+;;; brk.el --- A collection of opinionated and/or custom elisp code -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2025 Ohma Togaki
 
