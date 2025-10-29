@@ -822,7 +822,7 @@ All faces from both built-in features and external packages are centrally manage
        `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
        `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
        ;; blamer
-       `(blamer-face ((,c :height default :background ,bg-hl-line :foreground ,fg-lavender :italic t)))
+       `(blamer-face ((,c :height 1.0 :background ,bg-hl-line :foreground ,fg-lavender :italic t)))
        ;; dired-filter
        `(‎dired-filter-group-header‎ ((,c :background ,bg-lavender :box(:line-width 2 :color ,bg-lavender))))
        ;; goggles
