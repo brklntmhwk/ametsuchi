@@ -3114,6 +3114,13 @@ Outline-based notes management and organizer
   ;; Org files management
   (org-default-notes-file (concat user-documents-dir "inbox.org"))
   (org-archive-location (concat user-documents-dir "archive/" "%s::"))
+  ;; Org modules
+  (org-modules '(org-clock
+                 org-crypt
+                 org-eww
+                 org-habit
+                 org-id
+                 org-info))
   ;; Agenda-related stuff
   (org-enforce-todo-dependencies t)
   (org-extend-today-until 4) ; 4 a.m.
@@ -3563,7 +3570,6 @@ The habit tracking code for Org
 #+begin_src emacs-lisp
 (use-package org-habit
   :after org-agenda
-  :demand t
   :custom
   (org-habit-graph-column 35)
   (org-habit-following-days 7)
