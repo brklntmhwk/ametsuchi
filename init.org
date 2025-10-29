@@ -2284,10 +2284,10 @@ A startup screen extracted from Spacemacs
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
   (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
-  ;; (dashboard-startupify-list '(dashboard-insert-banner
-  ;;                              dashboard-insert-newline
-  ;;                              dashboard-insert-init-info
-  ;;                              dashboard-items))
+  (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-newline
+                               dashboard-insert-init-info
+                               dashboard-insert-items))
   (dashboard-items
    '((my-agenda . 10)
      (projects . 5)
@@ -2304,7 +2304,6 @@ A startup screen extracted from Spacemacs
    (:map dashboard-mode-map
          ("?" . brk/dashboard-mode-transient)))
   :hook
-  (after-init-hook . dashboard-refresh-buffer)
   (server-after-make-frame-hook . dashboard-refresh-buffer)
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
