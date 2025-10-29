@@ -189,14 +189,14 @@ belonging to yesterday."
   "Fill the time part of an Org timestamp with `org-extend-today-until' in mind."
   (let ((hour (or (org-element-property :hour-start ts)
                   org-extend-today-until))
-        (min (or (org-element-property :minute-start ts)
-                 0))
+        (minu (or (org-element-property :minute-start ts)
+                  0))
         (sec (or (org-element-property :second-start ts)
                  0)))
     (thread-first
       (copy-sequence ts)
       (org-element-put-property :hour-start hour)
-      (org-element-put-property :minute-start min)
+      (org-element-put-property :minute-start minu)
       (org-element-put-property :second-start sec))))
 
 (defun brk-dashboard--agenda-open-action (el)
