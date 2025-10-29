@@ -1,4 +1,4 @@
-;;; brk-dashboard.el ---  -*- lexical-binding: t -*-
+;;; brk-dashboard.el --- Opinionated dashboard displays -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2025 Ohma Togaki
 
