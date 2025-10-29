@@ -2275,14 +2275,12 @@ A startup screen extracted from Spacemacs
 (use-package dashboard
   :ensure t
   :custom
-  (dashboard-agenda-item-icon "∴")
-  (dashboard-agenda-action #'dashboard-agenda--visit-file)
   (dashboard-banner-logo-title nil)
   (dashboard-center-content t)
   (dashboard-navigation-cycle t)
   (dashboard-page-separator "\n\f\f\n")
   (dashboard-projects-backend 'project-el)
-  (dashboard-set-file-icons t)
+  (dashboard-set-file-icons nil)
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
   (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
