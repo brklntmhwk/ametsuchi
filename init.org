@@ -2198,6 +2198,22 @@ A startup screen extracted from Spacemacs
   :hook
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
+  :init
+  (defun brk/dashboard-setup-for-daemon ()
+    (require 'dashboard)
+    (dashboard-insert-startupify-lists)
+    (add-hook 'server-after-make-frame-hook
+              (lambda ()
+                (let ((inhibit-message t))
+                  (unless (seq-find
+                           (lambda (buf)
+                             (buffer-local-value 'server-buffer-clients buf))
+                           (buffer-list))
+                    (dashboard-initialize))))))
+
+  (if (daemonp)
+      (brk/dashboard-setup-for-daemon)
+    (dashboard-setup-startup-hook))
   :config
   (require 'brk-dashboard)
 
@@ -2225,23 +2241,7 @@ A startup screen extracted from Spacemacs
        ("g" "GitHub CLI" consult-gh)
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
-       ("e" "Mu4e" mu4e)]))
-
-  (defun brk/dashboard-setup-for-daemon ()
-    (require 'dashboard)
-    (dashboard-insert-startupify-lists)
-    (add-hook 'server-after-make-frame-hook
-              (lambda ()
-                (let ((inhibit-message t))
-                  (unless (seq-find
-                           (lambda (buf)
-                             (buffer-local-value 'server-buffer-clients buf))
-                           (buffer-list))
-                    (dashboard-initialize))))))
-
-  (if (daemonp)
-      (brk/dashboard-setup-for-daemon)
-    (dashboard-setup-startup-hook)))
+       ("e" "Mu4e" mu4e)])))
 #+end_src
 **** dired
 #+begin_quote
