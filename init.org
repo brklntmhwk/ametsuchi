@@ -267,33 +267,10 @@ tools for declaring and initializing options
 :PROPERTIES:
 :CUSTOM_ID: data-management
 :END:
-**** Directory
+**** brk-directory
 #+begin_src emacs-lisp
-(require 'xdg)
-
-(defvar emacs-config-home
-  (concat (xdg-config-home) "/emacs/"))
-
-(defvar emacs-cache-home
-  (concat (xdg-cache-home) "/emacs/"))
-
-(defvar emacs-data-home
-  (concat (xdg-data-home) "/emacs/"))
-
-(defvar emacs-state-home
-  (concat (xdg-state-home) "/emacs/"))
-
-(defvar user-documents-dir
-  (or (xdg-user-dir "DOCUMENTS")
-      "~/Documents/"))
-
-(defvar user-downloads-dir
-  (or (xdg-user-dir "DOWNLOADS")
-      "~/Downloads/"))
-
-(defvar user-pictures-dir
-  (or (xdg-user-dir "PICTURES")
-      "~/Pictures/"))
+(use-package brk-directory
+  :ensure t)
 #+end_src
 **** no-littering
 #+begin_quote
@@ -303,8 +280,8 @@ Help keeping ~/.config/emacs clean
 (use-package no-littering
   :ensure t
   :custom
-  (no-littering-var-directory emacs-cache-home)
-  (no-littering-etc-directory emacs-data-home))
+  (no-littering-var-directory brk-directory-cache-home)
+  (no-littering-etc-directory brk-directory-data-home))
 #+end_src
 *** Performance Enhancement
 :PROPERTIES:
@@ -414,9 +391,9 @@ Transient commands
 (use-package transient
   :defer 1
   :custom
-  (transient-history-file (concat emacs-state-home "transient/history.el"))
-  (transient-values-file (concat emacs-data-home "transient/values.el"))
-  (transient-levels-file (concat emacs-data-home "transient/levels.el"))
+  (transient-history-file (concat brk-directory-state-home "transient/history.el"))
+  (transient-values-file (concat brk-directory-data-home "transient/values.el"))
+  (transient-levels-file (concat brk-directory-data-home "transient/levels.el"))
   :config
   (transient-define-prefix brk/toggle-transient ()
     "Prefix for `toggle-map'"
@@ -439,7 +416,7 @@ browse UN*X manual pages `wo (without) man'
 (use-package woman
   :custom
   (woman-fill-column 82)
-  (woman-cache-filename (concat emacs-cache-home ".wmncach.el"))
+  (woman-cache-filename (concat brk-directory-cache-home ".wmncach.el"))
   :bind
   (("<f1> M-m" . woman)))
 #+end_src
@@ -1071,7 +1048,7 @@ Completion At Point Extensions
   :ensure t
   :custom
   (cape-dict-file
-   (concat emacs-data-home "cape/dict"))
+   (concat brk-directory-data-home "cape/dict"))
   :functions
   (cape-capf-buster
    cape-capf-super)
@@ -1210,7 +1187,7 @@ An Interactive interface for "GitHub CLI" client inside GNU Emacs using Consult
   :if (executable-find "gh")
   :after consult
   :custom
-  (consult-gh-default-clone-directory (concat user-documents-dir "projects/"))
+  (consult-gh-default-clone-directory (concat brk-directory-user-documents "projects/"))
   (consult-gh-issue-maxnum 50)
   (consult-gh-repo-maxnum 50)
   (consult-gh-show-preview t)
@@ -1517,7 +1494,7 @@ automatic mode-dependent insertion of text into new files
 (use-package autoinsert
   :custom
   (auto-insert 'other)
-  (auto-insert-directory (concat emacs-data-home "templates/autoinsert/"))
+  (auto-insert-directory (concat brk-directory-data-home "templates/autoinsert/"))
   (auto-insert-query nil)
   :hook
   (after-init-hook . auto-insert-mode))
@@ -1898,7 +1875,7 @@ Tempo templates/snippets with in-buffer field editing
 (use-package tempel
   :ensure t
   :custom
-  (tempel-path (concat emacs-data-home "templates/*.eld"))
+  (tempel-path (concat brk-directory-data-home "templates/*.eld"))
   :bind
   (("M-+" . tempel-complete)
    ("M-*" . tempel-insert)
@@ -2284,7 +2261,7 @@ A startup screen extracted from Spacemacs
   (dashboard-set-file-icons nil)
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
-  (dashboard-startup-banner (concat user-pictures-dir "dashboard-banner.png"))
+  (dashboard-startup-banner (concat brk-directory-user-pictures "dashboard-banner.png"))
   (dashboard-startupify-list '(dashboard-insert-banner
                                dashboard-insert-newline
                                dashboard-insert-init-info
@@ -2940,7 +2917,7 @@ Work with Git forges from the comfort of Magit
   :demand t
   :after magit
   :custom
-  (forge-database-file (concat emacs-data-home "forge/database.sqlite"))
+  (forge-database-file (concat brk-directory-data-home "forge/database.sqlite"))
   (forge-owned-accounts '(("brklntmhwk")))
   (forge-add-pullreq-refspec 'ask))
 #+end_src
@@ -3050,7 +3027,7 @@ Emacs Web Wowser
   (eww-auto-rename-buffer 'title)
   ;; (eww-bookmarks-directory "~/")
   ;; (eww-browse-url-new-window-is-tab nil)
-  (eww-download-directory user-downloads-dir)
+  (eww-download-directory brk-directory-user-downloads)
   (eww-history-limit 150)
   :hook
   (eww-after-render-hook . (lambda ()
@@ -3117,8 +3094,8 @@ Outline-based notes management and organizer
   :defer 3
   :custom
   ;; Org files management
-  (org-default-notes-file (concat user-documents-dir "inbox.org"))
-  (org-archive-location (concat user-documents-dir "archive/" "%s::"))
+  (org-default-notes-file (concat brk-directory-user-documents "inbox.org"))
+  (org-archive-location (concat brk-directory-user-documents "archive/" "%s::"))
   ;; Org modules
   (org-modules '(org-clock
                  org-crypt
@@ -3212,7 +3189,7 @@ Dynamic task and appointment lists for Org
    (seq-filter
     (lambda (file)
       (not (string-match-p "/archive/" file)))
-    (directory-files-recursively user-documents-dir "\\.org$")))
+    (directory-files-recursively brk-directory-user-documents "\\.org$")))
   (org-agenda-inhibit-startup t)
   (org-agenda-prefix-format
    '((agenda . " %i %-12:c%?-12t% s")
@@ -3270,7 +3247,7 @@ Dynamic task and appointment lists for Org
                 (and
                  (not (string-match-p "/archive/" file))
                  (not (string-match-p "/work/" file))))
-              (directory-files-recursively user-documents-dir "\\.org$")))
+              (directory-files-recursively brk-directory-user-documents "\\.org$")))
             (org-agenda-start-with-log-mode t)
             (org-agenda-block-separator nil)))
           ;; ("l" "Throwback Views"
@@ -3326,7 +3303,7 @@ Dynamic task and appointment lists for Org
           ("w" "Workplace Agenda"
            ,(brk/org-agenda-common-agenda-sections)
            ((org-agenda-files
-             (directory-files-recursively (concat user-documents-dir "work/") "\\.org$"))
+             (directory-files-recursively (concat brk-directory-user-documents "work/") "\\.org$"))
             (org-agenda-block-separator nil))))))
 #+end_src
 ***** org-super-agenda
@@ -3430,7 +3407,7 @@ Fast note taking in Org
     "Return the position of today's entry in the latest yearly journal file.
 If today's journal heading exists, place point at the end of the subtree.
 If not, create it using `org-reverse-datetree-goto-date-in-file' before placing point."
-    (let* ((journal-dir (file-name-as-directory (concat user-documents-dir "journal/")))
+    (let* ((journal-dir (file-name-as-directory (concat brk-directory-user-documents "journal/")))
            (year (format-time-string "%Y"))
            (latest-file (expand-file-name (format "%s.org" year) journal-dir)))
       (unless (file-exists-p latest-file)
@@ -3445,7 +3422,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
       (cons latest-file (point))))
   (setq org-capture-templates
         `(("a" "Anki Basic" entry
-           (file ,(concat user-documents-dir "anki.org"))
+           (file ,(concat brk-directory-user-documents "anki.org"))
            ,(concat
              "* %? %^g\n"
              ":PROPERTIES:\n"
@@ -3456,7 +3433,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
            :empty-lines-after 1
            :prepend t)
           ("c" "Anki Cloze" entry
-           (file ,(concat user-documents-dir "anki.org"))
+           (file ,(concat brk-directory-user-documents "anki.org"))
            ,(concat
              "* {{c1::%?}} %^g\n"
              ":PROPERTIES:\n"
@@ -3552,7 +3529,7 @@ Image drag-and-drop for Org-mode.
   :ensure t
   :after org
   :custom
-  (org-download-image-dir user-pictures-dir)
+  (org-download-image-dir brk-directory-user-pictures)
   ;; (org-download-edit-cmd "swappy %s")
   ;; (org-download-screenshot-method "grimblast copysave")
   (org-download-timestamp "%Y%m%d_%H%M%S_")
@@ -3589,7 +3566,7 @@ Global identifiers for Org entries
 (use-package org-id
   :after org
   :custom
-  (org-id-locations-file (concat emacs-cache-home "org-id-locations"))
+  (org-id-locations-file (concat brk-directory-cache-home "org-id-locations"))
   (org-id-link-to-org-use-id 'create-if-interactive)
   (org-id-search-archives nil))
 #+end_src
@@ -3612,7 +3589,7 @@ a simple org-mode based journaling mode
   :ensure t
   :after org
   :custom
-  (org-journal-dir (concat user-documents-dir "journal/"))
+  (org-journal-dir (concat brk-directory-user-documents "journal/"))
   (org-journal-prefix-key nil)
   (org-journal-date-format "%a, %d %b")
   (org-journal-time-format "")
@@ -3997,7 +3974,7 @@ Yet another calibre client
 (use-package calibredb
   :ensure t
   :custom
-  (calibredb-root-dir (concat user-documents-dir "calibre/"))
+  (calibredb-root-dir (concat brk-directory-user-documents "calibre/"))
   (calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
   ;; (calibredb-device-dir "/TODO")
   (calibredb-download-dir nil)
@@ -4014,7 +3991,7 @@ Browse the Emacsmirror package database
 #+begin_src emacs-lisp
 (use-package epkg
   :custom
-  (epkg-repository (concat emacs-data-home "epkgs/")))
+  (epkg-repository (concat brk-directory-data-home "epkgs/")))
 #+end_src
 ***** epkg-marginalia
 #+begin_quote
@@ -4070,7 +4047,7 @@ Featureful EPUB reader mode
   :custom
   (nov-text-width 82)
   ;; File name where last reading places are saved to and restored from.
-  (nov-save-place-file (concat emacs-cache-home "nov-places"))
+  (nov-save-place-file (concat brk-directory-cache-home "nov-places"))
   :hook (nov-mode-hook . brk/nov-mode-setup)
   :config
   ;; https://github.com/akirak/emacs-config?tab=readme-ov-file#nov
@@ -4092,7 +4069,7 @@ OpenStreetMap viewer
   :ensure t
   :custom
   (osm-search-language "en,ja")
-  (osm-tile-directory emacs-cache-home)
+  (osm-tile-directory brk-directory-cache-home)
   :bind
   (("<f6>" . osm)
    (:map osm-mode-map
