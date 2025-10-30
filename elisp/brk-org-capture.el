@@ -35,13 +35,13 @@
 (require 'ol)
 (require 'org-capture)
 
-(defun brk-org-capture--find-latest-datetree-entry ()
+(defun brk-org-capture-find-latest-datetree-entry ()
   "Return the position of today's entry in the latest yearly journal file.
 If today's journal heading exists, place point at the end of the subtree.
 If not, create it using `org-reverse-datetree-goto-date-in-file' before placing point."
   (require 'brk-directory)
   (require 'org-reverse-datetree)
-  (let* ((journal-dir (file-name-as-directory (concat user-documents-dir "journal/")))
+  (let* ((journal-dir (file-name-as-directory (concat brk-directory-user-documents "journal/")))
          (year (format-time-string "%Y"))
          (latest-file (expand-file-name (format "%s.org" year) journal-dir)))
     (unless (file-exists-p latest-file)
