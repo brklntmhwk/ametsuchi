@@ -35,8 +35,11 @@
 (defun brk-dashboard-insert-my-agenda-section (list-size)
   "Insert LIST-SIZE number of agenda entries into the dashboard."
   (dashboard-insert-section
-   (format "Today's Agenda (Extended today until: %02d:00)"
-           org-extend-today-until)
+   (concat
+    "Today's Agenda"
+    (when (and (featurep 'org)
+               (boundp 'org-extend-today-until))
+      (format " (Extended today until: %02d:00)" org-extend-today-until)))
    (brk-dashboard--my-agenda-items)
    list-size
    'my-agenda
