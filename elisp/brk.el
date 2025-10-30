@@ -4,7 +4,8 @@
 
 ;; Author: Ohma Togaki
 ;; Version: 0.1
-;; URL: https://github.com/brklntmhwk/lisp/brk.el
+;; Keywords: convenience
+;; URL: https://github.com/brklntmhwk/elisp/brk.el
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is not part of GNU Emacs.
