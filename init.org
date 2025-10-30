@@ -2216,8 +2216,8 @@ A startup screen extracted from Spacemacs
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
        ("e" "Mu4e" mu4e)]))
-  (dashboard-setup-startup-hook)
-  (when (daemonp)
+  (defun brk/dashboard-setup-for-daemon ()
+    (require 'dashboard)
     (dashboard-insert-startupify-lists)
     (add-hook 'server-after-make-frame-hook
               (lambda ()
@@ -2226,7 +2226,10 @@ A startup screen extracted from Spacemacs
                            (lambda (buf)
                              (buffer-local-value 'server-buffer-clients buf))
                            (buffer-list))
-                    (dashboard-initialize)))))))
+                    (dashboard-initialize))))))
+  (if (daemonp)
+      (brk/dashboard-setup-for-daemon)
+    (dashboard-setup-startup-hook)))
 #+end_src
 **** dired
 #+begin_quote
