@@ -2460,7 +2460,8 @@ process Emacs shell arguments
   (inhibit-startup-echo-area-message t)
   (inhibit-startup-screen t)
   (initial-buffer-choice
-   (lambda () (get-buffer "*dashboard*")))
+   ; If not present yet, create the Dashboard buffer in advance.
+   (lambda () (get-buffer-create "*dashboard*")))
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode))
 #+end_src
