@@ -269,8 +269,7 @@ tools for declaring and initializing options
 :END:
 **** brk-directory
 #+begin_src emacs-lisp
-(use-package brk-directory
-  :ensure t)
+(use-package brk-directory)
 #+end_src
 **** no-littering
 #+begin_quote
@@ -593,7 +592,6 @@ Fontset allows you to flexibly specify which font to be active for a specific ta
 ;; fontaine does not seem to support fontset configuration, so implement it on your own.
 ;; https://github.com/protesilaos/fontaine/commit/bf2a37b5cc7448d05f77a23879436b0f94eb29ff
 (use-package brk-fontset
-  :ensure t
   :config
   (when (daemonp)
     (add-hook 'server-after-make-frame-hook
