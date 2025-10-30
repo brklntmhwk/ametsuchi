@@ -302,7 +302,8 @@ Benchmarks for require and load calls
 #+begin_src emacs-lisp
 (use-package benchmark-init
   :ensure t
-  :hook (after-init-hook . benchmark-init/deactivate))
+  :config
+  (add-hook 'after-init-hook #'benchmark-init/deactivate))
 #+end_src
 **** edebug
 #+begin_quote
