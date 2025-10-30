@@ -1919,7 +1919,9 @@ interface for display-line-numbers
   (defun brk/display-line-numbers-fixed-width ()
     (when (< display-line-numbers-width 5)
       (setq display-line-numbers-width 5)))
+
   (add-hook 'display-line-numbers-mode-hook #'brk/display-line-numbers-fixed-width)
+
   (dolist (mode '(dashboard-mode-hook
                   dired-mode-hook
                   eat-mode-hook
@@ -2141,6 +2143,7 @@ Save/restore sets of windows, tabs/frames, and their buffers
       "Returns non-nil if BUFFER is present in `activities-current'."
       (when (activities-current)
         (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
+
     (defvar my-consult--source-activities-buffer
       `(:name "Activities Buffers"
               :narrow ?a
@@ -2153,6 +2156,7 @@ Save/restore sets of windows, tabs/frames, and their buffers
                                   :sort 'visibility
                                   :as #'buffer-name))
               :state ,#'consult--buffer-state))
+
     (add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
 #+end_src
 **** dashboard
@@ -2195,18 +2199,23 @@ A startup screen extracted from Spacemacs
                            (setq-local frame-title-format nil)))
   :config
   (require 'brk-dashboard)
+
   (add-to-list 'dashboard-item-generators
                '(my-agenda . brk-dashboard-insert-my-agenda-section))
   (add-to-list 'dashboard-heading-icons
                '(my-agenda . "nf-oct-calendar"))
+
   (defun brk/home ()
     (interactive)
     (delete-other-windows)
     (dashboard-refresh-buffer))
+
   (mapc (lambda (k) (keymap-unset dashboard-mode-map k))
         '("j" "k" "{" "}"))
+
   (keymap-set dashboard-mode-map "n" #'dashboard-next-line)
   (keymap-set dashboard-mode-map "p" #'dashboard-previous-line)
+
   (with-eval-after-load 'transient
     (transient-define-prefix brk/dashboard-mode-transient ()
       "Prefix for dashboard launch menu."
@@ -2216,6 +2225,7 @@ A startup screen extracted from Spacemacs
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
        ("e" "Mu4e" mu4e)]))
+
   (defun brk/dashboard-setup-for-daemon ()
     (require 'dashboard)
     (dashboard-insert-startupify-lists)
@@ -2227,6 +2237,7 @@ A startup screen extracted from Spacemacs
                              (buffer-local-value 'server-buffer-clients buf))
                            (buffer-list))
                     (dashboard-initialize))))))
+
   (if (daemonp)
       (brk/dashboard-setup-for-daemon)
     (dashboard-setup-startup-hook)))
@@ -2416,7 +2427,9 @@ Operations on the current project
       (when (string-match (rx bol "/nix/store/" (+ (not "/")) "/")
                           dir)
         (list 'nix-store (match-string 0 dir)))))
+
   (add-hook 'project-find-functions #'brk/project-try-nix-store)
+
   (cl-defmethod project-root ((project (head nix-store)))
     (cadr project)))
 #+end_src
@@ -2646,6 +2659,7 @@ Emacs Lisp mode
   :config
   (add-to-list 'auto-mode-alist
                '("/recipes/[-a-z0-9]+\\'" . lisp-data-mode))
+
   (define-skeleton elisp-skeleton
     "Insert a header for Emacs Lisp files."
     > ";;; "
@@ -2659,6 +2673,7 @@ Emacs Lisp mode
     ";;; "
     (file-name-nondirectory (or buffer-file-name (buffer-name)))
     " ends here")
+
   (with-eval-after-load 'autoinsert
     (dolist (entry (reverse
                     '(("\\.dir-locals\\(?:-2\\)?\\.el\\'" . "dir-locals-insert.el")
@@ -3127,8 +3142,10 @@ Dynamic task and appointment lists for Org
   ;; Unset `org-agenda-goto' because it is confusing.
   (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
         '("TAB" "<tab>"))
+
   ;; Then override `delete-other-windows' because I do not use it.
   (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
+
   ;; Stick to DRY
   (defun brk/org-agenda-common-agenda-sections ()
     "Return a list of common agenda sections."
@@ -3153,6 +3170,7 @@ Dynamic task and appointment lists for Org
                    '((:name ""
                             :time-grid t
                             :anything)))))))
+
   ;; Add custom agenda commands and their views.
   (setq org-agenda-custom-commands
         `(("@" "Private Agenda"
