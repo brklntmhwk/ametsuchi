@@ -2305,9 +2305,14 @@ A startup screen extracted from Spacemacs
    (:map dashboard-mode-map
          ("?" . brk/dashboard-mode-transient)))
   :hook
-  (server-after-make-frame-hook . dashboard-refresh-buffer)
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
+  (server-after-make-frame-hook . (lambda ()
+                                    (unless (seq-find
+                                             (lambda (buf)
+                                               (buffer-local-value 'server-buffer-clients buf))
+                                             (buffer-list))
+                                      (dashboard-initialize))))
   :config
   (require 'brk-dashboard)
   (add-to-list 'dashboard-item-generators
