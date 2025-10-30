@@ -2174,7 +2174,6 @@ A startup screen extracted from Spacemacs
   (dashboard-startup-banner (concat brk-directory-user-pictures "dashboard-banner.png"))
   (dashboard-startupify-list '(dashboard-insert-banner
                                dashboard-insert-newline
-                               dashboard-insert-init-info
                                dashboard-insert-items))
   (dashboard-items
    '((my-agenda . 10)
@@ -2194,12 +2193,6 @@ A startup screen extracted from Spacemacs
   :hook
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
-  (server-after-make-frame-hook . (lambda ()
-                                    (unless (seq-find
-                                             (lambda (buf)
-                                               (buffer-local-value 'server-buffer-clients buf))
-                                             (buffer-list))
-                                      (dashboard-initialize))))
   :config
   (require 'brk-dashboard)
   (add-to-list 'dashboard-item-generators
@@ -2223,7 +2216,16 @@ A startup screen extracted from Spacemacs
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
        ("e" "Mu4e" mu4e)]))
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
+  (when (daemonp)
+    (dashboard-insert-startupify-lists)
+    (add-hook 'server-after-make-frame-hook
+              (lambda ()
+                (unless (seq-find
+                         (lambda (buf)
+                           (buffer-local-value 'server-buffer-clients buf))
+                         (buffer-list))
+                  (dashboard-initialize))))))
 #+end_src
 **** dired
 #+begin_quote
