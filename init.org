@@ -2165,74 +2165,68 @@ Save/restore sets of windows, tabs/frames, and their buffers
 A startup screen extracted from Spacemacs
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :custom
-    (dashboard-banner-logo-title nil)
-    (dashboard-center-content t)
-    (dashboard-navigation-cycle t)
-    (dashboard-page-separator "\n\f\f\n")
-    (dashboard-projects-backend 'project-el)
-    (dashboard-set-file-icons nil)
-    (dashboard-set-heading-icons t)
-    (dashboard-show-shortcuts t)
-    (dashboard-startup-banner (concat brk-directory-user-pictures "dashboard-banner.png"))
-    (dashboard-startupify-list '(dashboard-insert-banner
-                                 dashboard-insert-newline
-                                 dashboard-insert-items))
-    (dashboard-items
-     '((my-agenda . 10)
-       (projects . 5)
-       (bookmarks . 10)
-       (recents . 15)))
-    (dashboard-item-shortcuts
-     '((my-agenda . "a")
-       (bookmarks . "s")
-       (projects . "j")
-       (recents . "r")
-       (registers . "e")))
-    :bind
-    (("<f5>" . brk/home)
-     (:map dashboard-mode-map
-           ("?" . brk/dashboard-mode-transient)))
-    :hook
-    (dashboard-mode-hook . (lambda ()
-                             (setq-local frame-title-format nil)))
-    :config
-    (require 'brk-dashboard)
+(use-package dashboard
+  :ensure t
+  :custom
+  (dashboard-banner-logo-title nil)
+  (dashboard-center-content t)
+  (dashboard-navigation-cycle t)
+  (dashboard-page-separator "\n\f\f\n")
+  (dashboard-projects-backend 'project-el)
+  (dashboard-set-file-icons nil)
+  (dashboard-set-heading-icons t)
+  (dashboard-show-shortcuts t)
+  (dashboard-startup-banner (concat brk-directory-user-pictures "dashboard-banner.png"))
+  (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-newline
+                               dashboard-insert-items))
+  (dashboard-items
+   '((my-agenda . 10)
+     (projects . 5)
+     (bookmarks . 10)
+     (recents . 15)))
+  (dashboard-item-shortcuts
+   '((my-agenda . "a")
+     (bookmarks . "s")
+     (projects . "j")
+     (recents . "r")
+     (registers . "e")))
+  :bind
+  (("<f5>" . brk/home)
+   (:map dashboard-mode-map
+         ("?" . brk/dashboard-mode-transient)))
+  :hook
+  (server-after-make-frame-hook . dashboard-refresh-buffer)
+  (dashboard-mode-hook . (lambda ()
+                           (setq-local frame-title-format nil)))
+  :config
+  (require 'brk-dashboard)
 
-    (add-to-list 'dashboard-item-generators
-                 '(my-agenda . brk-dashboard-insert-my-agenda-section))
-    (add-to-list 'dashboard-heading-icons
-                 '(my-agenda . "nf-oct-calendar"))
+  (add-to-list 'dashboard-item-generators
+               '(my-agenda . brk-dashboard-insert-my-agenda-section))
+  (add-to-list 'dashboard-heading-icons
+               '(my-agenda . "nf-oct-calendar"))
 
-    (defun brk/home ()
-      (interactive)
-      (delete-other-windows)
-      (dashboard-refresh-buffer))
+  (defun brk/home ()
+    (interactive)
+    (delete-other-windows)
+    (dashboard-refresh-buffer))
 
-    (mapc (lambda (k) (keymap-unset dashboard-mode-map k))
-          '("j" "k" "{" "}"))
+  (mapc (lambda (k) (keymap-unset dashboard-mode-map k))
+        '("j" "k" "{" "}"))
 
-    (keymap-set dashboard-mode-map "n" #'dashboard-next-line)
-    (keymap-set dashboard-mode-map "p" #'dashboard-previous-line)
+  (keymap-set dashboard-mode-map "n" #'dashboard-next-line)
+  (keymap-set dashboard-mode-map "p" #'dashboard-previous-line)
 
-    (with-eval-after-load 'transient
-      (transient-define-prefix brk/dashboard-mode-transient ()
-        "Prefix for dashboard launch menu."
-        [("m" "Mastodon" mastodon)
-         ("o" "OpenStreetMap" osm)
-         ("g" "GitHub CLI" consult-gh)
-         ;; ("c" "Calibre" calibredb)
-         ("?" "Gptel" gptel-menu)
-         ("e" "Mu4e" mu4e)]))
-
-    (if (daemonp)
-        (add-hook 'server-after-make-frame-hook
-                  (lambda ()
-                    (dashboard-insert-startupify-lists)
-                    (dashboard-initialize)))
-      (dashboard-setup-startup-hook)))
+  (with-eval-after-load 'transient
+    (transient-define-prefix brk/dashboard-mode-transient ()
+      "Prefix for dashboard launch menu."
+      [("m" "Mastodon" mastodon)
+       ("o" "OpenStreetMap" osm)
+       ("g" "GitHub CLI" consult-gh)
+       ;; ("c" "Calibre" calibredb)
+       ("?" "Gptel" gptel-menu)
+       ("e" "Mu4e" mu4e)])))
 #+end_src
 **** dired
 #+begin_quote
