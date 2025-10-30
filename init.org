@@ -2191,6 +2191,9 @@ A startup screen extracted from Spacemacs
    (:map dashboard-mode-map
          ("?" . brk/dashboard-mode-transient)))
   :hook
+  (server-after-make-frame-hook . (lambda ()
+                                    (let ((inhibit-message t))
+                                      (dashboard-refresh-buffer))))
   (dashboard-mode-hook . (lambda ()
                            (setq-local frame-title-format nil)))
   :config
@@ -2216,16 +2219,7 @@ A startup screen extracted from Spacemacs
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
        ("e" "Mu4e" mu4e)]))
-  (dashboard-setup-startup-hook)
-  (when (daemonp)
-    (dashboard-insert-startupify-lists)
-    (add-hook 'server-after-make-frame-hook
-              (lambda ()
-                (unless (seq-find
-                         (lambda (buf)
-                           (buffer-local-value 'server-buffer-clients buf))
-                         (buffer-list))
-                  (dashboard-initialize))))))
+  (dashboard-setup-startup-hook))
 #+end_src
 **** dired
 #+begin_quote
