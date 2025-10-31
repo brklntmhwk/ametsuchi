@@ -2185,6 +2185,7 @@ A startup screen extracted from Spacemacs
      (projects . 5)
      (bookmarks . 10)
      (recents . 15)))
+
   (dashboard-item-shortcuts
    '((my-agenda . "a")
      (bookmarks . "s")
@@ -2226,7 +2227,10 @@ A startup screen extracted from Spacemacs
        ("g" "GitHub CLI" consult-gh)
        ;; ("c" "Calibre" calibredb)
        ("?" "Gptel" gptel-menu)
-       ("e" "Mu4e" mu4e)])))
+       ("e" "Mu4e" mu4e)]))
+
+  (unless (daemonp)
+    (dashboard-setup-startup-hook)))
 #+end_src
 **** dired
 #+begin_quote
