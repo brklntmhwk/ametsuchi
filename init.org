@@ -3207,7 +3207,9 @@ Supercharge your Org daily/weekly agenda by grouping items
   :after org-agenda
   :custom
   (org-super-agenda-header-prefix "")
-  :hook (org-agenda-mode-hook . org-super-agenda-mode))
+  :hook (org-agenda-mode-hook . org-super-agenda-mode)
+  :config
+  (require 'brk-org-super-agenda))
 #+end_src
 **** org-anki
 #+begin_quote
