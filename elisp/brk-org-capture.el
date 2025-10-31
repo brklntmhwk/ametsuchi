@@ -30,6 +30,7 @@
 ;;
 
 ;;; Code:
+
 (require 'brk-directory)
 
 (defun brk-org-capture--find-latest-datetree-entry ()
