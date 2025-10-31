@@ -2272,48 +2272,14 @@ Ibuffer-like filtering for dired
 (use-package dired-filter
   :ensure t
   :after dired
-  :custom
-  (dired-filter-group-saved-groups
-   '(("default"
-      ("General directories"
-       (directory . t)
-       (name . "^[[:alnum:]]"))
-      ("Dot directories"
-       (directory . t)
-       (name . "^\\."))
-      ("Dot or config files"
-       (file . t)
-       (or (dot-files)
-           (extension "conf" "toml" "yaml" "yml")))
-      ("Data files"
-       (file . t)
-       (extension "csv" "json" "jsonc" "lock"))
-      ("Code"
-       (file . t)
-       (extension "astro" "c" "clj" "css" "el" "hs"
-                  "html" "js" "jsx" "nix" "py" "rs"
-                  "scss" "ts" "tsx" "zig"))
-      ("Org"
-       (file . t)
-       (extension "org" "org_archive"))
-      ("Text documents"
-       (file . t)
-       (or (name . "COPYING")
-           (name . "LICENSE")
-           (name . "README")
-           (name . "TODO")
-           (extension "markdown" "md" "mdx" "mkd" "rst" "txt")))
-      ("E-books and PDF" (extension "azw" "epub" "mobi"  "pdf"))
-      ("Archives" (extension "bz2" "gz" "nar" "rar" "tar" "zip"))
-      ("LaTeX" (extension "tex" "bib"))
-      ("Executables" (executable))
-      ("Images"
-       (extension "avif" "bmp" "ico" "jpeg" "jpg" "gif"
-                  "png" "raw" "svg" "tiff" "webp" "xcf")))))
   :hook
   ((dired-mode-hook . (lambda ()
                         (dired-filter-mode)
-                        (dired-filter-group-mode)))))
+                        (dired-filter-group-mode))))
+  :config
+  (require 'brk-dired-filter)
+  (setq dired-filter-group-saved-groups
+        `(("default" ,@(brk-dired-filter-generate-default-groups)))))
 #+end_src
 ***** dired-hacks-utils
 #+begin_quote
