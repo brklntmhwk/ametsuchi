@@ -2248,7 +2248,10 @@ directory-browsing commands
   ((:map dired-mode-map
          ("N" . dired-create-empty-file)))
   :hook
-  (dired-mode-hook . dired-hide-details-mode))
+  (dired-mode-hook . dired-hide-details-mode)
+  :config
+  (require 'brk-dired)
+  (keymap-set dired-mode-map "C-<return>" #'brk-dired-find-file-other-tab))
 #+end_src
 ***** dired-collapse
 #+begin_quote
