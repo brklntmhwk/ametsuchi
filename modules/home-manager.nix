@@ -47,15 +47,25 @@ in
       };
     };
 
-    home.packages = with pkgs; [
+    home.packages = builtins.attrValues {
       # Add font packages that will be used in your Emacs config.
-      moralerspace-hwnf
-      sarasa-gothic
-      noto-fonts-emoji
-      symbola
-    ];
+      inherit (pkgs)
+        moralerspace-hwnf
+        sarasa-gothic
+        noto-fonts-emoji
+        symbola
+        ;
+    };
 
     # Generate a desktop file for emacsclient.
     services.emacs.client.enable = cfg.serviceIntegration.enable;
+
+    # Deploy data files.
+    xdg.dataFile = {
+      "emacs/templates" = {
+        source = ../templates;
+        recursive = true;
+      };
+    };
   };
 }

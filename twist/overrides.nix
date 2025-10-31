@@ -28,4 +28,10 @@ builtins.intersectAttrs prev {
       '';
     }
   );
+
+  # https://github.com/akirak/emacs-config/blob/1a76845c6f3740578efdc978da6db9b0ebe6bccc/emacs/overrides.nix
+  brk = prev.brk.overrideAttrs (old: {
+    # The libraries are improperly packaged, so disable byte-compilation for now.
+    dontByteCompile = true;
+  });
 }

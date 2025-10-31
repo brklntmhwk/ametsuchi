@@ -94,11 +94,11 @@
     "gnu-elpa": {
       "flake": false,
       "locked": {
-        "lastModified": 1758231659,
-        "narHash": "sha256-AkxnRSeuqUwuhZfjsc198SWcylc0cWAUWw+Fh8iEUgQ=",
+        "lastModified": 1760200209,
+        "narHash": "sha256-Cx4W8whZRpGcoU0p2T1yirug8FRaKR8WcMopjPmlrrA=",
         "owner": "elpa-mirrors",
         "repo": "elpa",
-        "rev": "3159cda84f536358285088960f6d5077b9641e67",
+        "rev": "95b0fc13c5b21306efb70c45442f0883bc401d4f",
         "type": "github"
       },
       "original": {
@@ -110,7 +110,7 @@
     "gnu-elpa-archive": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-X60DKUgmowtxv302s8JE9rVncUbuflmkyGAA3ZSDB9U=",
+        "narHash": "sha256-SP2z75y0TKDSnOauGCzNgZKUJ3Tb4DXiivCZRYuzYzA=",
         "type": "file",
         "url": "https://elpa.gnu.org/packages/archive-contents"
       },
@@ -150,11 +150,11 @@
     "melpa": {
       "flake": false,
       "locked": {
-        "lastModified": 1758550773,
-        "narHash": "sha256-hW4XMbxEPJW4zc0YYqIkwUNe4lqnZwGtgEEFZ7ity14=",
+        "lastModified": 1761062476,
+        "narHash": "sha256-D7FLw6yz86JHIaMW+aOEy2dhniFPAEnkl0acQeNXSNc=",
         "owner": "melpa",
         "repo": "melpa",
-        "rev": "2dbcb69f603a94b6abc196d45ec5d2fb2ddc1344",
+        "rev": "c3b9c3c5e5d1966c1b0598ced8971f3344519681",
         "type": "github"
       },
       "original": {
@@ -180,6 +180,21 @@
       "original": {
         "owner": "Naxdy",
         "repo": "nix-bwrapper",
+        "type": "github"
+      }
+    },
+    "nix-filter": {
+      "locked": {
+        "lastModified": 1757882181,
+        "narHash": "sha256-+cCxYIh2UNalTz364p+QYmWHs0P+6wDhiWR4jDIKQIU=",
+        "owner": "numtide",
+        "repo": "nix-filter",
+        "rev": "59c44d1909c72441144b93cf0f054be7fe764de5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "nix-filter",
         "type": "github"
       }
     },
@@ -349,6 +364,7 @@
         "gnu-elpa-archive": "gnu-elpa-archive",
         "melpa": "melpa",
         "nix-bwrapper": "nix-bwrapper",
+        "nix-filter": "nix-filter",
         "nixpkgs": "nixpkgs_4",
         "nongnu-elpa": "nongnu-elpa",
         "nongnu-elpa-archive": "nongnu-elpa-archive",

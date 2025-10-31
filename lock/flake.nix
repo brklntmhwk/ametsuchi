@@ -105,6 +105,12 @@
       repo = "compat";
       type = "github";
     };
+    cond-let = {
+      flake = false;
+      owner = "tarsius";
+      repo = "cond-let";
+      type = "github";
+    };
     consult = {
       flake = false;
       owner = "minad";
@@ -211,6 +217,12 @@
       flake = false;
       type = "git";
       url = "https://codeberg.org/akib/emacs-eat";
+    };
+    eca = {
+      flake = false;
+      owner = "editor-code-assistant";
+      repo = "eca-emacs";
+      type = "github";
     };
     edit-indirect = {
       flake = false;
@@ -348,6 +360,12 @@
       flake = false;
       owner = "karthink";
       repo = "gptel";
+      type = "github";
+    };
+    gptel-magit = {
+      flake = false;
+      owner = "ragnard";
+      repo = "gptel-magit";
       type = "github";
     };
     grugru = {
@@ -505,6 +523,12 @@
       repo = "move-dup";
       type = "github";
     };
+    multiple-cursors = {
+      flake = false;
+      owner = "magnars";
+      repo = "multiple-cursors.el";
+      type = "github";
+    };
     nerd-icons = {
       flake = false;
       owner = "rainstormstudio";
@@ -642,6 +666,12 @@
       repo = "org-recur";
       type = "github";
     };
+    org-reverse-datetree = {
+      flake = false;
+      owner = "akirak";
+      repo = "org-reverse-datetree";
+      type = "github";
+    };
     org-super-agenda = {
       flake = false;
       owner = "alphapapa";
@@ -664,6 +694,12 @@
       flake = false;
       owner = "alphapapa";
       repo = "org-web-tools";
+      type = "github";
+    };
+    origami = {
+      flake = false;
+      owner = "gregsexton";
+      repo = "origami.el";
       type = "github";
     };
     osm = {
@@ -718,7 +754,7 @@
       flake = false;
       lastModified = 1718485631;
       type = "tarball";
-      url = "https://elpa.gnu.org/packages/persist-0.6.1.tar";
+      url = "https://elpa.gnu.org/packages/persist-0.8.tar";
     };
     plz = {
       flake = false;
