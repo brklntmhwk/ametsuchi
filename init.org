@@ -2311,8 +2311,9 @@ Ibuffer-like filtering for dired
        (extension "avif" "bmp" "ico" "jpeg" "jpg" "gif"
                   "png" "raw" "svg" "tiff" "webp" "xcf")))))
   :hook
-  ((dired-mode-hook . dired-filter-mode)
-   (dired-mode-hook . dired-filter-group-mode)))
+  ((dired-mode-hook . (lambda ()
+                        (dired-filter-mode)
+                        (dired-filter-group-mode)))))
 #+end_src
 ***** dired-hacks-utils
 #+begin_quote
