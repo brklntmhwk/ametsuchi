@@ -34,14 +34,13 @@
 
 ;;;###autoload
 (defun brk-dired-find-file-other-tab ()
-  "Open the file at point in another tab immediately.
+  "In Dired, visit this file in another tab immediately.
 For a directory, open it normally."
-  (interactive)
+  (interactive nil dired-mode)
   (let ((file (dired-get-file-for-visit)))
     (if (file-directory-p file)
         (dired-find-file)
-      (tab-new))
-    (find-file file)))
+      (dired--find-file #'find-file-other-tab file))))
 
 (provide 'brk-dired)
 ;;; brk-dired.el ends here
