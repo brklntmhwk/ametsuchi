@@ -127,19 +127,23 @@
 (defun brk-directory-describe ()
   "Display all user directory paths in a readable format."
   (interactive)
-  (with-output-to-temp-buffer "*My Directories*"
-    (princ (format "Config:    %s\n" brk-directory-config-home))
-    (princ (format "Cache:     %s\n" brk-directory-cache-home))
-    (princ (format "Data:      %s\n" brk-directory-data-home))
-    (princ (format "State:     %s\n" brk-directory-state-home))
-    (princ (format "Desktop:   %s\n" brk-directory-user-desktop))
-    (princ (format "Documents: %s\n" brk-directory-user-documents))
-    (princ (format "Downloads: %s\n" brk-directory-user-downloads))
-    (princ (format "Music:     %s\n" brk-directory-user-music))
-    (princ (format "Pictures:  %s\n" brk-directory-user-pictures))
-    (princ (format "Public:    %s\n" brk-directory-user-public))
-    (princ (format "Templates: %s\n" brk-directory-user-templates))
-    (princ (format "Videos:    %s\n" brk-directory-user-videos))))
+  (let ((dirs '(("Config" . brk-directory-config-home)
+                ("Cache" . brk-directory-cache-home)
+                ("Data" . brk-directory-data-home)
+                ("State" . brk-directory-state-home)
+                ("Desktop" . brk-directory-user-desktop)
+                ("Documents" . brk-directory-user-documents)
+                ("Music" . brk-directory-user-music)
+                ("Pictures" . brk-directory-user-pictures)
+                ("Public" . brk-directory-user-public)
+                ("Templates" . brk-directory-user-templates)
+                ("Videos" . brk-directory-user-videos))))
+    (with-output-to-temp-buffer "*My Directories*"
+      (mapc (pcase-lambda (`(,label . ,sym))
+              (princ (format "%-10s %s\n"
+                             (concat label ":")
+                             (symbol-value sym))))
+            dirs))))
 
 (provide 'brk-directory)
 ;;; brk-directory.el ends here
