@@ -74,10 +74,7 @@
             ("E-books and PDF" (extension "azw" "epub" "mobi"  "pdf"))
             ("Archives" (extension "bz2" "gz" "nar" "rar" "tar" "zip"))
             ("LaTeX" (extension "tex" "bib"))
-            ("Executables" (executable))
-            ("Images"
-             (extension "avif" "bmp" "ico" "jpeg" "jpg" "gif"
-                        "png" "raw" "svg" "tiff" "webp" "xcf")))
+            ("Executables" (executable)))
           ;; https://github.com/akirak/emacs-config/commit/f6224a515be5626aba0914f68bd4b3af7fcb0a79
           (thread-last
             mailcap-mime-extensions
@@ -87,12 +84,12 @@
             (seq-group-by (lambda (x)
                             (let ((mime (cdr x)))
                               (pcase mime
-                                ((rx bol "audio/")
-                                 "Audio")
                                 ((rx bol "image/")
                                  "Image")
                                 ((rx bol "video/")
-                                 "Video")))))
+                                 "Video")
+                                ((rx bol "audio/")
+                                 "Audio")))))
             (cl-remove-if (lambda (x)
                             (not (car x))))
             (mapcar (lambda (x)
