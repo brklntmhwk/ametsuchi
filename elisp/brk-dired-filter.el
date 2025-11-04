@@ -95,7 +95,7 @@
             (mapcar (lambda (x)
                       `(,(car x)
                         (extension ,@(thread-last
-                                       (car x)
+                                       (cdr x)
                                        (mapcar #'car)
                                        (mapcar (lambda (s)
                                                  (substring s 1)))))))))))
