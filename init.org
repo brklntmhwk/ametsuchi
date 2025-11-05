@@ -242,6 +242,13 @@ convenient way to repeat the previous command
 #+begin_quote
 A collection of opinionated and/or custom elisp code
 #+end_quote
+
+See the [[file:elisp/][elisp]] directory for the collection of Elisp code, which ended up parting from this monolithic init file for such reasons as:
+
+- It becomes bloated for a single package or a feature
+- It involves many personal or opinionated settings to the point where adding a layer for them appears reasonable
+- Just because...
+
 #+begin_src emacs-lisp
 (use-package brk
   :ensure t)
@@ -3940,7 +3947,7 @@ Make sure that customizable variables whose values should preferably be kept pri
 :END:
 
 This project is licensed under the terms of the MIT license.
-It adopts and follows the [[https://reuse.software/][REUSE Specification Version 3.3]]; therefore the license files are stored under [[file:LICENSES/][LICENSES]] directory, and each file contains an SPDX license identifier.
+It adopts and follows the [[https://reuse.software/][REUSE Specification Version 3.3]]; therefore the license files are stored under the [[file:LICENSES/][LICENSES]] directory, and each file contains an SPDX license identifier.
 ** Acknowledgments
 :PROPERTIES:
 :CUSTOM_ID: acknowledgments
