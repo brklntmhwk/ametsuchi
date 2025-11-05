@@ -53,7 +53,7 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
     (cons latest-file (point))))
 
 (defun brk-org-capture--anki-deck-prompt ()
-  (let* ((decks brk-org-anki-decks)
+  (let* ((decks brk-org-anki--decks)
          (deck-options (string-join decks "|")))
     (format "%%^{Anki deck name?|%s}" deck-options)))
 

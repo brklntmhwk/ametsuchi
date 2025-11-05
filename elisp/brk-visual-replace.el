@@ -33,7 +33,6 @@
 
 (require 'transient)
 
-;;;###autoload
 (transient-define-prefix brk-visual-replace-transient ()
   "Provide a menu of available actions on `visual-replace-mode-map'."
   ["Basic operation"
