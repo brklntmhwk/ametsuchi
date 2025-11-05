@@ -33,16 +33,8 @@
 
 (require 'org-anki)
 
-(defgroup brk-org-anki nil
-  "Personal settings and extensions for org-anki."
-  :group 'applications
-  :prefix "brk-org-anki-")
-
-(defcustom brk-org-anki-decks
-  '("Default")
-  "Targetable Anki decks."
-  :type '(repeat (string :tag "Deck name"))
-  :group 'brk-org-anki)
+(defvar brk-org-anki--decks '("Default")
+  "Targetable Anki decks.")
 
 (defvar brk-org-anki--deck-fetch-timer nil
   "Timer for fetching deck names after module load.")
@@ -79,12 +71,11 @@ Return a list of deck names, or nil if unavailable."
 (defun brk-org-anki-refresh-decks ()
   "Refresh deck list from AnkiConnect."
   (interactive)
-  (let ((decks (brk-org-anki--fetch-deck-names)))
-    (when decks
-      (customize-set-variable 'brk-org-anki-decks decks)
-      (message "brk-org-anki: Updated decks: %s" decks))
-    (unless decks
-      (message "brk-org-anki: Failed to fetch decks"))))
+  (if-let ((decks (brk-org-anki--fetch-deck-names)))
+      (progn
+        (setq 'brk-org-anki--decks decks)
+        (message "brk-org-anki: Updated decks: %s" decks))
+    (message "brk-org-anki: Failed to fetch decks")))
 
 (defun brk-org-anki--init ()
   "Initialize org-anki settings."
