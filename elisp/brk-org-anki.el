@@ -49,8 +49,7 @@
 
 (defun brk-org-anki--fetch-deck-names ()
   "Fetch Anki deck names via AnkiConnect.
-Return a list of deck names, or nil if unavailable.
-Updates `brk-org-anki-decks' on success."
+Return a list of deck names, or nil if unavailable."
   (let ((url-request-method "POST")
         (url-request-data
          (encode-coding-string
