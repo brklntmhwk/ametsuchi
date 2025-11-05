@@ -3235,7 +3235,9 @@ Synchronize org-mode entries to Anki
         ("s" . org-anki-sync-entry)
         ("S" . org-anki-sync-all)
         ("u" . org-anki-update-all)
-        ("U" . org-anki-update-dir)))
+        ("U" . org-anki-update-dir))
+  :config
+  (require 'brk-org-anki))
 #+end_src
 **** org-appear
 #+begin_quote
