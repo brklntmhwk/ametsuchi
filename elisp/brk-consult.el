@@ -50,21 +50,13 @@
           :state ,#'consult--buffer-state))
 
 ;; Comply with the conventions consult brings up.
-(consult--define-state tab)
+;; TODO: Add a state function.
+;; (consult--define-state tab)
 (defun consult--tab-action (tab)
   "Open TAB."
   (tab-bar-switch-to-tab tab))
-(defun consult--tab-preview ()
-  "Create preview function for tabs."
-  (let (current-tab)
-    (lambda (action cand)
-      (pcase action
-        ('preview
-         (setq current-tab (alist-get 'name (tab-bar--current-tab)))
-         (tab-bar-switch-to-tab cand))
-        ('preview-restore
-         (when current-tab
-           (tab-bar-switch-to-tab current-tab)))))))
+;; (defun consult--tab-preview ()
+;;   "Create preview function for tabs.")
 
 (defvar brk-consult--tab-history nil)
 
@@ -74,7 +66,8 @@
           :category tab
           :face font-lock-function-name-face
           :history brk-consult--tab-history
-          ;; :action ,#'tab-bar-switch-to-tab
+          :action ,#'consult--tab-action
+          ;; :state ,#'consult--tab-state
           :items ,(lambda ()
                     (let ((tabs (funcall tab-bar-tabs-function)))
                       (when (> (length tabs) 1)
@@ -83,8 +76,7 @@
                           (cl-remove-if (lambda (tab)
                                           (eq 'current-tab (car tab))))
                           (mapcar (lambda (tab)
-                                    (alist-get 'name tab)))))))
-          :state ,#'consult--tab-state))
+                                    (alist-get 'name tab)))))))))
 
 (provide 'brk-consult)
 ;;; brk-consult.el ends here
