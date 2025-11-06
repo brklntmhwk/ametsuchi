@@ -1081,7 +1081,7 @@ Consulting completing-read
   (require 'brk-consult)
   (dolist (source '(brk-consult-source-activities-buffer
                     brk-consult-source-tab-bar-tab))
-    (cl-pushnew source consult-buffer-sources :test #'equal))
+    (cl-pushnew source consult-buffer-sources :test #'equal)))
 #+end_src
 ***** consult-dir
 #+begin_quote
@@ -3639,6 +3639,7 @@ Interact with ChatGPT or other LLMs
   (:map mode-specific-map
         ("g" . gptel-menu))
   :config
+  (require 'gptel-integrations)
   (setq gptel-model 'gpt-4o
         gptel-backend (gptel-make-openai "OpenAI"
                         :key (lambda () (gptel-api-key-from-auth-source "api.openai.com"))
