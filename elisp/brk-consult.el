@@ -35,18 +35,56 @@
 (require 'brk-activities)
 
 ;; https://github.com/alphapapa/activities.el/discussions/59
-(defvar brk-consult--source-activities-buffer
+(defvar brk-consult-source-activities-buffer
   `(:name "Activities Buffers"
-          :narrow ?a
+          :narrow (?a . "Activity")
           :category buffer
           :face consult-buffer
           :history buffer-name-history
           :default t
-          :items ,(lambda () (consult--buffer-query
-                              :predicate #'brk-activities-local-buffer-p
-                              :sort 'visibility
-                              :as #'buffer-name))
+          :items ,(lambda ()
+                    (consult--buffer-query
+                     :predicate #'brk-activities-local-buffer-p
+                     :sort 'visibility
+                     :as #'buffer-name))
           :state ,#'consult--buffer-state))
+
+;; Comply with the conventions consult brings up.
+(consult--define-state tab)
+(defun consult--tab-action (tab)
+  "Open TAB."
+  (tab-bar-switch-to-tab tab))
+(defun consult--tab-preview ()
+  "Create preview function for tabs."
+  (let (current-tab)
+    (lambda (action cand)
+      (pcase action
+        ('preview
+         (setq current-tab (alist-get 'name (tab-bar--current-tab)))
+         (tab-bar-switch-to-tab cand))
+        ('preview-restore
+         (when current-tab
+           (tab-bar-switch-to-tab current-tab)))))))
+
+(defvar brk-consult--tab-history nil)
+
+(defvar brk-consult-source-tab-bar-tab
+  `(:name "Tabs in Tab Bar"
+          :narrow (?t . "Tab")
+          :category tab
+          :face font-lock-function-name-face
+          :history brk-consult--tab-history
+          ;; :action ,#'tab-bar-switch-to-tab
+          :items ,(lambda ()
+                    (let ((tabs (funcall tab-bar-tabs-function)))
+                      (when (> (length tabs) 1)
+                        (thread-last
+                          tabs
+                          (cl-remove-if (lambda (tab)
+                                          (eq 'current-tab (car tab))))
+                          (mapcar (lambda (tab)
+                                    (alist-get 'name tab)))))))
+          :state ,#'consult--tab-state))
 
 (provide 'brk-consult)
 ;;; brk-consult.el ends here
