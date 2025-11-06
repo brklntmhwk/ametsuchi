@@ -1079,7 +1079,9 @@ Consulting completing-read
   :hook (completion-list-mode-hook . consult-preview-at-point-mode)
   :config
   (require 'brk-consult)
-  (add-to-list 'consult-buffer-sources 'brk-consult--source-activities-buffer))
+  (dolist (source '(brk-consult-source-activities-buffer
+                    brk-consult-source-tab-bar-tab))
+    (cl-pushnew source consult-buffer-sources :test #'equal))
 #+end_src
 ***** consult-dir
 #+begin_quote
