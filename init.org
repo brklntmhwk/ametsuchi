@@ -1076,7 +1076,10 @@ Consulting completing-read
          ("M-s e" . consult-isearch-history))
    (:map mode-specific-map
          ("k" . consult-kmacro)))
-  :hook (completion-list-mode-hook . consult-preview-at-point-mode))
+  :hook (completion-list-mode-hook . consult-preview-at-point-mode)
+  :config
+  (require 'brk-consult)
+  (add-to-list 'consult-buffer-sources 'brk-consult--source-activities-buffer))
 #+end_src
 ***** consult-dir
 #+begin_quote
