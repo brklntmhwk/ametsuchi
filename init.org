@@ -1655,7 +1655,7 @@ Multiple cursors for emacs.
 Scroll a line smoothly
 #+end_quote
 
-NOTE: Key bindings related to scrolling are defined in the [[#window-management][window]] configuration with some custom commands.
+See the [[#window-management][window]] configuration for key bindings related to scrolling.
 
 #+begin_src emacs-lisp
 (use-package pixel-scroll

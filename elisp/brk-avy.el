@@ -53,7 +53,7 @@
   t)
 
 (defun brk-avy-action-copy-dwim (pt)
-  "Copy the entire Sexp at PT."
+  "Copy the entire sexp at PT."
   (save-excursion
     (goto-char pt)
     (let* ((bounds (or (bounds-of-thing-at-point 'sexp)
