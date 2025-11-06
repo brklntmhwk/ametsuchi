@@ -2108,28 +2108,11 @@ Save/restore sets of windows, tabs/frames, and their buffers
          ("C-n" . activities-new)
          ("C-a" . activities-resume)
          ("C-s" . activities-suspend)))
-  :hook (after-init-hook . activities-tabs-mode)
+  :hook (after-init-hook . (lambda ()
+                             (activities-mode)
+                             (activities-tabs-mode)))
   :config
-  (with-eval-after-load 'consult
-    (defun brk/activities-local-buffer-p (buffer)
-      "Returns non-nil if BUFFER is present in `activities-current'."
-      (when (activities-current)
-        (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
-
-    (defvar my-consult--source-activities-buffer
-      `(:name "Activities Buffers"
-              :narrow ?a
-              :category buffer
-              :face consult-buffer
-              :history buffer-name-history
-              :default t
-              :items ,(lambda () (consult--buffer-query
-                                  :predicate #'brk/activities-local-buffer-p
-                                  :sort 'visibility
-                                  :as #'buffer-name))
-              :state ,#'consult--buffer-state))
-
-    (add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
+  (require 'brk-activities))
 #+end_src
 **** dashboard
 #+begin_quote
