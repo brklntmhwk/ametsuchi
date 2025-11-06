@@ -1429,8 +1429,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   :ensure t
   :custom
   (avy-dispatch-alist
-   '((?c . avy-action-copy)
-     (?l . avy-action-ispell)
+   '((?l . avy-action-ispell)
      (?m . avy-action-mark)
      (?r . avy-action-teleport)
      (?w . avy-action-kill-move)
@@ -1458,7 +1457,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   (require 'brk-avy)
   (setf (alist-get ?H avy-dispatch-alist) #'brk-avy-action-helpful)
   (setf (alist-get ?. avy-dispatch-alist) #'brk-avy-action-embark)
-  (setf (alist-get ?C avy-dispatch-alist) #'brk-avy-action-copy-dwim))
+  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim))
 #+end_src
 **** deadgrep
 #+begin_quote
