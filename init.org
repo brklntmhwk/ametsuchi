@@ -1572,8 +1572,7 @@ Enchanted Spell Checker
   :hook
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
-    markdown-mode-hook
-    org-mode-hook) . jinx-mode)
+    markdown-mode-hook) . jinx-mode)
   :bind
   (([remap ispell-word] . jinx-correct)
    ("C-M-$" . jinx-correct-nearest)))
