@@ -3611,19 +3611,6 @@ AI pair programming via ECA (Editor Code Assistant)
         ("e" . eca)
         ("M-e" . eca-transient-menu)))
 #+end_src
-**** elysium
-#+begin_quote
-Automatically apply LLM-created code-suggestions
-#+end_quote
-#+begin_src emacs-lisp
-(use-package elysium
-  :ensure t
-  :after gptel
-  :demand t
-  :config
-  (transient-append-suffix 'gptel-menu '(-1 0)
-    '("q" "Elysium query" elysium-query)))
-#+end_src
 **** gptel
 #+begin_quote
 Interact with ChatGPT or other LLMs
