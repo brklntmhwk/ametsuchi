@@ -242,6 +242,13 @@ convenient way to repeat the previous command
 #+begin_quote
 A collection of opinionated and/or custom elisp code
 #+end_quote
+
+See the [[file:elisp/][elisp]] directory for the collection of Elisp code, which ended up parting from this monolithic init file for such reasons as:
+
+- It becomes bloated for a single package or a feature
+- It involves many personal or opinionated settings to the point where adding a layer for them appears reasonable
+- Just because...
+
 #+begin_src emacs-lisp
 (use-package brk
   :ensure t)
@@ -1069,7 +1076,12 @@ Consulting completing-read
          ("M-s e" . consult-isearch-history))
    (:map mode-specific-map
          ("k" . consult-kmacro)))
-  :hook (completion-list-mode-hook . consult-preview-at-point-mode))
+  :hook (completion-list-mode-hook . consult-preview-at-point-mode)
+  :config
+  (require 'brk-consult)
+  (dolist (source '(brk-consult-source-activities-buffer
+                    brk-consult-source-tab-bar-tab))
+    (cl-pushnew source consult-buffer-sources :test #'equal)))
 #+end_src
 ***** consult-dir
 #+begin_quote
@@ -1419,8 +1431,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   :ensure t
   :custom
   (avy-dispatch-alist
-   '((?c . avy-action-copy)
-     (?l . avy-action-ispell)
+   '((?l . avy-action-ispell)
      (?m . avy-action-mark)
      (?r . avy-action-teleport)
      (?w . avy-action-kill-move)
@@ -1433,7 +1444,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   (avy-styles-alist '((avy-goto-char-timer . at-full)))
   (avy-all-windows t)
   (avy-single-candidate-jump nil)
-  (avy-timeout-seconds 0.5)
+  (avy-timeout-seconds 0.4)
   :bind
   (("M-j" . avy-goto-char-timer)
    ("M-J" . avy-goto-char-in-line)
@@ -1445,28 +1456,10 @@ Jump to arbitrary positions in visible text and select text quickly.
    (:map isearch-mode-map
          ("M-j" . avy-isearch)))
   :config
-  (with-eval-after-load 'helpful
-    ;; https://karthinks.com/software/avy-can-do-anything/#look-up-the-documentation-for-a-symbol
-    (defun brk/avy-action-helpful (pt)
-      (save-excursion
-        (goto-char pt)
-        (helpful-at-point))
-      (select-window
-       (cdr (ring-ref avy-ring 0)))
-      t)
-    (setf (alist-get ?H avy-dispatch-alist) #'brk/avy-action-helpful))
-
-  (with-eval-after-load 'embark
-    ;; https://karthinks.com/software/avy-can-do-anything/#avy-plus-embark-any-action-anywhere
-    (defun brk/avy-action-embark (pt)
-      (unwind-protect
-          (save-excursion
-            (goto-char pt)
-            (embark-act))
-        (select-window
-         (cdr (ring-ref avy-ring 0))))
-      t)
-    (setf (alist-get ?. avy-dispatch-alist) #'brk/avy-action-embark)))
+  (require 'brk-avy)
+  (setf (alist-get ?H avy-dispatch-alist) #'brk-avy-action-helpful)
+  (setf (alist-get ?. avy-dispatch-alist) #'brk-avy-action-embark)
+  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim))
 #+end_src
 **** deadgrep
 #+begin_quote
@@ -1579,8 +1572,7 @@ Enchanted Spell Checker
   :hook
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
-    markdown-mode-hook
-    org-mode-hook) . jinx-mode)
+    markdown-mode-hook) . jinx-mode)
   :bind
   (([remap ispell-word] . jinx-correct)
    ("C-M-$" . jinx-correct-nearest)))
@@ -1663,7 +1655,7 @@ Multiple cursors for emacs.
 Scroll a line smoothly
 #+end_quote
 
-NOTE: Key bindings related to scrolling are defined in the [[#window][window]] configuration with some custom commands.
+See the [[#window-management][window]] configuration for key bindings related to scrolling.
 
 #+begin_src emacs-lisp
 (use-package pixel-scroll
@@ -1812,26 +1804,8 @@ A prompt for replace-string and query-replace
   :bind
   ([remap query-replace] . visual-replace)
   :config
-  (with-eval-after-load 'transient
-    (transient-define-prefix brk/visual-replace-mode-transient ()
-      "Prefix for `visual-replace-mode-map'."
-      ["Basic operation"
-       ("a" "apply one repeat" visual-replace-apply-one-repeat)
-       ("A" "apply one" visual-replace-apply-one)
-       ("s" "substring match" visual-replace-substring-match)
-       ("u" "undo" visual-replace-undo)
-       ("y" "yank" visual-replace-yank)
-       ("M-y" "yank-pop" visual-replace-yank-pop)]
-      ["Toggle replace mode"
-       ("c" "toggle case fold" visual-replace-toggle-case-fold)
-       ("e" "toggle regexp" visual-replace-toggle-regexp)
-       ("q" "toggle query" visual-replace-toggle-query)
-       ("w" "toggle word" visual-replace-toggle-word)]
-      ["Change scope"
-       ("f" "switch to full scope" visual-replace-switch-to-full-scope)
-       ("p" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
-       ("r" "switch to region scope" visual-replace-switch-to-region-scope)])
-    (keymap-set visual-replace-mode-map "?" #'brk/visual-replace-mode-transient)))
+  (require 'brk-visual-replace)
+  (keymap-set visual-replace-mode-map "?" #'brk-visual-replace-transient))
 #+end_src
 **** vundo
 #+begin_quote
@@ -2137,28 +2111,11 @@ Save/restore sets of windows, tabs/frames, and their buffers
          ("C-n" . activities-new)
          ("C-a" . activities-resume)
          ("C-s" . activities-suspend)))
-  :hook (after-init-hook . activities-tabs-mode)
+  :hook (after-init-hook . (lambda ()
+                             (activities-mode)
+                             (activities-tabs-mode)))
   :config
-  (with-eval-after-load 'consult
-    (defun brk/activities-local-buffer-p (buffer)
-      "Returns non-nil if BUFFER is present in `activities-current'."
-      (when (activities-current)
-        (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
-
-    (defvar my-consult--source-activities-buffer
-      `(:name "Activities Buffers"
-              :narrow ?a
-              :category buffer
-              :face consult-buffer
-              :history buffer-name-history
-              :default t
-              :items ,(lambda () (consult--buffer-query
-                                  :predicate #'brk/activities-local-buffer-p
-                                  :sort 'visibility
-                                  :as #'buffer-name))
-              :state ,#'consult--buffer-state))
-
-    (add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer)))
+  (require 'brk-activities))
 #+end_src
 **** dashboard
 #+begin_quote
@@ -3100,106 +3057,16 @@ Dynamic task and appointment lists for Org
                 ("p" . org-agenda-previous-date-line)))
   :hook (org-agenda-finalize-hook . hl-line-mode)
   :config
+  (require 'brk-org-agenda)
+
+  (setq org-agenda-custom-commands (brk-org-agenda-custom-commands))
+
   ;; Unset `org-agenda-goto' because it is confusing.
   (mapc (lambda (k) (keymap-unset org-agenda-mode-map k))
         '("TAB" "<tab>"))
 
   ;; Then override `delete-other-windows' because I do not use it.
-  (keymap-set org-agenda-mode-map "o" #'org-agenda-goto)
-
-  ;; Stick to DRY
-  (defun brk/org-agenda-common-agenda-sections ()
-    "Return a list of common agenda sections."
-    `((agenda "" ((org-agenda-span 'day)
-                  (org-agenda-overriding-header "")
-                  (org-agenda-log-mode-items '(closed clock state))
-                  (org-super-agenda-groups
-                   '((:name ""
-                            :time-grid t)
-                     (:name "◆ Today"
-                            :date today
-                            :deadline today
-                            :scheduled today)
-                     (:name "◆ Overdue"
-                            :deadline past
-                            :scheduled past)))))
-      (agenda "" ((org-agenda-span 6)
-                  (org-agenda-overriding-header "")
-                  (org-agenda-log-mode-items '(closed clock))
-                  (org-agenda-start-day "+1d")
-                  (org-super-agenda-groups
-                   '((:name ""
-                            :time-grid t
-                            :anything)))))))
-
-  ;; Add custom agenda commands and their views.
-  (setq org-agenda-custom-commands
-        `(("@" "Private Agenda"
-           ,(brk/org-agenda-common-agenda-sections)
-           ((org-agenda-files
-             (seq-filter
-              (lambda (file)
-                (and
-                 (not (string-match-p "/archive/" file))
-                 (not (string-match-p "/work/" file))))
-              (directory-files-recursively brk-directory-user-documents "\\.org$")))
-            (org-agenda-start-with-log-mode t)
-            (org-agenda-block-separator nil)))
-          ;; ("l" "Throwback Views"
-          ;;  ((org-ql-block '(or (closed :from -30 :to today)
-          ;;                      (clocked :from -30 :to today)
-          ;;                      (ts :from -30 :to today))
-          ;;                 ((org-ql-block-header "Over the last 30 days")
-          ;;                  (org-ql-indent-levels t)
-          ;;                  (org-super-agenda-groups
-          ;;                   '((:auto-ts reverse)))))))
-          ("t" "Miscellaneous Task Views"
-           ((alltodo "" ((org-agenda-overriding-header "By Priority")
-                         (org-super-agenda-groups
-                          '((:name "Now!"
-                                   :priority "A")
-                            (:name "Soon."
-                                   :priority "B")
-                            (:name "Someday..."
-                                   :priority "C")
-                            (:discard (:anything))))))
-            (alltodo "" ((org-agenda-overriding-header "By Tag")
-                         (org-super-agenda-groups
-                          '((:discard (:tag ("ORDERED" "PROJECT")))
-                            (:auto-tags)
-                            (:discard (:anything))))))
-            (alltodo "" ((org-agenda-overriding-header "By Effort")
-                         (org-super-agenda-groups
-                          '((:name "Sprint (x <= 30min)"
-                                   :effort< "30min")
-                            (:name "Short Run (30min < x <= 3h)"
-                                   :effort< "3h")
-                            (:name "Long Run (3h < x <= 3d)"
-                                   :effort< "3d")
-                            (:name "Marathon (3d < x)"
-                                   :effort> "3d")
-                            (:discard (:anything))))))
-            (org-ql-block '(and (level 2 6)
-                                (todo)
-                                (ancestors (tags "PROJECT")))
-                          ((org-ql-block-header "By Project")
-                           (org-ql-indent-levels t)
-                           (org-super-agenda-groups
-                            '((:auto-outline-path)))))
-            ;; https://github.com/alphapapa/org-ql/blob/master/examples.org#stuck-projects-block-agenda
-            (org-ql-block '(and (tags "PROJECT")
-                                (not (done))
-                                (not (descendants (todo "READY")))
-                                (not (descendants (scheduled))))
-                          ((org-ql-block-header "Stuck Projects")
-                           (org-ql-indent-levels t)
-                           (org-super-agenda-groups
-                            '((:auto-ts)))))))
-          ("w" "Workplace Agenda"
-           ,(brk/org-agenda-common-agenda-sections)
-           ((org-agenda-files
-             (directory-files-recursively (concat brk-directory-user-documents "work/") "\\.org$"))
-            (org-agenda-block-separator nil))))))
+  (keymap-set org-agenda-mode-map "o" #'org-agenda-goto))
 #+end_src
 ***** org-super-agenda
 #+begin_quote
@@ -3235,7 +3102,9 @@ Synchronize org-mode entries to Anki
         ("s" . org-anki-sync-entry)
         ("S" . org-anki-sync-all)
         ("u" . org-anki-update-all)
-        ("U" . org-anki-update-dir)))
+        ("U" . org-anki-update-dir))
+  :config
+  (require 'brk-org-anki))
 #+end_src
 **** org-appear
 #+begin_quote
@@ -3556,6 +3425,9 @@ Refile Org Subtrees
 #+begin_quote
 Create reverse date trees in org-mode
 #+end_quote
+
+[2025-10-17 Fri] Migrated my diary system from Org-journal to Org-reverse-datatree, for it can handle date entries in reverse chronological order. That said, it still needs to ally with Org-capture to fully compete against Org-journal.
+
 #+begin_src emacs-lisp
 (use-package org-reverse-datetree
   :ensure t
@@ -3649,19 +3521,6 @@ AI pair programming via ECA (Editor Code Assistant)
         ("e" . eca)
         ("M-e" . eca-transient-menu)))
 #+end_src
-**** elysium
-#+begin_quote
-Automatically apply LLM-created code-suggestions
-#+end_quote
-#+begin_src emacs-lisp
-(use-package elysium
-  :ensure t
-  :after gptel
-  :demand t
-  :config
-  (transient-append-suffix 'gptel-menu '(-1 0)
-    '("q" "Elysium query" elysium-query)))
-#+end_src
 **** gptel
 #+begin_quote
 Interact with ChatGPT or other LLMs
@@ -3677,6 +3536,7 @@ Interact with ChatGPT or other LLMs
   (:map mode-specific-map
         ("g" . gptel-menu))
   :config
+  (require 'gptel-integrations)
   (setq gptel-model 'gpt-4o
         gptel-backend (gptel-make-openai "OpenAI"
                         :key (lambda () (gptel-api-key-from-auth-source "api.openai.com"))
@@ -3953,7 +3813,7 @@ Make sure that customizable variables whose values should preferably be kept pri
 :END:
 
 This project is licensed under the terms of the MIT license.
-It adopts and follows the [[https://reuse.software/][REUSE Specification Version 3.3]]; therefore the license files are stored under [[file:LICENSES/][LICENSES]] directory, and each file contains an SPDX license identifier.
+It adopts and follows the [[https://reuse.software/][REUSE Specification Version 3.3]]; therefore the license files are stored under the [[file:LICENSES/][LICENSES]] directory, and each file contains an SPDX license identifier.
 ** Acknowledgments
 :PROPERTIES:
 :CUSTOM_ID: acknowledgments

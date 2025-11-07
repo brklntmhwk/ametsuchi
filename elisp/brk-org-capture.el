@@ -52,61 +52,68 @@ If not, create it using `org-reverse-datetree-goto-date-in-file' before placing 
     (org-reverse-datetree-goto-date-in-file)
     (cons latest-file (point))))
 
+(defun brk-org-capture--anki-deck-prompt ()
+  (let* ((decks brk-org-anki--decks)
+         (deck-options (string-join decks "|")))
+    (format "%%^{Anki deck name?|%s}" deck-options)))
+
 ;;;###autoload
 (defun brk-org-capture-generate-templates ()
   "Return my default Org-capture templates as a list."
-  `(("a" "Anki Basic" entry
-     (file ,(concat brk-directory-user-documents "anki.org"))
-     ,(concat
-       "* %? %^g\n"
-       ":PROPERTIES:\n"
-       ":ANKI_NOTE_TYPE: Basic\n"
-       ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
-       ":END:\n"
-       "Answer")
-     :empty-lines-after 1
-     :prepend t)
-    ("c" "Anki Cloze" entry
-     (file ,(concat brk-directory-user-documents "anki.org"))
-     ,(concat
-       "* {{c1::%?}} %^g\n"
-       ":PROPERTIES:\n"
-       ":ANKI_NOTE_TYPE: Cloze\n"
-       ":ANKI_DECK: %^{The Anki deck name?|Default|deck2|deck3}\n"
-       ":END:\n")
-     :empty-lines-after 1
-     :prepend t)
-    ("d" "Draft" entry
-     (file "")
-     "* %U %? :DRAFT:"
-     :empty-lines-after 1
-     :prepend t)
-    ("i" "Interruption" entry
-     (file "")
-     "* %U %?"
-     :clock-in t
-     :clock-resume t)
-    ("j" "Journal" entry
-     (function brk-org-capture--find-latest-datetree-entry)
-     "* %U %?")
-    ("p" "Project" entry
-     (file "")
-     ,(concat
-       "* PENDING %? :PROJECT:\n"
-       ":LOGBOOK:\n"
-       "- Created at      %U\n"
-       ":END:")
-     :empty-lines-after 1
-     :prepend t)
-    ("t" "Todo" entry
-     (file "")
-     ,(concat
-       "* PENDING %?\nSCHEDULED: %t\n"
-       ":LOGBOOK:\n"
-       "- Created at      %U\n"
-       ":END:")
-     :empty-lines-after 1
-     :prepend t)))
+  (require 'brk-org-anki)
+  (let ((anki-deck-prompt (brk-org-capture--anki-deck-prompt)))
+    `(("a" "Anki Basic" entry
+       (file ,(concat brk-directory-user-documents "anki.org"))
+       ,(concat
+         "* %? %^g\n"
+         ":PROPERTIES:\n"
+         ":ANKI_NOTE_TYPE: Basic\n"
+         ":ANKI_DECK: " anki-deck-prompt "\n"
+         ":END:\n"
+         "Answer")
+       :empty-lines-after 1
+       :prepend t)
+      ("c" "Anki Cloze" entry
+       (file ,(concat brk-directory-user-documents "anki.org"))
+       ,(concat
+         "* {{c1::%?}} %^g\n"
+         ":PROPERTIES:\n"
+         ":ANKI_NOTE_TYPE: Cloze\n"
+         ":ANKI_DECK: " anki-deck-prompt "\n"
+         ":END:\n")
+       :empty-lines-after 1
+       :prepend t)
+      ("d" "Draft" entry
+       (file "")
+       "* %U %? :DRAFT:"
+       :empty-lines-after 1
+       :prepend t)
+      ("i" "Interruption" entry
+       (file "")
+       "* %U %?"
+       :clock-in t
+       :clock-resume t)
+      ("j" "Journal" entry
+       (function brk-org-capture--find-latest-datetree-entry)
+       "* %U %?")
+      ("p" "Project" entry
+       (file "")
+       ,(concat
+         "* PENDING %? :PROJECT:\n"
+         ":LOGBOOK:\n"
+         "- Created at      %U\n"
+         ":END:")
+       :empty-lines-after 1
+       :prepend t)
+      ("t" "Todo" entry
+       (file "")
+       ,(concat
+         "* PENDING %?\nSCHEDULED: %t\n"
+         ":LOGBOOK:\n"
+         "- Created at      %U\n"
+         ":END:")
+       :empty-lines-after 1
+       :prepend t))))
 
 (provide 'brk-org-capture)
 ;;; brk-org-capture.el ends here
