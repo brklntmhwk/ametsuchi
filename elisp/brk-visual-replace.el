@@ -36,21 +36,24 @@
 (transient-define-prefix brk-visual-replace-transient ()
   "Provide a menu of available actions on `visual-replace-mode-map'."
   ["Basic operation"
-   ("a" "apply one repeat" visual-replace-apply-one-repeat)
-   ("A" "apply one" visual-replace-apply-one)
-   ("s" "substring match" visual-replace-substring-match)
-   ("u" "undo" visual-replace-undo)
-   ("y" "yank" visual-replace-yank)
-   ("M-y" "yank-pop" visual-replace-yank-pop)]
+   ("a" "Apply one repeat" visual-replace-apply-one-repeat)
+   ("A" "Apply one" visual-replace-apply-one)
+   ("s" "Substring match" visual-replace-substring-match)
+   ("u" "Undo" visual-replace-undo)
+   ("y" "Yank" visual-replace-yank)
+   ("M-y" "Yank-pop" visual-replace-yank-pop)]
+  ["Navigation"
+   ("n" "Next candidate" visual-replace-next-match)
+   ("p" "Prev candidate" visual-replace-prev-match)]
   ["Toggle replace mode"
    ("c" "toggle case fold" visual-replace-toggle-case-fold)
    ("e" "toggle regexp" visual-replace-toggle-regexp)
    ("q" "toggle query" visual-replace-toggle-query)
    ("w" "toggle word" visual-replace-toggle-word)]
   ["Change scope"
-   ("f" "switch to full scope" visual-replace-switch-to-full-scope)
-   ("p" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
-   ("r" "switch to region scope" visual-replace-switch-to-region-scope)])
+   ("F" "switch to full scope" visual-replace-switch-to-full-scope)
+   ("P" "switch to from-point scope" visual-replace-switch-to-from-point-scope)
+   ("R" "switch to region scope" visual-replace-switch-to-region-scope)])
 
 (provide 'brk-visual-replace)
 ;;; brk-visual-replace.el ends here
