@@ -83,7 +83,8 @@ contracting, or moving."
                  brk-sontaku--elisp-mode-state-machine)
           (const :tag "State machine for `org-mode'"
                  brk-sontaku--org-mode-state-machine)
-          (function :tag "Custom state machine")))
+          (function :tag "Custom state machine"))
+  :group 'brk-sontaku)
 
 ;;;; Error handling
 
@@ -104,7 +105,7 @@ DIRECTION must be either \\='forward or \\='backward."
 
 (defun brk-sontaku--syntax-class-to-char (syntax-class)
   "Return the designator char of SYNTAX-CLASS."
-  (aref "- .w_()'\"$\\/<>@!|" syntax-class))
+  (aref " .w_()'\"$\\/<>@!|" syntax-class))
 
 (defun brk-sontaku--syntax-char-after (&optional pt)
   "Return the syntax code after PT, described by a char.
@@ -118,7 +119,7 @@ For the meaning of the returned char, see `modify-syntax-entry'."
                 (>= pt (point-max)))
       (brk-sontaku--syntax-class-to-char (syntax-class (syntax-after pt))))))
 
-(defun brk-sontaku--syntactic-depth-at (pt)
+(defun brk-sontaku--syntactic-depth-at (&optional pt)
   "Return syntactic depth at PT."
   (let ((pt (or pt (point))))
     (car (syntax-ppss pt))))
@@ -248,9 +249,9 @@ BOUNDS is the original bounds to start from."
 ;; TODO: reconsider if this function can be helpful anywhere.
 (defun brk-sontaku--safe-scan-sexps (n &optional pt)
   "Safely scan and return the position N sexps away from PT.
-If PT is not provided, use the current point.
-Return nil if the scan reaches the beginning
-or end of the accessible part in the middle."
+If PT is not provided, use the current point.  Return nil if
+the scan reaches the beginning or end of the accessible part
+in the middle."
   (let ((pt (or pt (point))))
     (ignore-errors (scan-sexps pt n))))
 
@@ -307,7 +308,7 @@ If not found, return nil."
   "Return non-nil if char at PT is whitespace.
 i.e., a whitespace or a newline."
   (let ((pt (or pt (point))))
-    (eq (brk-sontaku--syntax-char-after pt) ?-)))
+    (eq (brk-sontaku--syntax-char-after pt) ? )))
 
 (defun brk-sontaku--skip-whitespace (direction &optional bound)
   "Move across contiguous whitespace in DIRECTION.
@@ -349,7 +350,7 @@ If BOUND is before or after point and DIRECTION is
 CHAR is either a one-length string or a char."
   (let* ((pt (or pt (point)))
          (ch (char-after pt)))
-    (when (and c (<= (1+ pt) (point-max)))
+    (when (and ch (<= (1+ pt) (point-max)))
       (cond
        ((characterp char)
         (eq ch char))
@@ -364,7 +365,7 @@ CHARS is a list whose elements may be characters, one-length strings,
 or a mixture of them."
   (let* ((pt (or pt (point)))
          (ch (char-after pt)))
-    (when (and c (<= (1+ pt) (point-max)))
+    (when (and ch (<= (1+ pt) (point-max)))
       (let ((targets
              (mapcar
               (lambda (elt)
@@ -378,15 +379,25 @@ or a mixture of them."
                   (user-error "CHARS elements must be chars or strings, got %S"
                               elt))))
               chars)))
-        (memq c targets)))))
+        (memq ch targets)))))
+
+(defun brk-sontaku--skip-char (direction)
+  "Move across a single character according to DIRECTION.
+
+This simply integrates `forward-char' and `backward-char'
+into a single function by taking DIRECTION as an argument.
+DIRECTION must be either \\='forward or \\='backward."
+  (let ((skip-fn (brk-sontaku--resolve-direction
+                  direction #'forward-char #'backward-char)))
+    (funcall skip-fn)))
 
 (defun brk-sontaku--skip-chars (string direction &optional bound)
   "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
 except that:
 
-- It signals an error if BOUND is before or after point and DIRECTION is
+- it signals an error if BOUND is before or after point and DIRECTION is
 'forward and 'backward, respectively.
-- It returns nil if it fails and the point after move if successful.
+- it returns nil if it fails and the point after move if successful.
 
 For more specific definitions of STRING, see `skip-chars-forward'.
 DIRECTION must be either \\='forward or \\='backward."
@@ -418,29 +429,42 @@ Return nil if it fails and the final point after move if successful."
     (eq (syntax-ppss-context (syntax-ppss pt)) 'comment)))
 
 (defun brk-sontaku--skip-comment-block (direction)
-  "Move across a contiguous comment block according to DIRECTION.
+  "Move across a comment block according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 
-This function is an enhanced version of `forward-comment' in that:
+This function behaves like `forward-comment' except that:
 
-- Instead of nil, it returns the point when it skips before
+- when DIRECTION is \\='forward, it stops at the end of
+the comment without moving to the next line.
+- when DIRECTION is \\='backward and the point is at the
+end of the comment, it skips to the beginning instead of
+returning nil.
+- instead of nil, it returns the point when it skips before
 a single line comment, there is no trailing newline, and
 reaches the end of buffer."
   (let ((arg (brk-sontaku--resolve-direction direction 1 -1))
-        (skip-whitespace-direction (brk-sontaku--resolve-direction
-                                    direction 'backward 'forward))
         (from (point))
         to)
-    (if (eq direction 'forward)
-        (progn
-          (save-excursion
-            (when (progn (forward-comment arg)
-                         (not (eq (point) from)))
-              (setq to (point))))
-          (when to (goto-char to)))
-      (forward-comment arg)
-      (brk-sontaku--skip-whitespace skip-whitespace-direction)
-      (point))))
+    (pcase arg
+      ;; \\='forward
+      (1 (save-excursion
+           (forward-comment arg)
+           (when (bolp)
+             ;; Move back to the end of the comment skipped just now.
+             (brk-sontaku--skip-char 'backward))
+           (when (/= (point) from)
+             (setq to (point)))))
+      ;; \\='backward
+      (-1 (save-excursion
+            (when (eolp)
+              ;; Move forward one char in advance for `forward-comment'
+              ;; to work as expected.
+              (brk-sontaku--skip-char 'forward))
+            (forward-comment arg)
+            (brk-sontaku--skip-whitespace 'forward)
+            (when (/= (point) from)
+              (setq to (point))))))
+    (when to (goto-char to))))
 
 ;;;;; Syntax
 
@@ -581,17 +605,22 @@ This fixes that variability, always returning nil if it fails."
 DIRECTION must be either \\='forward or \\='backward.
 
 This is similar to `forward-sexp'/`backward-sexp', but it takes care of
-some behavioral glitches they have. See the implementation for more details."
+some behavioral glitches (quirks?) they have.  See the implementation
+for more details."
   (let ((skip-syntax-direction (brk-sontaku--resolve-direction
                                 direction 'backward 'forward))
-        (skip-char-fn (brk-sontaku--resolve-direction
-                       direction #'forward-char #'backward-char))
         (point-fn (brk-sontaku--resolve-direction
                    direction #'point (lambda () (1- (point))))))
     (if (brk-sontaku--skip-sexp direction)
-        (progn (brk-sontaku--skip-syntax " " skip-syntax-direction) (point))
+        ;; Play it safe and skip back whitespace ahead of the point.
+        (progn (brk-sontaku--skip-syntax " " skip-syntax-direction)
+               (point))
+      (goto-char (point))
+      ;; Skip an expression prefix ahead if present.
+      ;; In the example below, "*" is the point.
+      ;; e.g., (foo *') --> 'forward --> (foo '*)
       (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
-        (funcall skip-char-fn) (point)))))
+        (brk-sontaku--skip-char direction) (point)))))
 
 ;;;;; Symbol
 
@@ -660,10 +689,6 @@ Unlike `forward-symbol', it returns nil when the current point is:
   (let ((pt (or pt (point))))
     (eq (syntax-ppss-context (syntax-ppss pt)) 'string)))
 
-;; TODO: make it so that this also turns to t when point is in double--camel-case.
-;; TODO: make it so that this does nothing when STYLE is either camel or pascal,
-;; and CASE-STATE is either upper or lower.
-;; TODO: add user-error logic.
 (defun brk-sontaku--match-string-case-p (style &optional case-state pt)
   "Return non-nil if the element at PT matches STYLE-case in CASE-STATE.
 STYLE must be either of:
@@ -674,9 +699,19 @@ STYLE must be either of:
 - \\='pascal: \"PascalCase\"
 - \\='snake: \"snake_case\"
 
+Note that this function works on the assumption that
+camelCase and PascalCase should have at least one set of ups and downs.
+
 CASE-STATE is either \\='upper, \\='lower, or nil.  When STYLE is either
-\\='camel or \\='pascal, that does nothing."
+\\='camel or \\='pascal, CASE-STATE is ignored and treated as nil."
+  (unless (memq style '(camel dot kebab pascal snake))
+    (user-error "STYLE must be either \\='camel, \\='dot, \\='kebab, \\='pascal or \\='snake, got %S" style))
+  (when (and case-state (not (memq case-state '(upper lower))))
+    (user-error "CASE-STATE must be either \\='upper, \\='lower or nil, got %S" case-state))
   (let* ((pt (or pt (point)))
+         (case-state (if (memq style '(camel pascal))
+                         nil
+                       case-state))
          (bounds (save-excursion
                    (goto-char pt)
                    (skip-chars-backward "A-Za-z0-9_.-")
@@ -685,28 +720,17 @@ CASE-STATE is either \\='upper, \\='lower, or nil.  When STYLE is either
                      (let ((end (point)))
                        (when (> end beg)
                          (cons beg end))))))
-         ;; TODO: `brk-sontaku--at-symbol-p' behaves unexpectedly.
-         ;; Use or make a function that fits the bill here.
-         ;; (bounds (when (brk-sontaku--at-symbol-p pt)
-         ;;           (save-excursion
-         ;;             (goto-char pt)
-         ;;             (skip-chars-backward "A-Za-z0-9_.-")
-         ;;             (let ((beg (point)))
-         ;;               (skip-chars-forward "A-Za-z0-9_.-")
-         ;;               (let ((end (point)))
-         ;;                 (when (> end beg)
-         ;;                   (cons beg end)))))))
          (str (when bounds
                 (buffer-substring-no-properties (car bounds) (cdr bounds))))
          (sep (pcase style
                 ('dot ".")
-                ('kebab "-")
+                ('kebab '(+ "-")) ; Allow one or more hyphens.
                 ('snake "_")
                 (_ nil)))
          (case-state-frag (pcase case-state
                             ('lower '(+ (or lower digit)))
                             ('upper '(+ (or upper digit)))
-                            (_ '(+ (or alpha upper)))))
+                            (_ '(+ (or alpha lower)))))
          (re (rx-to-string
               (pcase style
                 ((or 'dot 'kebab 'snake)
@@ -721,13 +745,16 @@ CASE-STATE is either \\='upper, \\='lower, or nil.  When STYLE is either
                        eos))
                 ('pascal
                  `(seq bos
-                       upper (* (or lower digit))
-                       (* (seq upper (* (or lower digit))))
+                       upper
+                       (+ (or lower digit))
+                       (* (seq upper (+ (or lower digit))))
                        eos))
                 (_
                  `(seq bos
                        alpha (+ alpha)
-                       eos))))))
+                       eos)))))
+         ;; Make it case-sensitive temporarily.
+         (case-fold-search nil))
     (and str (string-match-p re str) t)))
 
 (defun brk-sontaku--skip-string (direction)
@@ -829,13 +856,16 @@ If BOUND is non-nil, stop before BOUND."
                      '(dot kebab snake)))))
     (cl-loop while (or (brk-sontaku--at-word-p (funcall point-fn))
                        (funcall str-cases-p))
-             do (funcall skip-fn)
+             if (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ? )
+             do (cl-return nil)
+             else do (funcall skip-fn)
              when (and bound (funcall over-bound-p (point) bound))
              do (progn
                   (goto-char (funcall before-bound bound))
                   (cl-return nil))
-             finally (let ((to (point)))
-                       (unless (eq from to) to)))))
+             finally (cl-return nil))
+    (let ((to (point)))
+      (unless (eq from to) to))))
 
 ;;;;; Regexp
 
@@ -873,7 +903,8 @@ DIRECTION must be either of:
 ;;;;; Dispatch tables
 
 (defconst brk-sontaku--unit-dispatch-table
-  '((chars . brk-sontaku--skip-chars)
+  '((char . brk-sontaku--skip-char)
+    (chars . brk-sontaku--skip-chars)
     (string . brk-sontaku--skip-string)
     (comment . brk-sontaku--skip-comment-block)
     (same-char . brk-sontaku--skip-same-chars)
@@ -910,29 +941,40 @@ DIRECTION must be either of:
 
 ;;;; Commands
 
-;; TODO: Refine docstring.
 ;;;###autoload
 (defun brk-sontaku-expand-region ()
-  "Expand current region according to the specified strategy for current major mode."
+  "Expand the active region according to the state machine
+designed for the current major mode.
+
+This command performs region expansion based on the state machine
+registered for the current `major-mode'.  Each invocation expands
+the region outward one step, following the strategies defined for
+that mode.
+They can be defined via `brk-sontaku-define-mode-state-machine'.
+
+For whatever reason, if expansion is not possible, signal an error."
   (interactive)
-  (let ((orig-bounds (if (use-region-p)
-                         (cons (region-beginning) (region-end))
-                       (cons (point) (point))))
-        (sm-fn (brk-sontaku--get-state-machine major-mode)))
-    (pcase-let* ((target-bounds (funcall
-                                 (or sm-fn
-                                     brk-sontaku-default-state-machine-function)))
-                 (`(,beg . ,end) target-bounds))
-      (if (brk-sontaku--interval-contains-p target-bounds orig-bounds 'proper)
-          (progn
-            (brk-sontaku--maybe-reset-region-history)
-            (brk-sontaku--mark-region beg end replace-mark)
-            (brk-sontaku--update-region-history beg end))
-        (user-error "Cannot expand region further")))))
+  (let* ((orig-bounds (if (use-region-p)
+                          (cons (region-beginning) (region-end))
+                        (cons (point) (point))))
+         (sm-fn (brk-sontaku--get-state-machine major-mode))
+         (beg (funcall
+               (or sm-fn 'backward
+                   brk-sontaku-default-state-machine-function 'backward)))
+         (end (funcall
+               (or sm-fn 'forward
+                   brk-sontaku-default-state-machine-function 'forward)))
+         (target-bounds (cons beg end)))
+    (if (brk-sontaku--interval-contains-p target-bounds orig-bounds 'proper)
+        (progn
+          (brk-sontaku--maybe-reset-region-history)
+          (brk-sontaku--mark-region beg end replace-mark)
+          (brk-sontaku--update-region-history beg end))
+      (user-error "Cannot expand region further"))))
 
 ;;;###autoload
 (defun brk-sontaku-contract-region (arg)
-  "Contract current region according to the specified strategy for current major mode.
+  "Contract current region according to `brk-sontaku--region-history'.
 When given a numeric prefix argument ARG, contract that many times.
 If ARG is negative, perform expansion instead."
   (interactive "p")
@@ -996,7 +1038,7 @@ For valid predicate keywords, see `brk-sontaku--pred-dispatch-table'.
      ;; Otherwise, signal an error.
      (t (user-error "Invalid predicate form: %S" pred-form)))))
 
-(defun brk-sontaku--compile-action-form (action-form)
+(defun brk-sontaku--compile-action-form (action-form direction)
   "Compile ACTION-FORM into a sequential unit operation.
 ACTION-FORM should look like (unit NAME [COUNT]) or a list of them,
 where NAME is a key of an alist reserved in
@@ -1010,14 +1052,15 @@ For example:
 This validates NAME against `brk-sontaku--unit-dispatch-table'
 and returns the corresponding predicate function when matched
 upon macro expansion.
-At runtime, it is called and returns the last bounds after
-applying all unit actions."
+At runtime, it is called and returns the last point after
+applying all unit actions.
+DIRECTION must be either \\='forward or \\='backward."
   (let ((actions (if (and (consp action-form)
                           (not (eq (car action-form) 'unit)))
                      action-form
                    (list action-form))))
     `(save-excursion
-       (let (last-bounds)
+       (let (to)
          ,@(mapcar
             (lambda (a)
               ;; cadr a: (unit UNIT-NAME COUNT) --> UNIT-NAME
@@ -1025,20 +1068,20 @@ applying all unit actions."
               (let* ((unit-name (cadr a))
                      (count (caddr a))
                      (entry (alist-get unit-name brk-sontaku--unit-dispatch-table)))
-                (if entry
-                    (let ((fn (cdr entry)))
-                      (pcase a
-                        (`(unit ,unit-name ,count)
-                         (unless (and (integerp count) (> count 0))
-                           (user-error "COUNT must be a positive integer in %S" a))
-                         `(dotimes (_ ,count)
-                            (setq last-bounds (,fn))))
-                        (`(unit ,unit-name)
-                         `(setq last-bounds (,fn)))
-                        (_ (user-error "Invalid unit action syntax: %S" a))))
-                  (user-error "Unknown unit action: %S" unit-name))))
+                (unless entry
+                  (user-error "Unknown unit action: %S" unit-name))
+                (let ((fn (cdr entry)))
+                  (pcase a
+                    (`(unit ,unit-name ,count)
+                     (unless (and (integerp count) (> count 0))
+                       (user-error "COUNT must be a positive integer in %S" a))
+                     `(dotimes (_ ,count)
+                        (setq to (,fn ,direction))))
+                    (`(unit ,unit-name)
+                     `(setq to (,fn ,direction)))
+                    (_ (user-error "Invalid unit action syntax: %S" a))))))
             actions)
-         last-bounds))))
+         to))))
 
 (defun brk-sontaku-compile-done (done-val)
   "Compile a done clause into a predicate form, which checks
@@ -1073,21 +1116,20 @@ named `sontaku--MODE-state-machine' and registered in
   (declare (debug (symbolp stringp body [":done" [&or symbolp form]]))
            (indent defun))
   (unless (brk-sontaku--valid-derived-major-mode-symbol-p mode)
-    (user-error "brk-sontaku-define-mode-state-machine: `%s' is not
-a valid derived major mode function" mode))
+    (user-error "brk-sontaku-define-mode-state-machine: `%s' is not a valid derived major mode function" mode))
   (when (brk-sontaku--get-state-machine mode)
-    (message "brk-sontaku--mode-state-machine-registry: Redefining
-an expansion strategy for `%s'" mode))
+    (message "brk-sontaku--mode-state-machine-registry: Redefining an expansion strategy for `%s'" mode))
   (let ((strategy-forms (cl-loop for (key val) on strategies by #'cddr
                                  when (eq key :strategy)
                                  collect val))
         (fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
-        (fn-docstring (format "A state machine auto-generated for `%s'.\n\n%s"
+        (fn-docstring (format "A state machine auto-generated for `%s'.\n
+DIRECTION must be either \\='forward or \\='backward.\n\n%s"
                               mode docstring)))
     `(progn
        (brk-sontaku--register-state-machine ',mode ',fn-name)
 
-       (defun ,fn-name ()
+       (defun ,fn-name (direction)
          ,fn-docstring
          (let ((done-expr (brk-sontaku-compile-done done)))
            (if (,done-expr)
@@ -1104,7 +1146,6 @@ an expansion strategy for `%s'" mode))
 
 ;;;; Built-in Expansion Strategies
 
-;; TODO: Add more edge cases if you find them.
 ;; NOTE: We don't need this. Delegate this logic building part to users.
 ;; That said, this can be helpful when writing strategies in terms of
 ;; the orders actions should be called and strategies.
