@@ -1415,14 +1415,19 @@ Otherwise, it signals an error."
     done-val)
    (t (user-error "Invalid :done form: %S" done-val))))
 
-(cl-defmacro brk-sontaku-define-mode-state-machine (mode docstring &rest strategies &key done)
+;; TODO: Consider dropping DONE arg and delegate that role to the defcustom
+;; as thought previously.
+(cl-defmacro brk-sontaku-define-mode-state-machine (mode docstring &key strategies done)
   "Define a state machine-based expansion/contraction/action strategy for MODE.
 MODE is a symbol that must be a valid derived major mode. (e.g., `org-mode')
 DOCSTRING is the function's docstring.
 
-Multiple :strategy clauses may be given.  The generated function will be
-named `brk-sontaku--MODE-state-machine' and registered in
-`brk-sontaku--mode-state-machine-registry' under the MODE symbol.
+STRATEGIES are a list of strategy forms.  They consist of a combination of
+predicates and actions.  For the detailed explanations on them, see
+`brk-sontaku--compile-pred-form' and `brk-sontaku--compile-action-form', respectively.
+
+The generated function will be named `brk-sontaku--MODE-state-machine'
+and registered in `brk-sontaku--mode-state-machine-registry' under the MODE symbol.
 
 The user-defined state machine functions play a role as an agency in:
 
@@ -1432,50 +1437,50 @@ The user-defined state machine functions play a role as an agency in:
 - returning the resulting point
 
 Sontaku commands use them to look up the next point to move or expand to."
-  (declare (debug (symbolp stringp body [":done" [&or symbolp form]]))
+  (declare (debug (symbolp stringp
+                           &rest [&or [":strategies" sexp]
+                                      [":done" [&or symbolp form]]]))
            (indent defun))
   (unless (brk-sontaku--valid-derived-major-mode-symbol-p mode)
     (user-error "brk-sontaku-define-mode-state-machine: `%s' is not a valid derived major mode" mode))
   (when (brk-sontaku--get-state-machine mode)
     (message "brk-sontaku-define-mode-state-machine: Redefining the state machine function for `%s'" mode))
-  (let ((strategy-forms (cl-loop for (key val) on strategies by #'cddr
-                                 when (eq key :strategy)
-                                 collect val))
-        (fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
-        (fn-docstring (format "A state machine auto-generated for `%s'.\n
-DIRECTION must be either \\='forward or \\='backward.\n\n%s"
+  (let ((fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
+        (fn-docstring (format "A state machine auto-generated for `%s'.\nDIRECTION must be either \\='forward or \\='backward.\n\n%s"
                               mode docstring)))
     `(progn
        (brk-sontaku--register-state-machine ',mode ',fn-name)
 
        (defun ,fn-name (direction)
          ,fn-docstring
-         (let ((done-expr (brk-sontaku-compile-done done)))
-           (if (,done-expr)
+         (let ((done-expr (brk-sontaku-compile-done ',done)))
+           (if done-expr
                (user-error "Current region reaches the bounds limit.")
              (cond
               ,@(cl-loop
-                 for sf in strategy-forms
+                 for sf in strategies
                  collect
                  (let* ((pred-form (car sf))
                         (action-form (cdr sf))
                         (pred-expr (brk-sontaku--compile-pred-form pred-form))
-                        (action-expr (brk-sontaku--compile-action-form action-form)))
+                        (action-expr (brk-sontaku--compile-action-form action-form
+                                                                       'direction)))
                    `(,pred-expr ,action-expr))))))))))
 
 ;;;; Built-in Expansion Strategies
 
 (brk-sontaku-define-mode-state-machine emacs-lisp-mode
-  ""
-  :strategy ((in-comment) . (unit sexp))
-  :strategy ((in-string) . (unit sexp))
-  :strategy ((at-empty-line) . (unit empty-line))
-  :strategy (default . (unit sexp))
+  "Docstring for emacs-lisp-mode."
+  :strategies
+  (((in-comment) . (unit sexp))
+   ((in-string) . (unit sexp))
+   ((at-empty-line) . (unit empty-line))
+   (default . (unit sexp)))
   :done 'at-outermost)
 
 (brk-sontaku-define-mode-state-machine org-mode
-  ""
-  :strategy (default . (unit word))
+  "Docstring for org-mode."
+  :strategies ((default . (unit word)))
   :done 'at-outermost)
 
 ;; NOTE: We don't need this. Delegate this logic building part to users.
