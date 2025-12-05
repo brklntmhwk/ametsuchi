@@ -47,18 +47,7 @@
 (defvar brk-sontaku--region-history nil
   "History of expanded regions for contraction support.")
 
-;; FIXME: Do we need this? The only thing it can be helpful for is the last action...
-(defvar brk-sontaku--prev-state
-  '(:char nil :syntax-class nil :last-action nil)
-  "State machine's previous state.
-It includes:
-
-- the character at point and its syntax class
-- the last action taken
-- ")
-
 (make-variable-buffer-local 'brk-sontaku--region-history)
-(make-variable-buffer-local 'brk-sontaku--prev-state)
 
 ;;;; Internal Constants
 
@@ -231,6 +220,65 @@ in the middle."
   (let ((pt (or pt (point))))
     (ignore-errors (scan-sexps pt n))))
 
+(defun brk-sontaku--skip-chars (string direction &optional bound)
+  "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
+except that:
+
+- it signals an error if BOUND is before or after point and DIRECTION is
+'forward and 'backward, respectively.
+- it returns nil if it fails and the point after move if successful.
+
+For more specific definitions of STRING, see `skip-chars-forward'.
+DIRECTION must be either \\='forward or \\='backward."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
+  (let* ((skip-fn (brk-sontaku--resolve-direction
+                   direction #'skip-chars-forward #'skip-chars-backward))
+         (moved (funcall skip-fn string bound)))
+    (when (/= moved 0) (point))))
+
+(defun brk-sontaku--skip-sexp (direction &optional n)
+  "Move across a sexp according to DIRECTION.
+DIRECTION must be either \\='forward or \\='backward.
+With N, do it that many times. Negative arg -N means move
+backward across N sexps. That means:
+
+- It moves forward with -N when given \\='backward.
+- It moves backward with -N when given \\='forward.
+
+This is a safer version of `forward-sexp'.
+The original `forward-sexp' behaves capriciously
+depending on the major modes:
+
+- In `emacs-lisp-mode', it throws a `scan-error'.
+- In `nxml-mode', it throws a plain error.
+- In `web-mode', it does nothing and returns nil.
+
+This fixes that variability, always returning nil if it fails."
+  (let ((skip-fn (brk-sontaku--resolve-direction
+                  direction #'forward-sexp #'backward-sexp)))
+    (condition-case _
+        (let ((from (point))
+              (to (progn (funcall skip-fn n) (point))))
+          (unless (eq from to) to))
+      (error nil))))
+
+(defun brk-sontaku--skip-syntax (syntax direction &optional bound)
+  "Behave like `skip-syntax-forward' or `skip-syntax-backward' given DIRECTION
+except that:
+
+- it signals an error if BOUND is before or after point and DIRECTION is
+'forward and 'backward, respectively.
+- it returns nil if it fails, and the point after move
+if successful, respectively.
+
+SYNTAX is a string of syntax code characters and will be passed onto either of them.
+DIRECTION must be either \\='forward or \\='backward."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
+  (let* ((skip-fn (brk-sontaku--resolve-direction
+                   direction #'skip-syntax-forward #'skip-syntax-backward))
+         (moved (funcall skip-fn syntax bound)))
+    (when (/= moved 0) (point))))
+
 (defun brk-sontaku--move-within (action direction &optional limit)
   "Call ACTION (a function that moves the point according to DIRECTION).
 DIRECTION must be either \\='forward or \\='backward.
@@ -304,23 +352,6 @@ For the meaning of the returned char, see `modify-syntax-entry'."
 If PT is not inside either of them, return nil."
   (let ((pt (or pt (point))))
     (nth 8 (syntax-ppss pt))))
-
-(defun brk-sontaku--skip-syntax (syntax direction &optional bound)
-  "Behave like `skip-syntax-forward' or `skip-syntax-backward' given DIRECTION
-except that:
-
-- it signals an error if BOUND is before or after point and DIRECTION is
-'forward and 'backward, respectively.
-- it returns nil if it fails, and the point after move
-if successful, respectively.
-
-SYNTAX is a string of syntax code characters and will be passed onto either of them.
-DIRECTION must be either \\='forward or \\='backward."
-  (brk-sontaku--error-if-wrong-bound-pos direction bound)
-  (let* ((skip-fn (brk-sontaku--resolve-direction
-                   direction #'skip-syntax-forward #'skip-syntax-backward))
-         (moved (funcall skip-fn syntax bound)))
-    (when (/= moved 0) (point))))
 
 ;;;; Predicates & Unit Actions
 
@@ -455,22 +486,6 @@ DIRECTION must be either \\='forward or \\='backward."
                   direction #'forward-char #'backward-char)))
     (funcall skip-fn)))
 
-(defun brk-sontaku--char-actions (string direction &optional bound)
-  "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
-except that:
-
-- it signals an error if BOUND is before or after point and DIRECTION is
-'forward and 'backward, respectively.
-- it returns nil if it fails and the point after move if successful.
-
-For more specific definitions of STRING, see `skip-chars-forward'.
-DIRECTION must be either \\='forward or \\='backward."
-  (brk-sontaku--error-if-wrong-bound-pos direction bound)
-  (let* ((skip-fn (brk-sontaku--resolve-direction
-                   direction #'skip-chars-forward #'skip-chars-backward))
-         (moved (funcall skip-fn string bound)))
-    (when (/= moved 0) (point))))
-
 (defun brk-sontaku--same-chars-action (direction &optional bound)
   "Move through same contiguous chars.
 DIRECTION must be either \\='forward or \\='backward.
@@ -481,9 +496,9 @@ Return nil if it fails and the final point after move if successful."
         (char-before-or-after (brk-sontaku--resolve-direction
                                direction #'char-after #'char-before)))
     (unless (funcall bob-or-eob-p)
-      (brk-sontaku--char-actions (regexp-quote
-                                  (char-to-string (funcall char-before-or-after)))
-                                 direction bound))))
+      (brk-sontaku--skip-chars (regexp-quote
+                                (char-to-string (funcall char-before-or-after)))
+                               direction bound))))
 
 ;;;;; Comment
 
@@ -492,53 +507,205 @@ Return nil if it fails and the final point after move if successful."
   (let ((pt (or pt (point))))
     (eq (syntax-ppss-context (syntax-ppss pt)) 'comment)))
 
-;; TODO: Consider a case in which comments are not at bolp.
-;; Maybe run `brk-sontaku--whitespace-action' in backward
-;; and then check if the point is bolp?
-(defun brk-sontaku--at-comment-beg-p (&optional pt)
-  "Return non-nil if PT is at the beginning of a comment block.
+(defun brk-sontaku--at-first-comment-starter-p (&optional pt)
+  "Return non-nil if PT is at the first comment starter.
 Technically, it returns non-nil when PT is at:
 
-- a comment starter and the logical beginning of a comment line.
-- the logical beginning of a comment line but not at a comment
+- a syntactic comment starter and the beginning of a comment line.
+(e.g., \"|;; comment.\" in Emacs Lisp)
+- the beginning of a comment line but not at a syntactic comment
 starter.
+(e.g., \"|/* comment. */\" in JavaScript)
 
-When it comes to a comment block that runs across multiple lines,
+When it comes to a comment block that traverses multiple lines,
 it implys the first line's one."
-  (let ((pt (or pt (point))))
+  (let* ((pt (or pt (point)))
+         (next-pos (1+ pt))
+         (prev-pos (1- pt)))
     (save-excursion
-      (goto-char pt)
-      (and (bolp)
-           (eq (brk-sontaku--syntax-char-after pt) ?<)
-           (progn
-             (previous-logical-line)
-             (not (eq (brk-sontaku--syntax-char-after) ?<)))))))
+      (cl-labels
+          ((in-comment-p (pos)
+             (brk-sontaku--in-comment-p pos))
+           (starter-p (pos)
+             (eq (brk-sontaku--syntax-char-after pos) ?<))
+           (first-starter-p (pos)
+             (and (starter-p pos)
+                  (save-excursion
+                    (goto-char pos)
+                    (brk-sontaku--skip-syntax "<" 'backward)
+                    (= pos (point)))))
+           (comment-delim-p (pos)
+             ;; e.g., "/* ... */" in JavaScript --> Punctuation chars.
+             (and (memq (brk-sontaku--syntax-char-after pos) '(?< ?.)) t))
+           (first-comment-delim-p (pos)
+             (and (comment-delim-p pos)
+                  (save-excursion
+                    (goto-char pos)
+                    (brk-sontaku--skip-syntax "." 'backward)
+                    (= pos (point)))))
+           (prev-line-beg-of-comment-p ()
+             (save-excursion
+               (goto-char pt)
+               (previous-logical-line)
+               (first-starter-p (point)))))
+        (or
+         ;; At the beginning of buffer and either a syntactic
+         ;; comment starter or a comment delimiter.
+         (and (bobp)
+              (or (starter-p pt) (comment-delim-p pt)))
+         (and (not (in-comment-p pt))
+              (or
+               ;; At the first comment starter and the beginning
+               ;; of a comment line.
+               (first-starter-p pt)
+               ;; At the first comment delimiter and the beginning
+               ;; of a comment line.
+               (first-comment-delim-p pt))
+              (not (prev-line-beg-of-comment-p))))))))
 
-(defun brk-sontaku--at-comment-end-p (&optional pt)
-  "Return non-nil if PT is at the end of a comment block.
+(defun brk-sontaku--at-last-comment-ender-p (&optional pt)
+  "Return non-nil if PT is at the last comment ender.
 Technically, it returns non-nil when PT is at:
 
-- a comment ender but not in a comment block.
-(e.g., \"/* comment. */|\" in JaveScript)
-- a comment ender and in a comment block.
+- a syntactic comment ender but not in a comment block.
+(e.g., \"/* comment. */|\" in JavaScript)
+- a syntactic comment ender and in a comment block.
 (e.g., \";; comment.|\" in Emacs Lisp)
 
-When it comes to a comment block that runs across multiple lines,
+When it comes to a comment block that traverses multiple lines,
+it implys the last line's one."
+  (let* ((pt (or pt (point)))
+         (next-pos (1+ pt))
+         (prev-pos (1- pt)))
+    (save-excursion
+      (cl-labels
+          ((ender-p (pos)
+             (eq (brk-sontaku--syntax-char-after pos) ?>))
+           (in-comment-p (pos)
+             (brk-sontaku--in-comment-p pos))
+           (at-empty-line-p (pos)
+             (brk-sontaku--at-empty-line-p pos))
+           (next-line-end-of-comment-p ()
+             (save-excursion
+               (goto-char next-pos)
+               (and (bolp)
+                    (progn
+                      (end-of-line)
+                      ;; NOTE: This still doesn't take care of multiple
+                      ;; trailing inline comments across contiguous lines.
+                      ;; In that case, this pred results in nil.
+                      (not (in-comment-p (point))))))))
+        (or
+         ;; At a comment ender and in a comment block.
+         (and (in-comment-p pt)
+              (ender-p pt)
+              (or (and (at-empty-line-p next-pos)
+                       (ender-p next-pos))
+                  (next-line-end-of-comment-p)))
+         ;; At a comment ender but not in a comment block.
+         (and (not (in-comment-p pt))
+              (in-comment-p prev-pos)
+              (not (save-excursion (goto-char pt) (bolp)))
+              (or (and (at-empty-line-p next-pos)
+                       (ender-p next-pos))
+                  (next-line-end-of-comment-p))))))))
+
+(defun brk-sontaku--at-comment-sentence-beg-p (&optional pt)
+  "Return non-nil if PT is at the beginning of a comment
+sentence.
+In a comment block, for example:
+
+- \";; |Comment\"
+- \"/* |Comment */ \"
+
+When it comes to a comment block that traverses multiple lines,
+it implys the first line's one."
+  (let ((pt (or pt (point))))
+    (cl-labels
+        ((in-comment-p (pos)
+           (brk-sontaku--in-comment-p pos))
+         (goto-comment-start (pos)
+           (goto-char (brk-sontaku--syntax-string-start pos)))
+         (forward-inside-comment-prefixes (pos)
+           (goto-char pos)
+           ;; Consider the JavaScript style of multiple line comment.
+           (brk-sontaku--skip-chars " \t\n*" 'forward))
+         (at-comment-delim-p (pos)
+           (and (memq (brk-sontaku--syntax-char-after pos) '(?< ?> ?.)) t))
+         (prev-empty-line-p ()
+           (save-excursion
+             (beginning-of-line)
+             (and (not (bobp))
+                  (progn
+                    (previous-logical-line)
+                    (brk-sontaku--at-empty-line-p)))))
+         (beg-of-comment-sentence-p (pos)
+           (save-excursion
+             (goto-comment-start pos)
+             (if (/= (line-number-at-pos pos t)
+                     (line-number-at-pos (point) t))
+                 ;; Take care of multiple line comment blocks.
+                 (progn
+                   (re-search-forward comment-start-skip
+                                      (line-end-position) t nil)
+                   (forward-line)
+                   (forward-inside-comment-prefixes (point))
+                   (= pos (point)))
+               ;; Otherwise, apply conditions for single line ones.
+               (and (not (at-comment-delim-p pos))
+                    (at-comment-delim-p (point))
+                    (boundp 'comment-start-skip)
+                    comment-start-skip
+                    (re-search-forward comment-start-skip
+                                       (line-end-position) t nil)
+                    (and (= pos (match-end 0))
+                         (if (not (prev-empty-line-p))
+                             (progn (backward-word)
+                                    (not (in-comment-p (point))))
+                           t)))))))
+      (and (in-comment-p pt)
+           (beg-of-comment-sentence-p pt)))))
+
+(defun brk-sontaku--at-comment-sentence-end-p (&optional pt)
+  "Return non-nil if PT is at the end of a comment sentence.
+In a comment block, for example:
+
+- \";; Comment|\"
+- \"/* Comment| */ \"
+
+When it comes to a comment block that traverses multiple lines,
 it implys the last line's one."
   (let ((pt (or pt (point))))
-    (save-excursion
-      (goto-char pt)
-      (let ((next-pos (1+ (point)))
-            (prev-pos (1- (point))))
-        (or
-         ;; At a comment ender but and in a comment block.
-         (and (brk-sontaku--in-comment-p pt)
-              (eq (brk-sontaku--syntax-char-after pt) ?>)
-              (brk-sontaku--at-empty-line-p next-pos))
-         ;; At a comment ender but not in a comment block.
-         (and (not (brk-sontaku--in-comment-p pt))
-              (brk-sontaku--in-comment-p prev-pos)
-              (eq (brk-sontaku--syntax-char-after next-pos) ?>)))))))
+    (cl-labels
+        ((goto-comment-start (pos)
+           (goto-char (brk-sontaku--syntax-string-start pos)))
+         (goto-comment-end (pos)
+           (goto-comment-start pos)
+           (forward-comment 1))
+         (in-comment-p (pos)
+           (brk-sontaku--in-comment-p pos))
+         (backward-empty-line-and-whitespace (pos)
+           (goto-char pos)
+           (brk-sontaku--skip-chars " \t\n" 'backward))
+         (end-of-comment-sentence-p (pos)
+           (save-excursion
+             (goto-comment-end pos)
+             (backward-empty-line-and-whitespace (point))
+             (if (and (boundp 'comment-end-skip)
+                      comment-end-skip
+                      (re-search-backward comment-end-skip
+                                          (line-beginning-position) t nil))
+                 (progn
+                   (goto-char (point))
+                   (backward-empty-line-and-whitespace (point))
+                   (= pos (point)))
+               (and (= pos (point))
+                    (if (not (brk-sontaku--at-empty-line-p (1+ (point))))
+                        (progn (forward-word)
+                               (not (in-comment-p (point))))
+                      t))))))
+      (and (in-comment-p pt)
+           (end-of-comment-sentence-p pt)))))
 
 (defun brk-sontaku--comment-action (direction)
   "Move across a comment block according to DIRECTION.
@@ -683,32 +850,6 @@ parentheses, brackets, braces, strings, comments, or paired tag-like constructs.
         (brk-sontaku--in-comment-p pt)
         (brk-sontaku--in-parens-p pt))))
 
-(defun brk-sontaku--skip-sexp (direction &optional n)
-  "Move across a sexp according to DIRECTION.
-DIRECTION must be either \\='forward or \\='backward.
-With N, do it that many times. Negative arg -N means move
-backward across N sexps. That means:
-
-- It moves forward with -N when given \\='backward.
-- It moves backward with -N when given \\='forward.
-
-This is a safer version of `forward-sexp'.
-The original `forward-sexp' behaves capriciously
-depending on the major modes:
-
-- In `emacs-lisp-mode', it throws a `scan-error'.
-- In `nxml-mode', it throws a plain error.
-- In `web-mode', it does nothing and returns nil.
-
-This fixes that variability, always returning nil if it fails."
-  (let ((skip-fn (brk-sontaku--resolve-direction
-                  direction #'forward-sexp #'backward-sexp)))
-    (condition-case _
-        (let ((from (point))
-              (to (progn (funcall skip-fn n) (point))))
-          (unless (eq from to) to))
-      (error nil))))
-
 (defun brk-sontaku--primitive-skip-sexp (direction)
   "Move across a sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
@@ -740,32 +881,35 @@ Unlike `forward-sexp' and `backward-sexp', this returns nil
 and does nothing when the current point is:
 
 inside a string and:
-- right after an opening quotation mark and DIRECTION is \\='backward.
-- right before an closing quotation mark and DIRECTION is \\='forward.
+- at the beginning of a string sentence(s) and DIRECTION is \\='backward.
+- at the end of a string sentence(s) and DIRECTION is \\='forward.
 
 inside a comment block and:
-- at the beginning of the block and DIRECTION is \\='backward.
-- at the end of the block and DIRECTION is \\='forward.
+- it goes beyond the current comment block.
 
 For the meaning of \"string\", see `brk-sontaku--string-action'."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((from (point))
-        (at-comment-peak-p
+        (at-string-peak-p
          (brk-sontaku--resolve-direction
           direction
-          #'brk-sontaku--at-comment-end-p
-          #'brk-sontaku--at-comment-beg-p))
-        (inside-and-next-to-quotation-p
-         (brk-sontaku--resolve-direction
-          direction
-          #'brk-sontaku--inside-and-next-to-closing-quotation-p
-          #'brk-sontaku--inside-and-next-to-opening-quotation-p)))
+          #'brk-sontaku--at-string-sentence-end-p
+          #'brk-sontaku--at-string-sentence-beg-p)))
     (cond
      ((brk-sontaku--in-comment-p)
-      (unless (funcall at-comment-peak-p)
-        (brk-sontaku--primitive-skip-sexp direction)))
+      (let* ((orig (point))
+             (next (save-excursion
+                     (goto-char orig)
+                     (brk-sontaku--primitive-skip-sexp direction)))
+             (beg (brk-sontaku--syntax-string-start orig))
+             (end (save-excursion
+                    (goto-char beg)
+                    (forward-comment 1)
+                    (point))))
+        (when (and (< beg next) (> end next))
+          (brk-sontaku--primitive-skip-sexp direction))))
      ((brk-sontaku--in-string-p)
-      (unless (funcall inside-and-next-to-quotation-p)
+      (unless (funcall at-string-peak-p)
         (brk-sontaku--primitive-skip-sexp direction)))
      (t (brk-sontaku--primitive-skip-sexp direction)))))
 
@@ -836,24 +980,20 @@ Unlike `forward-symbol', it returns nil when the current point is:
   (let ((pt (or pt (point))))
     (eq (syntax-ppss-context (syntax-ppss pt)) 'string)))
 
-(defun brk-sontaku--inside-and-next-to-opening-quotation-p (&optional pt)
-  "Return non-nil if PT is right after an opening
-quotation mark.
-
-Note that PT should also be in a string syntactically."
+(defun brk-sontaku--at-string-sentence-beg-p (&optional pt)
+  "Return non-nil if PT is at the beginning of a sentence
+in a string: right after an opening quotation mark."
   (let ((pt (or pt (point))))
-    (and (brk-sontaku--in-string-p)
+    (and (brk-sontaku--in-string-p pt)
          (= pt (1+ (brk-sontaku--syntax-string-start))))))
 
-(defun brk-sontaku--inside-and-next-to-closing-quotation-p (&optional pt)
-  "Return non-nil if PT is right before an closing
-quotation mark.
-
-Note that PT should also be in a string syntactically."
+(defun brk-sontaku--at-string-sentence-end-p (&optional pt)
+  "Return non-nil if PT is at the end of a sentence in a string:
+right before an closing quotation mark."
   (let* ((pt (or pt (point)))
-         (string-beg (brk-sontaku--syntax-string-start))
+         (string-beg (brk-sontaku--syntax-string-start pt))
          (string-end (brk-sontaku--safe-scan-sexps 1 string-beg)))
-    (and (brk-sontaku--in-string-p)
+    (and (brk-sontaku--in-string-p pt)
          (= pt (1- string-end)))))
 
 (defun brk-sontaku--match-string-case-p (style &optional case-state pt)
@@ -933,8 +1073,8 @@ By \"string\", it specifically means:
 - String quotes
 - String delimiters
 
-Note that this function does nothing when
-the current point is inside \"string\".  That built-in logic
+Note that this function does nothing when the current point
+is inside \"string\".  That built-in logic
 keeps unexpected behaviors occurred when called within
 themselves at bay."
   (let ((from (point))
@@ -1039,34 +1179,31 @@ If BOUND is non-nil, stop before BOUND."
 
 (defun brk-sontaku--with-regexp-p (regexp &optional direction bound pt)
   "Return non-nil if REGEXP matches relative to PT.
-DIRECTION must be either of:
+REGEXP may be:
+
+- a string regexp
+- an RX regexp (Lisp form)
+
+DIRECTION must be either:
 
 - nil: test REGEXP at point.
 - \\='forward: test REGEXP ahead within BOUND.
 - \\='backward: test REGEXP behind within BOUND."
-  (let ((pt (or pt (point))))
-    (pcase direction
-      ('nil
-       (save-match-data
-         (with-current-buffer (current-buffer)
-           (save-excursion
-             (goto-char pt)
-             (looking-at-p regexp)))))
-      ('forward
-       (save-match-data
-         (with-current-buffer (current-buffer)
-           (save-excursion
-             (goto-char pt)
-             (and (re-search-forward regexp bound t)
-                  t)))))
-      ('backward
-       (save-match-data
-         (with-current-buffer (current-buffer)
-           (save-excursion
-             (goto-char pt)
-             (and (re-search-backward regexp bound t)
-                  t)))))
-      (_ (user-error "Invalid DIRECTION %S" direction)))))
+  (let ((pt (or pt (point)))
+        (pattern (if (stringp regexp)
+                     regexp
+                   (rx-to-string regexp))))
+    (save-match-data
+      (save-excursion
+        (goto-char pt)
+        (pcase direction
+          ('nil
+           (looking-at-p pattern))
+          ('forward
+           (and (re-search-forward pattern bound t) t))
+          ('backward
+           (and (re-search-backward pattern bound t) t))
+          (_ (user-error "Invalid DIRECTION %S" direction)))))))
 
 ;;;;; Dispatch tables
 
@@ -1087,10 +1224,16 @@ DIRECTION must be either of:
 (defconst brk-sontaku--pred-dispatch-table
   '((at-bob . bobp)
     (at-bol . bolp)
+    (at-comment-sentense-beg . brk-sontaku--at-comment-sentence-beg-p)
+    (at-comment-sentense-end . brk-sontaku--at-comment-sentence-end-p)
     (at-empty-line . brk-sontaku--at-empty-line-p)
     (at-eob . eobp)
     (at-eol . eolp)
+    (at-first-comment-starter . brk-sontaku--at-first-comment-starter-p)
+    (at-last-comment-ender . brk-sontaku--at-last-comment-ender-p)
     (at-outermost . brk-sontaku--at-outermost-p)
+    (at-string-sentence-beg . brk-sontaku--at-string-sentence-beg-p)
+    (at-string-sentence-end . brk-sontaku--at-string-sentence-end-p)
     (at-symbol . brk-sontaku--at-symbol-p)
     (at-symbol-prefix . brk-sontaku--at-symbol-prefix-p)
     (at-whitespace . brk-sontaku--at-whitespace-p)
@@ -1321,6 +1464,19 @@ DIRECTION must be either \\='forward or \\='backward.\n\n%s"
                    `(,pred-expr ,action-expr))))))))))
 
 ;;;; Built-in Expansion Strategies
+
+(brk-sontaku-define-mode-state-machine emacs-lisp-mode
+  ""
+  :strategy ((in-comment) . (unit sexp))
+  :strategy ((in-string) . (unit sexp))
+  :strategy ((at-empty-line) . (unit empty-line))
+  :strategy (default . (unit sexp))
+  :done 'at-outermost)
+
+(brk-sontaku-define-mode-state-machine org-mode
+  ""
+  :strategy (default . (unit word))
+  :done 'at-outermost)
 
 ;; NOTE: We don't need this. Delegate this logic building part to users.
 ;; That said, this can be helpful when writing strategies in terms of
