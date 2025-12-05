@@ -279,6 +279,29 @@ DIRECTION must be either \\='forward or \\='backward."
          (moved (funcall skip-fn syntax bound)))
     (when (/= moved 0) (point))))
 
+(defun brk-sontaku--primitive-skip-sexp (direction)
+  "Move across a sexp according to DIRECTION.
+DIRECTION must be either \\='forward or \\='backward.
+
+This is similar to `forward-sexp'/`backward-sexp', but it takes care of
+some behavioral glitches (quirks?) they have.  See the implementation
+for more details."
+  (let ((skip-syntax-direction (brk-sontaku--resolve-direction
+                                direction 'backward 'forward))
+        (point-fn (brk-sontaku--resolve-direction
+                   direction #'point (lambda () (1- (point)))))
+        (skip-char-fn (brk-sontaku--resolve-direction
+                       direction #'forward-char #'backward-char)))
+    (if (brk-sontaku--skip-sexp direction)
+        ;; Play it safe and skip back whitespace ahead of the point.
+        (progn (brk-sontaku--skip-syntax " " skip-syntax-direction)
+               (point))
+      ;; Skip an expression prefix ahead if present.
+      ;; In the example below, "*" is the point.
+      ;; e.g., (foo *') --> 'forward --> (foo '*)
+      (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
+        (funcall skip-char-fn) (point)))))
+
 (defun brk-sontaku--move-within (action direction &optional limit)
   "Call ACTION (a function that moves the point according to DIRECTION).
 DIRECTION must be either \\='forward or \\='backward.
@@ -850,28 +873,6 @@ parentheses, brackets, braces, strings, comments, or paired tag-like constructs.
         (brk-sontaku--in-comment-p pt)
         (brk-sontaku--in-parens-p pt))))
 
-(defun brk-sontaku--primitive-skip-sexp (direction)
-  "Move across a sexp according to DIRECTION.
-DIRECTION must be either \\='forward or \\='backward.
-
-This is similar to `forward-sexp'/`backward-sexp', but it takes care of
-some behavioral glitches (quirks?) they have.  See the implementation
-for more details."
-  (let ((skip-syntax-direction (brk-sontaku--resolve-direction
-                                direction 'backward 'forward))
-        (point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point))))))
-    (if (brk-sontaku--skip-sexp direction)
-        ;; Play it safe and skip back whitespace ahead of the point.
-        (progn (brk-sontaku--skip-syntax " " skip-syntax-direction)
-               (point))
-      ;; Skip an expression prefix ahead if present.
-      ;; In the example below, "*" is the point.
-      ;; e.g., (foo *') --> 'forward --> (foo '*)
-      (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
-        (brk-sontaku--char-action direction) (point)))))
-
-;; TODO: Complete this action.
 (defun brk-sontaku--sexp-action (direction &optional bound)
   "Move across a sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
@@ -885,7 +886,7 @@ inside a string and:
 - at the end of a string sentence(s) and DIRECTION is \\='forward.
 
 inside a comment block and:
-- it goes beyond the current comment block.
+- the next call will move the point beyond the current comment block.
 
 For the meaning of \"string\", see `brk-sontaku--string-action'."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
