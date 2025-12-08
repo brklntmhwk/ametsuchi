@@ -57,21 +57,20 @@
 
 ;;;; User Options
 
-(defcustom brk-sontaku-expand-to-whole-buffer-at-top-level t
+(defcustom brk-sontaku-proceed-to-whole-buffer-at-top-level t
   "If non-nil, expanding region at top-level will select the entire buffer.
-Otherwise, region expansion stops silently when no broader syntactic unit exists."
+Otherwise, region expansion stops silently when no broader syntactic unit exists.
+The same goes for navigation commands."
   :type 'boolean
   :group 'brk-sontaku)
 
 (defcustom brk-sontaku-default-state-machine-function
-  #'brk-sontaku--emacs-lisp-mode-state-machine
+  #'brk-sontaku--default-state-machine
   "A default state machine function called when expanding,
 contracting, or moving."
   :type '(choice
-          (const :tag "State machine for `emacs-lisp-mode'"
-                 brk-sontaku--elisp-mode-state-machine)
-          (const :tag "State machine for `org-mode'"
-                 brk-sontaku--org-mode-state-machine)
+          (const :tag "Default state machine"
+                 brk-sontaku--default-state-machine)
           (function :tag "Custom state machine"))
   :group 'brk-sontaku)
 
@@ -119,7 +118,7 @@ When no active region exists, return nil."
         'backward
       'forward)))
 
-(defun brk-sontaku--mark-region (beg end replace-mark)
+(defun brk-sontaku--mark-region (beg end &optional replace-mark)
   "Mark and activate a region between BEG and END.
 If REPLACE-MARK is non-nil, replace the existing mark with the new one.
 Otherwise, push the existing one into mark ring."
@@ -507,7 +506,8 @@ into a single function by taking DIRECTION as an argument.
 DIRECTION must be either \\='forward or \\='backward."
   (let ((skip-fn (brk-sontaku--resolve-direction
                   direction #'forward-char #'backward-char)))
-    (funcall skip-fn)))
+    (funcall skip-fn)
+    (point)))
 
 (defun brk-sontaku--same-chars-action (direction &optional bound)
   "Move through same contiguous chars.
@@ -836,7 +836,7 @@ If BOUND is non-nil, stop before BOUND."
 
 ;;;;; S-Expression
 
-(defun brk-sontaku--at-outermost-p (&optional pt)
+(defun brk-sontaku--at-top-level-p (&optional pt)
   "Return non-nil if PT is at the outermost of the current buffer.
 That is, it is not enclosed in any parenthetical constructs,
 string, or comment."
@@ -1223,16 +1223,11 @@ DIRECTION must be either:
   "An alist mapping unit names to the corresponding primitive action functions.")
 
 (defconst brk-sontaku--pred-dispatch-table
-  '((at-bob . bobp)
-    (at-bol . bolp)
-    (at-comment-sentense-beg . brk-sontaku--at-comment-sentence-beg-p)
+  '((at-comment-sentense-beg . brk-sontaku--at-comment-sentence-beg-p)
     (at-comment-sentense-end . brk-sontaku--at-comment-sentence-end-p)
     (at-empty-line . brk-sontaku--at-empty-line-p)
-    (at-eob . eobp)
-    (at-eol . eolp)
     (at-first-comment-starter . brk-sontaku--at-first-comment-starter-p)
     (at-last-comment-ender . brk-sontaku--at-last-comment-ender-p)
-    (at-outermost . brk-sontaku--at-outermost-p)
     (at-string-sentence-beg . brk-sontaku--at-string-sentence-beg-p)
     (at-string-sentence-end . brk-sontaku--at-string-sentence-end-p)
     (at-symbol . brk-sontaku--at-symbol-p)
@@ -1254,6 +1249,42 @@ DIRECTION must be either:
 ;;;; Commands
 
 ;;;###autoload
+(defun brk-sontaku-forward ()
+  "Move forward according to the state machine designed for
+the current major mode.
+
+This command performs forward navigation based on the state machine
+registered for the current `major-mode'.  Each invocation moves the
+point forward by a certain unit according to the strategies defined for
+that mode.
+For more details, see `brk-sontaku-define-mode-state-machine'."
+  (interactive)
+  (let ((sm-fn (brk-sontaku--get-state-machine major-mode))
+        to)
+    (funcall
+     (or sm-fn
+         brk-sontaku-default-state-machine-function)
+     'forward)))
+
+;;;###autoload
+(defun brk-sontaku-backward ()
+  "Move backward according to the state machine designed for
+the current major mode.
+
+This command performs backward navigation based on the state machine
+registered for the current `major-mode'.  Each invocation moves the
+point backward by a certain unit according to the strategies defined for
+that mode.
+For more details, see `brk-sontaku-define-mode-state-machine'."
+  (interactive)
+  (let ((sm-fn (brk-sontaku--get-state-machine major-mode))
+        to)
+    (funcall
+     (or sm-fn
+         brk-sontaku-default-state-machine-function)
+     'backward)))
+
+;;;###autoload
 (defun brk-sontaku-expand-region ()
   "Expand the active region according to the state machine
 designed for the current major mode.
@@ -1262,6 +1293,7 @@ This command performs region expansion based on the state machine
 registered for the current `major-mode'.  Each invocation expands
 the region outward one step, following the strategies defined for
 that mode.
+
 They can be defined via `brk-sontaku-define-mode-state-machine'.
 
 For whatever reason, if expansion is not possible, signal an error."
@@ -1272,13 +1304,16 @@ For whatever reason, if expansion is not possible, signal an error."
          (sm-fn (brk-sontaku--get-state-machine major-mode))
          (beg (save-excursion
                 (funcall
-                 (or sm-fn 'backward
-                     brk-sontaku-default-state-machine-function 'backward))))
+                 (or sm-fn
+                     brk-sontaku-default-state-machine-function)
+                 'backward)))
          (end (save-excursion
                 (funcall
-                 (or sm-fn 'forward
-                     brk-sontaku-default-state-machine-function 'forward))))
-         (target-bounds (cons beg end)))
+                 (or sm-fn
+                     brk-sontaku-default-state-machine-function)
+                 'forward)))
+         (target-bounds (cons beg end))
+         (replace-mark (eq last-command this-command)))
     (if (brk-sontaku--interval-contains-p target-bounds orig-bounds 'proper)
         (progn
           (brk-sontaku--maybe-reset-region-history)
@@ -1288,7 +1323,10 @@ For whatever reason, if expansion is not possible, signal an error."
 
 ;;;###autoload
 (defun brk-sontaku-contract-region (arg)
-  "Contract current region according to `brk-sontaku--region-history'.
+  "Contract the active region according to `brk-sontaku--region-history'.
+This command simply undoes what `brk-sontaku-expand-region' does in
+reverse order.
+
 When given a numeric prefix argument ARG, contract that many times.
 If ARG is negative, perform expansion instead."
   (interactive "p")
@@ -1314,7 +1352,7 @@ If ARG is negative, perform expansion instead."
 otherwise return nil."
   (when (consp form) (car form)))
 
-(defun brk-sontaku--compile-pred-form (pred-form)
+(defun brk-sontaku--compile-pred-form (pred-form direction-sym)
   "Compile PRED-FORM into an executable form.
 Return a form that evaluates to non-nil when matched.
 PRED-FORM should look like:
@@ -1325,9 +1363,15 @@ PRED-FORM should look like:
 - a user-defined predicate function symbol: treat it as a function
 
 Otherwise, it signals an error.
-For the valid predicate keywords, see `brk-sontaku--pred-dispatch-table'."
+For the valid predicate keywords, see `brk-sontaku--pred-dispatch-table'.
+
+DIRECTION_SYM is a symbol naming the variable that will hold the
+runtime direction.  The generated code will refer to this variable.
+For the valid values, see `brk-sontaku--resolve-direction'."
   (let* ((head (brk-sontaku--form-head pred-form))
-         (pred (alist-get head brk-sontaku--pred-dispatch-table)))
+         (pred (alist-get head brk-sontaku--pred-dispatch-table))
+         (point-fn `(brk-sontaku--resolve-direction
+                     ,direction-sym #'point (lambda () (1- (point))))))
     (cond
      ;; Handle the default case here.
      ((eq pred-form 'default) 't)
@@ -1343,14 +1387,14 @@ For the valid predicate keywords, see `brk-sontaku--pred-dispatch-table'."
       `(not ,(brk-sontaku--compile-pred-form (cadr pred-form))))
      ;; Dispatch reserved predicate cases.
      (pred
-      `(,pred ,@(cdr pred-form)))
+      `(,pred ,@(cdr pred-form) ,point-fn))
      ;; If it is a symbol/predicate name, assume it is a predicate to call.
      ((symbolp pred-form)
       `(funcall #',pred-form))
      ;; Otherwise, signal an error.
      (t (user-error "Invalid predicate form: %S" pred-form)))))
 
-(defun brk-sontaku--compile-action-form (action-form direction)
+(defun brk-sontaku--compile-action-form (action-form direction-sym)
   "Compile ACTION-FORM into a sequential unit operation.
 ACTION-FORM should look like (unit NAME [COUNT]) or a list of them,
 where NAME is a key of an alist reserved in
@@ -1366,7 +1410,10 @@ and returns the corresponding predicate function when matched
 upon macro expansion.
 At runtime, it is called and returns the last point after
 applying all unit actions.
-DIRECTION must be either \\='forward or \\='backward."
+
+DIRECTION_SYM is a symbol naming the variable that will hold the
+runtime direction.  The generated code will refer to this variable.
+For the valid values, see `brk-sontaku--resolve-direction'."
   (let ((actions (if (and (consp action-form)
                           (not (eq (car action-form) 'unit)))
                      action-form
@@ -1388,37 +1435,13 @@ DIRECTION must be either \\='forward or \\='backward."
                           (count (and (integerp last-elt) (> last-elt 0) last-elt)))
                      (if count
                          `(dotimes (_ ,count)
-                            (setq to (,unit-action ,direction ,@(butlast rest))))
-                       `(setq to (,unit-action ,direction ,@rest)))))
+                            (setq to (,unit-action ,direction-sym ,@(butlast rest))))
+                       `(setq to (,unit-action ,direction-sym ,@rest)))))
                   (_ (user-error "Invalid unit action syntax: %S" a)))))
             actions)
          to))))
 
-(defun brk-sontaku-compile-done (done-val)
-  "Compile a done clause into a predicate form, which checks
-whether to stop proceeding at every state change,
-If it returns non-nil, abort the state machine.
-DONE-VAL must be either of:
-
- - a key of an alist reserved in `brk-sontaku--pred-dispatch-table':
-call the corresponding predicate function.
- - the other symbol: call it as a function.
- - a lambda or a function: simply call it.
-
-Otherwise, it signals an error."
-  (cond
-   ((assq done-val brk-sontaku--pred-dispatch-table)
-    (let ((fn (alist-get done-val brk-sontaku--pred-dispatch-table)))
-      `(,fn)))
-   ((symbolp done-val)
-    `(funcall #',done-val))
-   ((and (consp done-val) (memq (car done-val) '(lambda function)))
-    done-val)
-   (t (user-error "Invalid :done form: %S" done-val))))
-
-;; TODO: Consider dropping DONE arg and delegate that role to the defcustom
-;; as thought previously.
-(cl-defmacro brk-sontaku-define-mode-state-machine (mode docstring &key strategies done)
+(cl-defmacro brk-sontaku-define-mode-state-machine (mode docstring &key strategies)
   "Define a state machine-based expansion/contraction/action strategy for MODE.
 MODE is a symbol that must be a valid derived major mode. (e.g., `org-mode')
 DOCSTRING is the function's docstring.
@@ -1438,81 +1461,84 @@ The user-defined state machine functions play a role as an agency in:
 - returning the resulting point
 
 Sontaku commands use them to look up the next point to move or expand to."
-  (declare (debug (symbolp stringp
-                           &rest [&or [":strategies" sexp]
-                                      [":done" [&or symbolp form]]]))
+  (declare (debug (symbolp stringp &rest (:strategies sexp)))
            (indent defun))
   (unless (brk-sontaku--valid-derived-major-mode-symbol-p mode)
     (user-error "brk-sontaku-define-mode-state-machine: `%s' is not a valid derived major mode" mode))
+  (unless strategies
+    (user-error "brk-sontaku-define-mode-state-machine: Strategies not provided. At least one :strategies keyword must be given"))
   (when (brk-sontaku--get-state-machine mode)
     (message "brk-sontaku-define-mode-state-machine: Redefining the state machine function for `%s'" mode))
   (let ((fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
         (fn-docstring (format "A state machine auto-generated for `%s'.\nDIRECTION must be either \\='forward or \\='backward.\n\n%s"
                               mode docstring)))
     `(progn
-       (brk-sontaku--register-state-machine ',mode ',fn-name)
-
        (defun ,fn-name (direction)
          ,fn-docstring
-         (let ((done-expr (brk-sontaku-compile-done ',done)))
-           (if done-expr
-               (user-error "Current region reaches the bounds limit.")
-             (cond
-              ,@(cl-loop
-                 for sf in strategies
-                 collect
-                 (let* ((pred-form (car sf))
-                        (action-form (cdr sf))
-                        (pred-expr (brk-sontaku--compile-pred-form pred-form))
-                        (action-expr (brk-sontaku--compile-action-form action-form
-                                                                       'direction)))
-                   `(,pred-expr ,action-expr))))))))))
+         (cond
+          ((or (bobp) (eobp)
+               (and (not brk-sontaku-proceed-to-whole-buffer-at-top-level)
+                    (brk-sontaku--at-top-level-p)))
+           (message "Reached top-level boundary - action stopped")
+           nil)
+          ,@(cl-loop
+             for sf in strategies
+             collect
+             (let* ((pred-form (car sf))
+                    (action-form (cdr sf))
+                    (pred-expr (brk-sontaku--compile-pred-form pred-form
+                                                               'direction))
+                    (action-expr (brk-sontaku--compile-action-form action-form
+                                                                   'direction)))
+               `(,pred-expr ,action-expr)))))
+
+       (brk-sontaku--register-state-machine ',mode ',fn-name))))
+
+;; TODO: Write this function in the Sontaku DSL.
+
+(defun brk-sontaku--default-state-machine (direction)
+  "A default state machine that works as a fallback.
+DIRECTION must be either \\='forward or \\='backward."
+  (let ((point-fn (brk-sontaku--resolve-direction
+                   direction #'point (lambda () (1- (point))))))
+    (cond
+     ((brk-sontaku--at-word-p (funcall point-fn))
+      (brk-sontaku--word-action direction))
+     ((brk-sontaku--match-syntax-p '(?\( ?\) ?$ ? ) (funcall point-fn))
+      (brk-sontaku--syntax-action direction))
+     (t
+      (brk-sontaku--char-action direction)))))
+
+;; NOTE: These should be migrated to another file to allow users
+;; to selectively load them at their own will.
 
 ;;;; Built-in Expansion Strategies
 
-(brk-sontaku-define-mode-state-machine emacs-lisp-mode
-  "Docstring for emacs-lisp-mode."
-  :strategies
-  (((in-comment) . (unit sexp))
-   ((in-string) . (unit sexp))
-   ((at-empty-line) . (unit empty-line))
-   (default . (unit sexp)))
-  :done 'at-outermost)
+;; (brk-sontaku-define-mode-state-machine emacs-lisp-mode
+;;   "Docstring for emacs-lisp-mode."
+;;   :strategies
+;;   (((in-comment) . (unit sexp))
+;;    ((in-string) . (unit sexp))
+;;    ((at-empty-line) . (unit empty-line))
+;;    (default . (unit sexp))))
 
-(brk-sontaku-define-mode-state-machine org-mode
-  "Docstring for org-mode."
-  :strategies ((default . (unit word)))
-  :done 'at-outermost)
+;; (brk-sontaku-define-mode-state-machine org-mode
+;;   "Docstring for org-mode."
+;;   :strategies
+;;   (((in-string) . (unit word))
+;;    (default . (unit sexp))))
 
-;; NOTE: We don't need this. Delegate this logic building part to users.
-;; That said, this can be helpful when writing strategies in terms of
-;; the orders actions should be called and strategies.
-;; (defun brk-sontaku--skip-syntax-block (direction &optional limit)
-;;   "Move across a syntax block according to DIRECTION.
-;; When LIMIT is non-nil, do not move past LIMIT."
-;;   (let* ((point-fn (brk-sontaku--resolve-direction
-;;                     direction #'point (lambda () (1- (point)))))
-;;          (syntax-char (brk-sontaku--syntax-char-after (funcall point-fn)))
-;;          (syntax-classes (brk-sontaku--resolve-direction
-;;                           direction '(?\( ?$) '(?\) ?$))))
-;;     (or (brk-sontaku--move-within #'brk-sontaku--symbol-action direction limit)
-;;         (brk-sontaku--move-within #'brk-sontaku--string-action direction limit)
-;;         (brk-sontaku--move-within #'brk-sontaku--comment-action direction limit)
-;;         (when (memq syntax-char syntax-classes)
-;;           (let ((forward-sexp-function nil))
-;;             (brk-sontaku--move-within #'brk-sontaku--primitive-skip-sexp
-;;                                       direction limit)))
-;;         (when (eq syntax-char ?.)
-;;           (progn (forward-char) (point)))
-;;         (brk-sontaku--move-within #'brk-sontaku--same-chars-and-syntax-action
-;;                                   direction limit))))
+;;;; Sontaku mode
 
-;; TODO: add OOTB strategies for some popular major modes.
-;; emacs-lisp-mode, org-mode.
+(defvar-keymap sontaku-mode-map
+  :doc "Keymap for `sontaku-mode'."
+  "M-f" #'brk-sontaku-forward
+  "M-b" #'brk-sontaku-backward)
 
-;; TODO: add a default strategy that works as a fallback. (Maybe the one like puni?)
-;; That can be used in `brk-sontaku-expand-region' in case no state machine-fn found
-;; for the current mode.
+;;;###autoload
+(define-minor-mode sontaku-mode
+  "Minor mode to enable keybindings for Sontaku commands."
+  :keymap sontaku-mode-map)
 
 (provide 'brk-sontaku)
 ;;; brk-sontaku.el ends here
