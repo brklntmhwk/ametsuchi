@@ -66,7 +66,7 @@ The same goes for navigation commands."
 
 (defcustom brk-sontaku-default-state-machine-function
   #'brk-sontaku--default-state-machine
-  "A default state machine function called when expanding,
+  "The default state machine function called when expanding,
 contracting, or moving."
   :type '(choice
           (const :tag "Default state machine"
@@ -1259,8 +1259,8 @@ point forward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
   (interactive)
-  (let ((sm-fn (brk-sontaku--get-state-machine major-mode))
-        to)
+  (let ((sm-fn (brk-sontaku--get-state-machine major-mode)))
+    (goto-char (point))
     (funcall
      (or sm-fn
          brk-sontaku-default-state-machine-function)
@@ -1277,8 +1277,8 @@ point backward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
   (interactive)
-  (let ((sm-fn (brk-sontaku--get-state-machine major-mode))
-        to)
+  (let ((sm-fn (brk-sontaku--get-state-machine major-mode)))
+    (goto-char (point))
     (funcall
      (or sm-fn
          brk-sontaku-default-state-machine-function)
@@ -1303,11 +1303,13 @@ For whatever reason, if expansion is not possible, signal an error."
                         (cons (point) (point))))
          (sm-fn (brk-sontaku--get-state-machine major-mode))
          (beg (save-excursion
+                (goto-char (car orig-bounds))
                 (funcall
                  (or sm-fn
                      brk-sontaku-default-state-machine-function)
                  'backward)))
          (end (save-excursion
+                (goto-char (cdr orig-bounds))
                 (funcall
                  (or sm-fn
                      brk-sontaku-default-state-machine-function)
@@ -1387,7 +1389,7 @@ For the valid values, see `brk-sontaku--resolve-direction'."
       `(not ,(brk-sontaku--compile-pred-form (cadr pred-form))))
      ;; Dispatch reserved predicate cases.
      (pred
-      `(,pred ,@(cdr pred-form) ,point-fn))
+      `(,pred ,@(cdr pred-form) (funcall ,point-fn)))
      ;; If it is a symbol/predicate name, assume it is a predicate to call.
      ((symbolp pred-form)
       `(funcall #',pred-form))
@@ -1460,18 +1462,25 @@ The user-defined state machine functions play a role as an agency in:
 - running them according to DIRECTION
 - returning the resulting point
 
-Sontaku commands use them to look up the next point to move or expand to."
-  (declare (debug (symbolp stringp &rest (:strategies sexp)))
+Sontaku commands use them to look up the next point to move to or
+the next region to expand to."
+  (declare (debug (symbolp stringp (:strategies sexp)))
            (indent defun))
-  (unless (brk-sontaku--valid-derived-major-mode-symbol-p mode)
+  (unless (or (eq mode 'default)
+              (brk-sontaku--valid-derived-major-mode-symbol-p mode))
     (user-error "brk-sontaku-define-mode-state-machine: `%s' is not a valid derived major mode" mode))
   (unless strategies
-    (user-error "brk-sontaku-define-mode-state-machine: Strategies not provided. At least one :strategies keyword must be given"))
+    (user-error "brk-sontaku-define-mode-state-machine: Strategies not provided. \":strategies\" keyword must be given"))
   (when (brk-sontaku--get-state-machine mode)
     (message "brk-sontaku-define-mode-state-machine: Redefining the state machine function for `%s'" mode))
-  (let ((fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
-        (fn-docstring (format "A state machine auto-generated for `%s'.\nDIRECTION must be either \\='forward or \\='backward.\n\n%s"
-                              mode docstring)))
+  (let* ((common-doc "DIRECTION must be either \\='forward or \\='backward.")
+         (fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
+         (fn-docstring
+          (if (eq mode 'default)
+              (format "The default state machine.\n%s\n%s"
+                      common-doc docstring)
+            (format "A state machine for `%s'.\n%s\n%s"
+                    mode common-doc docstring))))
     `(progn
        (defun ,fn-name (direction)
          ,fn-docstring
@@ -1479,7 +1488,7 @@ Sontaku commands use them to look up the next point to move or expand to."
           ((or (bobp) (eobp)
                (and (not brk-sontaku-proceed-to-whole-buffer-at-top-level)
                     (brk-sontaku--at-top-level-p)))
-           (message "Reached top-level boundary - action stopped")
+           (message "Reached top level boundary. Sontaku action stopped")
            nil)
           ,@(cl-loop
              for sf in strategies
@@ -1496,18 +1505,16 @@ Sontaku commands use them to look up the next point to move or expand to."
 
 ;; TODO: Write this function in the Sontaku DSL.
 
-(defun brk-sontaku--default-state-machine (direction)
-  "A default state machine that works as a fallback.
-DIRECTION must be either \\='forward or \\='backward."
-  (let ((point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point))))))
-    (cond
-     ((brk-sontaku--at-word-p (funcall point-fn))
-      (brk-sontaku--word-action direction))
-     ((brk-sontaku--match-syntax-p '(?\( ?\) ?$ ? ) (funcall point-fn))
-      (brk-sontaku--syntax-action direction))
-     (t
-      (brk-sontaku--char-action direction)))))
+(brk-sontaku-define-mode-state-machine default
+  "This function is automatically generated via `brk-sontaku-define-mode-state-machine'
+and is the default value of `brk-sontaku-default-state-machine-function'.
+
+When no state machine is provided for a certain mode, this works as a fallback."
+  :strategies
+  (((at-word) . (unit word))
+   ((match-syntax '(?\( ?\) ?$)) . (unit syntax))
+   ((at-whitespace) . (unit whitespace))
+   (default . (unit sexp))))
 
 ;; NOTE: These should be migrated to another file to allow users
 ;; to selectively load them at their own will.
