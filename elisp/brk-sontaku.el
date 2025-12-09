@@ -42,7 +42,11 @@
 ;;;; Internal Variables
 
 (defvar brk-sontaku--mode-state-machine-registry nil
-  "Registry mapping MODE symbols to their state machine functions.")
+  "Registry mapping mode symbols to their state machine functions.
+Exceptionally, this accepts \\='default for the default state machine.")
+
+(defvar brk-sontaku--expander-registry nil
+  "Registry mapping expander names to the functions.")
 
 (defvar brk-sontaku--region-history nil
   "History of expanded regions for contraction support.")
@@ -68,11 +72,25 @@ The same goes for navigation commands."
   #'brk-sontaku--default-state-machine
   "The default state machine function called when expanding,
 contracting, or moving."
-  :type '(choice
-          (const :tag "Default state machine"
-                 brk-sontaku--default-state-machine)
-          (function :tag "Custom state machine"))
+  :type '(choice (const :tag "Default state machine"
+                        brk-sontaku--default-state-machine)
+                 (function :tag "Custom state machine"))
   :group 'brk-sontaku)
+
+(defcustom brk-sontaku-expander-stack 'alternate
+  "Expander stack used for region expansion.
+It must be one or a list of the style names registered in
+`brk-sontaku--expander-registry'.
+If provided as a list, expansion will be performed based on
+the stack in the list order."
+  :type '(choice (const alternate)
+                 (const linear)
+                 (const symmetric)
+                 (repeat
+                  :tag "List of expanders"
+                  (choice (const alternate)
+                          (const linear)
+                          (const symmetric)))))
 
 ;;;; Error handling
 
@@ -93,7 +111,7 @@ DIRECTION must be either \\='forward or \\='backward."
 
 (defun brk-sontaku--resolve-direction (direction forward-val backward-val)
   "Return a value according to DIRECTION.
-DIRECTION must be either \\='forward or \\=''backward.
+DIRECTION must be either \\='forward or \\='backward.
 
 If DIRECTION is:
 
@@ -345,6 +363,20 @@ as the state machine for MODE.  It is stored as an alist of (MODE . FN)."
   "Return the state machine function for MODE.
 If not found, return nil."
   (alist-get mode brk-sontaku--mode-state-machine-registry))
+
+(defun brk-sontaku--register-expander (style fn)
+  "Register FN in `brk-sontaku--expander-registry'
+as the STYLE expander.  It is stored as an alist of (STYLE . FN)."
+  (let ((cell (assoc mode brk-sontaku--expander-registry)))
+    (if cell
+        (setcdr cell fn)
+      (push (cons mode fn)
+            brk-sontaku--expander-registry))))
+
+(defun brk-sontaku--get-expander (style)
+  "Return the STYLE expander function.
+If not found, return nil."
+  (alist-get mode brk-sontaku--expander-registry))
 
 ;;;; Syntax Reference & Utils
 
@@ -1248,6 +1280,18 @@ DIRECTION must be either:
 
 ;;;; Commands
 
+(defun brk-sontaku--call-state-machine (direction &optional pos)
+  "Call the state machine function at POS for `major-mode' according to DIRECTION.
+DIRECTION must be either \\='forward or \\='backward."
+  (let ((pos (or pos (point)))
+        (sm-fn (brk-sontaku--get-state-machine major-mode)))
+    (save-excursion
+      (goto-char pos)
+      (funcall
+       (or sm-fn
+           brk-sontaku-default-state-machine-function)
+       direction))))
+
 ;;;###autoload
 (defun brk-sontaku-forward ()
   "Move forward according to the state machine designed for
@@ -1259,12 +1303,10 @@ point forward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
   (interactive)
-  (let ((sm-fn (brk-sontaku--get-state-machine major-mode)))
-    (goto-char (point))
-    (funcall
-     (or sm-fn
-         brk-sontaku-default-state-machine-function)
-     'forward)))
+  (let ((from (point)) to)
+    (setq to (brk-sontaku--call-state-machine 'forward from))
+    (when (/= from to)
+      (goto-char to))))
 
 ;;;###autoload
 (defun brk-sontaku-backward ()
@@ -1277,12 +1319,10 @@ point backward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
   (interactive)
-  (let ((sm-fn (brk-sontaku--get-state-machine major-mode)))
-    (goto-char (point))
-    (funcall
-     (or sm-fn
-         brk-sontaku-default-state-machine-function)
-     'backward)))
+  (let ((from (point)) to)
+    (setq to (brk-sontaku--call-state-machine 'backward from))
+    (when (/= from to)
+      (goto-char to))))
 
 ;;;###autoload
 (defun brk-sontaku-expand-region ()
@@ -1296,32 +1336,41 @@ that mode.
 
 They can be defined via `brk-sontaku-define-mode-state-machine'.
 
-For whatever reason, if expansion is not possible, signal an error."
+If expansion is not possible, echo the message."
   (interactive)
-  (let* ((orig-bounds (if (use-region-p)
+  (let* ((from (point))
+         (orig-bounds (if (use-region-p)
                           (cons (region-beginning) (region-end))
                         (cons (point) (point))))
-         (sm-fn (brk-sontaku--get-state-machine major-mode))
-         (beg (save-excursion
-                (goto-char (car orig-bounds))
-                (funcall
-                 (or sm-fn
-                     brk-sontaku-default-state-machine-function)
-                 'backward)))
-         (end (save-excursion
-                (goto-char (cdr orig-bounds))
-                (funcall
-                 (or sm-fn
-                     brk-sontaku-default-state-machine-function)
-                 'forward)))
-         (target-bounds (cons beg end))
-         (replace-mark (eq last-command this-command)))
-    (if (brk-sontaku--interval-contains-p target-bounds orig-bounds 'proper)
-        (progn
-          (brk-sontaku--maybe-reset-region-history)
-          (brk-sontaku--mark-region beg end replace-mark)
-          (brk-sontaku--update-region-history beg end))
-      (user-error "Cannot expand region further"))))
+         (replace-mark (eq last-command this-command))
+         forward-beg forward-end backward-beg backward-end smaller-bounds)
+    (save-excursion
+      (setq forward-end (brk-sontaku--call-state-machine 'forward)
+            forward-beg (brk-sontaku--call-state-machine 'backward)))
+    (save-excursion
+      (setq backward-beg (brk-sontaku--call-state-machine 'backward)
+            backward-end (brk-sontaku--call-state-machine 'forward)))
+    (let* ((target-bounds (cond
+                           ((eq forward-beg from)
+                            (cons forward-beg forward-end))
+                           ((eq backward-end from)
+                            (cons backward-beg backward-end))
+                           ((and (setq smaller-bounds
+                                       (brk-sontaku--compare-intervals-between
+                                        (cons forward-beg forward-end)
+                                        (cons backward-beg backward-end)
+                                        'smaller))
+                                 (<= (car smaller-bounds) from (cdr smaller-bounds)))
+                            smaller-bounds)))
+           (beg (car target-bounds))
+           (end (cdr target-bounds)))
+      (if (and target-bounds
+               (brk-sontaku--interval-contains-p target-bounds orig-bounds 'proper))
+          (progn
+            (brk-sontaku--maybe-reset-region-history)
+            (brk-sontaku--mark-region beg end replace-mark)
+            (brk-sontaku--update-region-history beg end))
+        (message "Cannot expand region further")))))
 
 ;;;###autoload
 (defun brk-sontaku-contract-region (arg)
@@ -1379,14 +1428,17 @@ For the valid values, see `brk-sontaku--resolve-direction'."
      ((eq pred-form 'default) 't)
      ;; Accept built-in `and', and `or'. Recurse this for the inner.
      ((eq head 'and)
-      `(and ,@(mapcar (lambda (f) (brk-sontaku--compile-pred-form f))
+      `(and ,@(mapcar (lambda (f) (brk-sontaku--compile-pred-form
+                                   f direction-sym))
                       (cdr pred-form))))
      ((eq head 'or)
-      `(or ,@(mapcar (lambda (f) (brk-sontaku--compile-pred-form f))
+      `(or ,@(mapcar (lambda (f) (brk-sontaku--compile-pred-form
+                                  f direction-sym))
                      (cdr pred-form))))
      ;; Accept built-in `not'.
      ((eq head 'not)
-      `(not ,(brk-sontaku--compile-pred-form (cadr pred-form))))
+      `(not ,(brk-sontaku--compile-pred-form
+              (cadr pred-form) direction-sym)))
      ;; Dispatch reserved predicate cases.
      (pred
       `(,pred ,@(cdr pred-form) (funcall ,point-fn)))
@@ -1503,8 +1555,6 @@ the next region to expand to."
 
        (brk-sontaku--register-state-machine ',mode ',fn-name))))
 
-;; TODO: Write this function in the Sontaku DSL.
-
 (brk-sontaku-define-mode-state-machine default
   "This function is automatically generated via `brk-sontaku-define-mode-state-machine'
 and is the default value of `brk-sontaku-default-state-machine-function'.
@@ -1516,24 +1566,24 @@ When no state machine is provided for a certain mode, this works as a fallback."
    ((at-whitespace) . (unit whitespace))
    (default . (unit sexp))))
 
-;; NOTE: These should be migrated to another file to allow users
-;; to selectively load them at their own will.
+(defmacro brk-sontaku--define-expander (style docstring &rest body)
+  "Define a region expander, a brain that decides how
+`brk-sontaku-expand-region' does its job.
 
-;;;; Built-in Expansion Strategies
+STYLE is a symbol that depicts the algorithm of expansion.
+DOCSTRING and BODY are the function's docstring and body, respectively.
 
-;; (brk-sontaku-define-mode-state-machine emacs-lisp-mode
-;;   "Docstring for emacs-lisp-mode."
-;;   :strategies
-;;   (((in-comment) . (unit sexp))
-;;    ((in-string) . (unit sexp))
-;;    ((at-empty-line) . (unit empty-line))
-;;    (default . (unit sexp))))
+The generated function will be named `brk-sontaku--STYLE-expander'
+and registered in `brk-sontaku--expander-registry' under the STYLE symbol."
+  (declare (debug (symbolp stringp body))
+           (indent defun))
+  (let (fn-name (intern (format "brk-sontaku--%s-expander" style)))
+    `(progn
+       (defun ,fn-name ()
+         ,docstring
+         ,body)
 
-;; (brk-sontaku-define-mode-state-machine org-mode
-;;   "Docstring for org-mode."
-;;   :strategies
-;;   (((in-string) . (unit word))
-;;    (default . (unit sexp))))
+       (brk-sontaku--register-expander ',style ',fn-name))))
 
 ;;;; Sontaku mode
 
