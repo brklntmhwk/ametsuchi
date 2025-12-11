@@ -4,8 +4,9 @@
 
 ;; Author: Ohma Togaki
 ;; Version: 0.1
-;; Keywords: convenience
+;; Keywords: convenience, tools
 ;; URL: https://github.com/brklntmhwk/elisp/brk-sontaku.el
+;; Package-Requires: ((emacs "26.1"))
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is not part of GNU Emacs.
@@ -61,7 +62,7 @@ Exceptionally, this accepts \\='default for the default state machine.")
 
 ;;;; User Options
 
-(defcustom brk-sontaku-proceed-to-whole-buffer-at-top-level t
+(defcustom brk-sontaku-expand-to-whole-buffer-at-top-level t
   "If non-nil, expanding region at top-level will select the entire buffer.
 Otherwise, region expansion stops silently when no broader syntactic unit exists.
 The same goes for navigation commands."
@@ -127,8 +128,8 @@ If DIRECTION is:
   "Return the direction of active region.
 If the point is:
 
-- at the beginning, return `backward'
-- at the end, return `forward'
+- at the beginning, return \\='backward
+- at the end, return \\='forward
 
 When no active region exists, return nil."
   (when (use-region-p)
@@ -169,29 +170,31 @@ Record the positions of BEG and END unless the whole buffer is selected."
 
 (defun brk-sontaku--interval-contains-p (outer inner &optional mode)
   "Return non-nil when OUTER contains INNER.
-Both OUTER and INNER must be cons cells of integer (BEG . END).
+Both OUTER and INNER must be cons cells of integer \"(BEG . END)\".
 MODE determines the containment type:
 
 - 'strict: strict containment (<)
 - 'proper: inclusive but equal is not allowed
 - nil: inclusive containment (<=)
-- none of them listed above: signal an error"
-  (cl-destructuring-bind (obeg . oend) outer
-    (cl-destructuring-bind (ibeg . iend) inner
-      (pcase mode
-        ('strict
-         (and (< obeg ibeg) (< iend oend)))
-        ('proper
-         (and (<= obeg ibeg)
-              (<= iend oend)
-              (not (and (= obeg ibeg)
-                        (= iend oend)))))
-        ((pred null)
-         (and (<= obeg ibeg) (<= iend oend)))
-        (_
-         (error "Invalid MODE: %S (must be 'strict, 'proper, or nil)" winner))))))
+- none of them listed above: signal an error
 
-(defun brk-sontaku--compare-intervals-between (i1 i2 winner)
+If OUTER or INNER is nil, return nil."
+  (when (and outer inner)
+    (cl-destructuring-bind (obeg . oend) outer
+      (cl-destructuring-bind (ibeg . iend) inner
+        (pcase mode
+          ('strict
+           (< obeg ibeg iend oend))
+          ('proper
+           (and (<= obeg ibeg iend oend)
+                (not (and (= obeg ibeg)
+                          (= iend oend)))))
+          ((pred null)
+           (<= obeg ibeg iend oend))
+          (_
+           (error "Invalid MODE: %S (must be 'strict, 'proper, or nil)" winner)))))))
+
+(defun brk-sontaku--interval-winner-between (i1 i2 winner)
   "Return either I1 or I2 depending on WINNER.
 If WINNER is:
 
@@ -199,9 +202,8 @@ If WINNER is:
 - 'smaller, return the one that is contained by the other.
 - none of them listed above, signal an error.
 
-Both I1 and I2 must be cons cells of integer.
-When I1 or I2 is nil, or neither of them contains the other,
-return nil."
+Both I1 and I2 must be cons cells of integer.  If I1 or I2 is nil, or
+neither of them contains the other, return nil."
   (when (and i1 i2)
     (pcase winner
       ('bigger (cond ((brk-sontaku--interval-contains-p i1 i2) i1)
@@ -211,15 +213,29 @@ return nil."
       (_ (error "Invalid WINNER: %S (must be 'bigger or 'smaller)" winner)))))
 
 ;; TODO: Revisit this and think over when to use it.
-(defun brk-sontaku--search-next-bounds (bounds bounds-fn)
-  "Return next bigger bounds according to BOUNDS-FN.
+(defun brk-sontaku--find-next-bounds (bounds expander)
+  "Return next bigger bounds according to EXPANDER.
 BOUNDS is the original bounds to start from."
-  (brk-sontaku--compare-intervals-between
+  (brk-sontaku--interval-winner-between
    (save-excursion (goto-char (car bounds))
-                   (funcall bounds-fn))
+                   (funcall expander))
    (save-excursion (goto-char (cdr bounds))
-                   (funcall bounds-fn))
+                   (funcall expander))
    'bigger))
+
+(defun brk-sontaku--beyond-bound-p (direction bound &optional pos)
+  "Return non-nil if POS is beyond BOUND according to DIRECTION.
+DIRECTION must be either \\='forward or \\='backward.
+Technically, it returns non-nil when:
+
+- DIRECTION is \\='forward and POS > BOUND
+- DIRECTION is \\='backward and POS < BOUND."
+  (let* ((pos (or pos (point)))
+         (beyond-bound-p (brk-sontaku--resolve-direction
+                          direction
+                          (lambda (bound pos) (> pos bound))
+                          (lambda (bound pos) (< pos bound)))))
+    (funcall beyond-bound-p)))
 
 (defun brk-sontaku--valid-derived-major-mode-symbol-p (symbol)
   "Return non-nil if SYMBOL is a valid derived major mode."
@@ -228,14 +244,6 @@ BOUNDS is the original bounds to start from."
        (not (memq symbol minor-mode-list))
        (string-suffix-p "-mode" (symbol-name symbol) t)
        (> (length (derived-mode-all-parents symbol)) 1)))
-
-(defun brk-sontaku--safe-scan-sexps (n &optional pt)
-  "Safely scan and return the position N sexps away from PT.
-If PT is not provided, use the current point.  Return nil if
-the scan reaches the beginning or end of the accessible part
-in the middle."
-  (let ((pt (or pt (point))))
-    (ignore-errors (scan-sexps pt n))))
 
 (defun brk-sontaku--skip-chars (string direction &optional bound)
   "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
@@ -319,6 +327,22 @@ for more details."
       (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
         (funcall skip-char-fn) (point)))))
 
+(defun brk-sontaku--beginning-of-list-around-point ()
+  "Move to the beginning of the list around point.
+Return the point when successful."
+  (let (moved)
+    (while (brk-sontaku--primitive-skip-sexp 'backward)
+      (setq moved t))
+    (when moved (point))))
+
+(defun brk-sontaku--end-of-list-around-point ()
+  "Move to the end of the list around point.
+Return the point when successful."
+  (let (moved)
+    (while (brk-sontaku--primitive-skip-sexp 'forward)
+      (setq moved t))
+    (when moved (point))))
+
 (defun brk-sontaku--move-within (action direction &optional limit)
   "Call ACTION (a function that moves the point according to DIRECTION).
 DIRECTION must be either \\='forward or \\='backward.
@@ -336,16 +360,12 @@ When LIMIT is nil, simply call ACTION."
       (funcall action direction)
     (let* ((from (point))
            (to (progn (funcall action direction) (point)))
-           (ok t)
-           (direction (cond
-                       ((> to from) 1)
-                       ((< to from) -1)
-                       (t 0))))
+           (ok t))
       (setq ok
             (pcase direction
-              (1 (<= to limit))
-              (-1 (>= to limit))
-              (0 nil)))
+              ('forward (<= to limit))
+              ('backward (>= to limit))
+              (_ nil)))
       (unless ok
         (goto-char from))
       ok)))
@@ -364,19 +384,31 @@ as the state machine for MODE.  It is stored as an alist of (MODE . FN)."
 If not found, return nil."
   (alist-get mode brk-sontaku--mode-state-machine-registry))
 
+(defun brk-sontaku--call-state-machine (direction &optional pos)
+  "Call the state machine function at POS for `major-mode' according to DIRECTION.
+DIRECTION must be either \\='forward or \\='backward."
+  (let ((pos (or pos (point)))
+        (sm-fn (brk-sontaku--get-state-machine major-mode)))
+    (save-excursion
+      (goto-char pos)
+      (funcall
+       (or sm-fn
+           brk-sontaku-default-state-machine-function)
+       direction))))
+
 (defun brk-sontaku--register-expander (style fn)
   "Register FN in `brk-sontaku--expander-registry'
 as the STYLE expander.  It is stored as an alist of (STYLE . FN)."
-  (let ((cell (assoc mode brk-sontaku--expander-registry)))
+  (let ((cell (assoc style brk-sontaku--expander-registry)))
     (if cell
         (setcdr cell fn)
-      (push (cons mode fn)
+      (push (cons style fn)
             brk-sontaku--expander-registry))))
 
 (defun brk-sontaku--get-expander (style)
   "Return the STYLE expander function.
 If not found, return nil."
-  (alist-get mode brk-sontaku--expander-registry))
+  (alist-get style brk-sontaku--expander-registry))
 
 ;;;; Syntax Reference & Utils
 
@@ -407,6 +439,27 @@ If PT is not inside either of them, return nil."
   (let ((pt (or pt (point))))
     (nth 8 (syntax-ppss pt))))
 
+(defun brk-sontaku--safe-scan-lists (n depth &optional pt)
+  "Safely scan and return the position N lists away from PT.
+Return nil if:
+
+- the scan reaches the beginning or end of the accessible part
+in the middle.
+- the depth at that point is zero
+
+For more detailed information, see `scan-lists'."
+  (let ((pt (or pt (point))))
+    (ignore-errors (scan-lists pt n depth))))
+
+(defun brk-sontaku--safe-scan-sexps (n &optional pt)
+  "Safely scan and return the position N sexps away from PT.
+Return nil if the scan reaches the beginning or end of the
+accessible part in the middle.
+
+For more detailed information, see `scan-sexps'."
+  (let ((pt (or pt (point))))
+    (ignore-errors (scan-sexps pt n))))
+
 ;;;; Predicates & Unit Actions
 
 ;;;;; Empty line
@@ -427,10 +480,6 @@ If BOUND is before or after point and DIRECTION is
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((n (brk-sontaku--resolve-direction
             direction 1 -1))
-        (over-bound-p (brk-sontaku--resolve-direction
-                       direction
-                       (lambda (pos bound) (> pos bound))
-                       (lambda (pos bound) (< pos bound))))
         (point-fn (brk-sontaku--resolve-direction
                    direction #'point (lambda () (1- (point)))))
         moved)
@@ -438,7 +487,7 @@ If BOUND is before or after point and DIRECTION is
       (while t
         (let ((next-pos (+ (point) n)))
           (when (and bound
-                     (funcall over-bound-p next-pos bound))
+                     (brk-sontaku--beyond-bound-p direction bound next-pos))
             (cl-return))
           (when (or (<= next-pos (point-min))
                     (>= next-pos (point-max)))
@@ -453,7 +502,7 @@ If BOUND is before or after point and DIRECTION is
 ;;;;; Whitespace
 
 (defun brk-sontaku--at-whitespace-p (&optional pt)
-  "Return non-nil if char at PT is whitespace.
+  "Return non-nil if the character at PT is whitespace.
 i.e., a whitespace or a newline."
   (let ((pt (or pt (point))))
     ;; "? " stands for whitespace syntax class.
@@ -467,10 +516,6 @@ If BOUND is before or after point and DIRECTION is
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((n (brk-sontaku--resolve-direction
             direction 1 -1))
-        (over-bound-p (brk-sontaku--resolve-direction
-                       direction
-                       (lambda (pos bound) (> pos bound))
-                       (lambda (pos bound) (< pos bound))))
         (point-fn (brk-sontaku--resolve-direction
                    direction #'point (lambda () (1- (point)))))
         moved)
@@ -478,7 +523,7 @@ If BOUND is before or after point and DIRECTION is
       (while t
         (let ((next-pos (+ (point) n)))
           (when (and bound
-                     (funcall over-bound-p next-pos bound))
+                     (brk-sontaku--beyond-bound-p direction bound next-pos))
             (cl-return))
           (when (or (<= next-pos (point-min))
                     (>= next-pos (point-max)))
@@ -974,9 +1019,10 @@ single quotation mark and PT is right before it.
   "Move across a symbol according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 
-This function skips contiguous chars of the same syntax altogether, rather
-regarding them as a symbol, which could be helpful to handle operators
-in some programming languages.  If BOUND is non-nil, stop before BOUND.
+This function skips contiguous chars of the same syntax altogether,
+regarding them as a symbol.  That could be helpful to handle operators
+in some programming languages.
+If BOUND is non-nil, stop before BOUND.
 
 Unlike `forward-symbol', it returns nil when the current point is:
 
@@ -1177,10 +1223,6 @@ cases as a word:
 If BOUND is non-nil, stop before BOUND."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let* ((from (point))
-         (over-bound-p (brk-sontaku--resolve-direction
-                        direction
-                        (lambda (pos bound) (> pos bound))
-                        (lambda (pos bound) (< pos bound))))
          (before-bound (brk-sontaku--resolve-direction
                         direction
                         (lambda (bound) (1- bound))
@@ -1200,7 +1242,8 @@ If BOUND is non-nil, stop before BOUND."
              if (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ? )
              do (cl-return nil)
              else do (funcall skip-fn)
-             when (and bound (funcall over-bound-p (point) bound))
+             when (and bound
+                       (brk-sontaku--beyond-bound-p direction bound (point)))
              do (progn
                   (goto-char (funcall before-bound bound))
                   (cl-return nil))
@@ -1278,19 +1321,145 @@ DIRECTION must be either:
     (with-regexp . brk-sontaku--with-regexp-p))
   "An alist mapping predicates to the corresponding predicate functions.")
 
-;;;; Commands
+;;;; Bounds Functions
 
-(defun brk-sontaku--call-state-machine (direction &optional pos)
-  "Call the state machine function at POS for `major-mode' according to DIRECTION.
-DIRECTION must be either \\='forward or \\='backward."
-  (let ((pos (or pos (point)))
-        (sm-fn (brk-sontaku--get-state-machine major-mode)))
+(defun brk-sontaku--bounds-of-state-machine-action ()
+  "Return bounds of the state machine action.
+This simply calls `brk-sontaku--call-state-machine' forward and backward
+and returns the points as a cons cell of integer \"(beg . end)\"."
+  (let ((beg (if (use-region-p)
+                 (save-excursion
+                   (goto-char (region-beginning))
+                   (brk-sontaku--call-state-machine 'backward))
+               (brk-sontaku--call-state-machine 'backward)))
+        (end (if (use-region-p)
+                 (save-excursion
+                   (goto-char (region-end))
+                   (brk-sontaku--call-state-machine 'forward))
+               (brk-sontaku--call-state-machine 'forward))))
+    (cons beg end)))
+
+(defun brk-sontaku--bounds-of-line-at-point ()
+  "Return bounds of the line at point.
+It is a cons cell of integer \"(beg . end)\"."
+  (unless (use-region-p)
+    (when-let* ((beg (line-beginning-position))
+                (end (line-end-position)))
+      (cons beg end))))
+
+(defun brk-sontaku--bounds-of-line-around-region ()
+  "Return bounds of the line around region.
+It is a cons cell of integer \"(beg . end)\".
+
+This takes care of multi-line region cases."
+  (when (use-region-p)
+    (when-let* ((orig-beg (region-beginning))
+                (orig-end (region-end))
+                (beg (save-excursion
+                       (goto-char orig-beg)
+                       (line-beginning-position)))
+                (end (save-excursion
+                       (goto-char orig-end)
+                       (line-end-position))))
+      (cons beg end))))
+
+(defun brk-sontaku--bounds-of-line-ahead ()
+  "Return bounds of the previous line beginning or next line end.
+It is a cons cell of integer \"(beg . end)\".
+
+This takes care of multi-line region cases.
+If no active region or region not expanded to the whole line(s),
+return nil."
+  (when-let* ((direction (brk-sontaku--active-region-direction)))
+    (let* ((reg-beg (region-beginning))
+           (reg-end (region-end))
+           (line-beg (save-excursion
+                       (goto-char reg-beg)
+                       (line-beginning-position)))
+           (line-end (save-excursion
+                       (goto-char reg-end)
+                       (line-end-position))))
+      (when (and (= reg-beg line-beg) (= reg-end line-end))
+        (pcase direction
+          ('forward (cons reg-beg
+                          (save-excursion
+                            (goto-char reg-end)
+                            (line-end-position 2))))
+          ('backward (cons (save-excursion
+                             (goto-char reg-beg)
+                             (line-beginning-position 0))
+                           reg-end)))))))
+
+(defun brk-sontaku--bounds-of-word-at-point ()
+  "Return bounds of the word at point.
+It is a cons cell of integer \"(beg . end)\"."
+  (let ((from (point))
+        forward-beg forward-end backward-beg backward-end smaller-bounds)
     (save-excursion
-      (goto-char pos)
-      (funcall
-       (or sm-fn
-           brk-sontaku-default-state-machine-function)
-       direction))))
+      (setq forward-end (progn (forward-word) (point))
+            forward-beg (progn (backward-word) (point))))
+    (save-excursion
+      (setq backward-beg (progn (backward-word) (point))
+            backward-end (progn (forward-word) (point))))
+    (cond
+     ((eq forward-beg from)
+      (cons forward-beg forward-end))
+     ((eq backward-end from)
+      (cons backward-beg backward-end))
+     ((and (setq smaller-bounds
+                 (brk-sontaku--interval-winner-between
+                  (cons forward-beg forward-end)
+                  (cons backward-beg backward-end)
+                  'smaller))
+           (<= (car smaller-bounds) from (cdr smaller-bounds)))
+      smaller-bounds))))
+
+(defun brk-sontaku--bounds-of-sexp-at-point ()
+  "Return bounds of the sexp at point.
+It is a cons cell of integer \"(beg . end)\".
+If not present, return nil."
+  (let ((from (point))
+        forward-beg forward-end backward-beg backward-end smaller-bounds)
+    (save-excursion
+      (setq forward-end (brk-sontaku--primitive-skip-sexp 'forward)
+            forward-beg (brk-sontaku--primitive-skip-sexp 'backward)))
+    (save-excursion
+      (setq backward-beg (brk-sontaku--primitive-skip-sexp 'backward)
+            backward-end (brk-sontaku--primitive-skip-sexp 'forward)))
+    (cond
+     ((eq forward-beg from)
+      (cons forward-beg forward-end))
+     ((eq backward-end from)
+      (cons backward-beg backward-end))
+     ((and (setq smaller-bounds
+                 (brk-sontaku--interval-winner-between
+                  (cons forward-beg forward-end)
+                  (cons backward-beg backward-end)
+                  'smaller))
+           (<= (car smaller-bounds) from (cdr smaller-bounds)))
+      smaller-bounds))))
+
+(defun brk-sontaku--bounds-of-list-around-point ()
+  "Return bounds of the list around point.
+It is a cons cell of integer \"(beg . end)\".
+If not present, return nil."
+  (when-let* ((beg (save-excursion
+                     (or (brk-sontaku--beginning-of-list-around-point)
+                         (point))))
+              (end (save-excursion
+                     (or (brk-sontaku--end-of-list-around-point)
+                         (point)))))
+    (cons beg end)))
+
+(defun brk-sontaku--bounds-of-sexp-around-point ()
+  "Return bounds of the outer sexp around point.
+It is a cons cell of integer \"(beg . end)\".
+If no enclosing sexp is found, return nil."
+  (when-let* ((beg (nth 1 (syntax-ppss)))
+              (end (brk-sontaku--safe-scan-lists 1 1)))
+    (cons beg end)))
+
+;;;; Commands
 
 ;;;###autoload
 (defun brk-sontaku-forward ()
@@ -1302,7 +1471,7 @@ registered for the current `major-mode'.  Each invocation moves the
 point forward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
-  (interactive)
+  (interactive "^")
   (let ((from (point)) to)
     (setq to (brk-sontaku--call-state-machine 'forward from))
     (when (/= from to)
@@ -1318,7 +1487,7 @@ registered for the current `major-mode'.  Each invocation moves the
 point backward by a certain unit according to the strategies defined for
 that mode.
 For more details, see `brk-sontaku-define-mode-state-machine'."
-  (interactive)
+  (interactive "^")
   (let ((from (point)) to)
     (setq to (brk-sontaku--call-state-machine 'backward from))
     (when (/= from to)
@@ -1356,7 +1525,7 @@ If expansion is not possible, echo the message."
                            ((eq backward-end from)
                             (cons backward-beg backward-end))
                            ((and (setq smaller-bounds
-                                       (brk-sontaku--compare-intervals-between
+                                       (brk-sontaku--interval-winner-between
                                         (cons forward-beg forward-end)
                                         (cons backward-beg backward-end)
                                         'smaller))
@@ -1416,7 +1585,7 @@ PRED-FORM should look like:
 Otherwise, it signals an error.
 For the valid predicate keywords, see `brk-sontaku--pred-dispatch-table'.
 
-DIRECTION_SYM is a symbol naming the variable that will hold the
+DIRECTION-SYM is a symbol naming the variable that will hold the
 runtime direction.  The generated code will refer to this variable.
 For the valid values, see `brk-sontaku--resolve-direction'."
   (let* ((head (brk-sontaku--form-head pred-form))
@@ -1465,7 +1634,7 @@ upon macro expansion.
 At runtime, it is called and returns the last point after
 applying all unit actions.
 
-DIRECTION_SYM is a symbol naming the variable that will hold the
+DIRECTION-SYM is a symbol naming the variable that will hold the
 runtime direction.  The generated code will refer to this variable.
 For the valid values, see `brk-sontaku--resolve-direction'."
   (let ((actions (if (and (consp action-form)
@@ -1520,11 +1689,11 @@ the next region to expand to."
            (indent defun))
   (unless (or (eq mode 'default)
               (brk-sontaku--valid-derived-major-mode-symbol-p mode))
-    (user-error "brk-sontaku-define-mode-state-machine: `%s' is not a valid derived major mode" mode))
+    (user-error "`%s' is not a valid derived major mode.  It must be either one of them as a symbol or \\='default" mode))
   (unless strategies
-    (user-error "brk-sontaku-define-mode-state-machine: Strategies not provided. \":strategies\" keyword must be given"))
+    (user-error "Strategies not provided. \":strategies\" keyword must be given"))
   (when (brk-sontaku--get-state-machine mode)
-    (message "brk-sontaku-define-mode-state-machine: Redefining the state machine function for `%s'" mode))
+    (message "Redefining the state machine function for `%s'" mode))
   (let* ((common-doc "DIRECTION must be either \\='forward or \\='backward.")
          (fn-name (intern (format "brk-sontaku--%s-state-machine" mode)))
          (fn-docstring
@@ -1537,11 +1706,6 @@ the next region to expand to."
        (defun ,fn-name (direction)
          ,fn-docstring
          (cond
-          ((or (bobp) (eobp)
-               (and (not brk-sontaku-proceed-to-whole-buffer-at-top-level)
-                    (brk-sontaku--at-top-level-p)))
-           (message "Reached top level boundary. Sontaku action stopped")
-           nil)
           ,@(cl-loop
              for sf in strategies
              collect
@@ -1564,26 +1728,88 @@ When no state machine is provided for a certain mode, this works as a fallback."
   (((at-word) . (unit word))
    ((match-syntax '(?\( ?\) ?$)) . (unit syntax))
    ((at-whitespace) . (unit whitespace))
-   (default . (unit sexp))))
+   (default . (unit char))))
 
-(defmacro brk-sontaku--define-expander (style docstring &rest body)
+(cl-defmacro brk-sontaku--define-expander (style docstring &key first functions)
   "Define a region expander, a brain that decides how
 `brk-sontaku-expand-region' does its job.
 
 STYLE is a symbol that depicts the algorithm of expansion.
 DOCSTRING and BODY are the function's docstring and body, respectively.
 
+FIRST is the first bounds function to be performed that returns
+bounds as a cons cell.  By \"first\", it means when `use-region-p'
+is nil.
+FUNCTIONS is a list of bounds functions.
+
 The generated function will be named `brk-sontaku--STYLE-expander'
 and registered in `brk-sontaku--expander-registry' under the STYLE symbol."
-  (declare (debug (symbolp stringp body))
+  (declare (debug (symbolp stringp
+                           &rest [&or [":first" form]
+                                      [":functions" form]]))
            (indent defun))
-  (let (fn-name (intern (format "brk-sontaku--%s-expander" style)))
+  (unless (symbolp style)
+    (error "style must be a symbol, got %S" style))
+  (unless (functionp first)
+    (error "first must be a function symbol, got %S" first))
+  (unless (and (listp functions)
+               (cl-every #'functionp functions))
+    (error "functions must be a list of functions, got %S" functions))
+  (let ((fn-name (intern (format "brk-sontaku--%s-expander" style))))
     `(progn
        (defun ,fn-name ()
          ,docstring
-         ,body)
+         (when (or (bobp) (eobp)
+                   (and (null brk-sontaku-expand-to-whole-buffer-at-top-level)
+                        (brk-sontaku--at-top-level-p)))
+           (user-error "Reached top level boundary. Sontaku expansion stopped"))
+         (if (not (use-region-p))
+             (progn (unless (fboundp ',first)
+                      (error "Function %S is not defined" ',first))
+                    (when-let* ((target-bounds (funcall #',first)))
+                      target-bounds))
+           (cl-dolist (fn ',functions)
+             (unless (fboundp fn)
+               (error "Function %S is not defined" fn))
+             (when-let* ((target-bounds (funcall fn)))
+               (cl-return target-bounds)))))
 
        (brk-sontaku--register-expander ',style ',fn-name))))
+
+(brk-sontaku--define-expander balanced
+  "An expander for balanced region expansion.
+
+By \"balanced\", it means the structured editing-based style
+that shines in Lisp family languages.  The detailed algorithm is
+simple as following these patterns in order.
+
+- expand to the sexp at point if present
+\"(foo* bar)\" --> \"(|foo*| bar)\"
+
+- expand to the list around point
+\"(|foo*| bar)\" --> \"(|foo bar*|)\"
+
+- expand to the sexp around point
+\"(|foo bar*|)\" --> \"|(foo bar)*|\""
+  :first brk-sontaku--bounds-of-sexp-at-point
+  :functions (brk-sontaku--bounds-of-sexp-at-point
+              brk-sontaku--bounds-of-list-around-point
+              brk-sontaku--bounds-of-sexp-around-point))
+
+(brk-sontaku--define-expander linear
+  "An expander for linear region expansion.
+
+The detailed algorithm is as follows in order:
+
+- expand at the mercy of the state machine
+- expand to the whole current line when the next expansion
+goes beyond the current line
+- expand to the previous line beginning or next line end
+depending on at which region peak the point is located"
+  :first brk-sontaku--bounds-of-word-at-point
+  :functions (brk-sontaku--bounds-of-state-machine-action
+              brk-sontaku--bounds-of-line-around-region
+              brk-sontaku--bounds-of-line-ahead))
 
 ;;;; Sontaku mode
 
