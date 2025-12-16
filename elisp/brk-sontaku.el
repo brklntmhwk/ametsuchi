@@ -85,7 +85,7 @@ Otherwise, region expansion stops silently when no broader syntactic unit exists
   :group 'brk-sontaku)
 
 (defcustom brk-sontaku-mode-expander-alist
-  '((emacs-lisp-mode . balanced)
+  '((emacs-lisp-mode . linear)
     (org-mode . alternate))
   "Alist mapping derived major modes to expander functions' styles.
 It must be one of the style names registered in `brk-sontaku--expander-registry'."
@@ -1409,21 +1409,43 @@ returns the points as a cons cell of integer \"(beg . end)\"."
                (brk-sontaku--call-navigator 'forward))))
     (cons beg end)))
 
-(defun brk-sontaku--bounds-of-two-way-navigator ()
-  "Return resulting bounds of the navigator actions called in both directions.
-This simply calls `brk-sontaku--call-navigator' forward and backward
-and returns the points as a cons cell of integer \"(beg . end)\"."
-  (let ((beg (if (use-region-p)
-                 (brk-sontaku--call-navigator 'backward (region-beginning))
-               (brk-sontaku--call-navigator 'backward)))
+(defun brk-sontaku--bounds-of-normal-navigator ()
+  "Return resulting bounds of the navigator action.
+By \"normal\", it means this calls `brk-sontaku--call-navigator'
+in the same direction as the region end at which the point is located:
+
+- When no active region, call it with \\='forward
+- When the point is at the beginning of region, call it with \\='backward
+- When the point is at the end of region, call it with \\='forward
+
+The returned value is a cons cell of integer \"(beg . end)\"."
+  (let ((direction (or (brk-sontaku--active-region-direction)
+                       'forward))
+        (beg (if (use-region-p)
+                 (region-beginning)
+               (if (memq (brk-sontaku--syntax-char-after (1- (point))) '(?_ ?w))
+                   (brk-sontaku--call-navigator 'backward)
+                 (point))))
         (end (if (use-region-p)
-                 (brk-sontaku--call-navigator 'forward (region-end))
+                 (region-end)
+               (point))))
+    (pcase direction
+      ('forward
+       (cons beg
+             (save-excursion
+               (goto-char end)
+               (brk-sontaku--skip-syntax " " 'forward)
                (brk-sontaku--call-navigator 'forward))))
-    (cons beg end)))
+      ('backward
+       (cons (save-excursion
+               (goto-char beg)
+               (brk-sontaku--skip-syntax " " 'backward)
+               (brk-sontaku--call-navigator 'backward))
+             end)))))
 
 (defun brk-sontaku--bounds-of-alternate-navigator ()
   "Return resulting bounds of the alternate navigator action.
-By \"alternate\", it means calling `brk-sontaku--call-navigator'
+By \"alternate\", it means this calls `brk-sontaku--call-navigator'
 forward and backward alternately:
 
 - When no active region, call it with \\='forward
@@ -1620,10 +1642,10 @@ It is a cons cell of integer \"(beg . end)\"."
     (line-around-region . brk-sontaku--bounds-of-line-around-region)
     (line-at-point . brk-sontaku--bounds-of-line-at-point)
     (navigator-at-point . brk-sontaku--bounds-of-navigator-at-point)
+    (normal-navigator . brk-sontaku--bounds-of-normal-navigator)
     (sexp-around-point . brk-sontaku--bounds-of-sexp-around-point)
     (sexp-at-point . brk-sontaku--bounds-of-sexp-at-point)
     (sexp-list-around-point . brk-sontaku--bounds-of-sexp-list-around-point)
-    (two-way-navigator . brk-sontaku--bounds-of-two-way-navigator)
     (word-at-point . brk-sontaku--bounds-of-word-at-point))
   "Alist mapping bounds function names to the corresponding bounds functions.")
 
@@ -2027,7 +2049,7 @@ no longer met.
 - Expand to the previous line beginning or next line end
 depending on which region end the point is located at.
 (region beg --> prev line beg, region end --> next line end)"
-  :strategies (((navigator-within-line) . (bounds two-way-navigator))
+  :strategies (((navigator-within-line) . (bounds normal-navigator))
                ((or (not (match-line-and-region-beg))
                     (not (match-line-and-region-end)))
                 . (bounds line-around-region))
