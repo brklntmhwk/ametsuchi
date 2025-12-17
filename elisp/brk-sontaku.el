@@ -47,24 +47,18 @@
 Exceptionally, this accepts \\='default for the default navigator.")
 
 (defvar brk-sontaku--expander-registry nil
-  "Registry mapping expander names to the functions.")
+  "Registry mapping expander styles to the functions.")
 
 (defvar brk-sontaku--region-history nil
   "History of expanded regions for contraction support.")
 
 (make-variable-buffer-local 'brk-sontaku--region-history)
 
-;;;; Internal Constants
-
-(defconst brk-sontaku--extra-paren-pairs
-  '(("＜" . "＞"))
-  "Extra bracket pairs considered by `brk-sontaku--in-paren-p'.")
-
 ;;;; User Options
 
-(defcustom brk-sontaku-expand-to-whole-buffer-at-top-level t
+(defcustom brk-sontaku-expand-to-whole-buffer-at-top-level-p t
   "If non-nil, expanding region at top-level will select the entire buffer.
-Otherwise, region expansion stops silently when no broader syntactic unit exists."
+Otherwise, region expansion stops when no broader syntactic unit exists."
   :type 'boolean
   :group 'brk-sontaku)
 
@@ -77,16 +71,16 @@ Otherwise, region expansion stops silently when no broader syntactic unit exists
   :group 'brk-sontaku)
 
 (defcustom brk-sontaku-default-expander-function
-  #'brk-sontaku--balanced-expander
+  #'brk-sontaku--sontaku-expander
   "Default expander function."
   :type '(choice (const :tag "Default expander"
-                        brk-sontaku--balanced-expander)
+                        brk-sontaku--sontaku-expander)
                  (function :tag "Custom expander"))
   :group 'brk-sontaku)
 
 (defcustom brk-sontaku-mode-expander-alist
-  '((emacs-lisp-mode . linear)
-    (org-mode . alternate))
+  '((emacs-lisp-mode . balanced)
+    (org-mode . linear))
   "Alist mapping derived major modes to expander functions' styles.
 It must be one of the style names registered in `brk-sontaku--expander-registry'."
   :type '(alist :key-type symbol :value-type symbol))
@@ -172,14 +166,14 @@ Record the positions of BEG and END unless the whole buffer is selected."
                 (max beg end))
           brk-sontaku--region-history)))
 
-(defun brk-sontaku--interval-contains-p (outer inner &optional mode)
+(defun brk-sontaku--interval-contains-p (outer inner mode)
   "Return non-nil when OUTER contains INNER.
-Both OUTER and INNER must be cons cells of integer \"(BEG . END)\".
+Both OUTER and INNER must be cons cells of integer \"(beg . end)\".
 MODE determines the containment type:
 
-- 'strict: strict containment (<)
-- 'proper: inclusive but equal is not allowed
-- nil: inclusive containment (<=)
+- \\='strict: strict containment (<)
+- \\='proper: inclusive but equal is not allowed
+- \\='inclusive: inclusive containment (<=)
 - none of them listed above: signal an error
 
 If OUTER or INNER is nil, return nil."
@@ -193,10 +187,10 @@ If OUTER or INNER is nil, return nil."
            (and (<= obeg ibeg iend oend)
                 (or (/= obeg ibeg)
                     (/= iend oend))))
-          ((pred null)
+          ('inclusive
            (<= obeg ibeg iend oend))
           (_
-           (error "Invalid MODE: %S (must be 'strict, 'proper, or nil)" mode)))))))
+           (error "MODE must be either 'strict, 'proper, or 'inclusive , got %S" mode)))))))
 
 (defun brk-sontaku--interval-winner-between (i1 i2 winner)
   "Return either I1 or I2 depending on WINNER.
@@ -210,22 +204,11 @@ Both I1 and I2 must be cons cells of integer.  If I1 or I2 is nil, or
 neither of them contains the other, return nil."
   (when (and i1 i2)
     (pcase winner
-      ('bigger (cond ((brk-sontaku--interval-contains-p i1 i2) i1)
-                     ((brk-sontaku--interval-contains-p i2 i1) i2)))
-      ('smaller (cond ((brk-sontaku--interval-contains-p i1 i2) i2)
-                      ((brk-sontaku--interval-contains-p i2 i1) i1)))
+      ('bigger (cond ((brk-sontaku--interval-contains-p i1 i2 'inclusive) i1)
+                     ((brk-sontaku--interval-contains-p i2 i1 'inclusive) i2)))
+      ('smaller (cond ((brk-sontaku--interval-contains-p i1 i2 'inclusive) i2)
+                      ((brk-sontaku--interval-contains-p i2 i1 'inclusive) i1)))
       (_ (error "Invalid WINNER: %S (must be 'bigger or 'smaller)" winner)))))
-
-;; TODO: Revisit this and think over when to use it.
-(defun brk-sontaku--find-next-bounds (bounds expander)
-  "Return next bigger bounds according to EXPANDER.
-BOUNDS is the original bounds to start from."
-  (brk-sontaku--interval-winner-between
-   (save-excursion (goto-char (car bounds))
-                   (funcall expander))
-   (save-excursion (goto-char (cdr bounds))
-                   (funcall expander))
-   'bigger))
 
 (defun brk-sontaku--beyond-bound-p (direction bound &optional pos)
   "Return non-nil if POS is beyond BOUND according to DIRECTION.
@@ -241,13 +224,32 @@ Technically, it returns non-nil when:
                           (lambda (bound pos) (< pos bound)))))
     (funcall beyond-bound-p)))
 
-(defun brk-sontaku--valid-derived-major-mode-symbol-p (symbol)
-  "Return non-nil if SYMBOL is a valid derived major mode."
-  (and (symbolp symbol)
-       (fboundp symbol)
-       (not (memq symbol minor-mode-list))
-       (string-suffix-p "-mode" (symbol-name symbol) t)
-       (> (length (derived-mode-all-parents symbol)) 1)))
+(defun brk-sontaku--move-within (action direction &optional limit)
+  "Call ACTION (a function that moves the point according to DIRECTION).
+DIRECTION must be either \\='forward or \\='backward.
+Return t if the resulting point stays within LIMIT.
+Otherwise, restore point and return nil.
+
+LIMIT is the farthest point ACTION is allowed to reach.
+If ACTION moves:
+
+- forward, LIMIT must be >= point.
+- backward, LIMIT must be <= point.
+
+When LIMIT is nil, simply call ACTION."
+  (if (null limit)
+      (funcall action direction)
+    (let* ((from (point))
+           (to (progn (funcall action direction) (point)))
+           (ok t))
+      (setq ok
+            (pcase direction
+              ('forward (<= to limit))
+              ('backward (>= to limit))
+              (_ nil)))
+      (unless ok
+        (goto-char from))
+      ok)))
 
 (defun brk-sontaku--skip-chars (string direction &optional bound)
   "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
@@ -266,7 +268,7 @@ DIRECTION must be either \\='forward or \\='backward."
     (when (/= moved 0) (point))))
 
 (defun brk-sontaku--skip-sexp (direction &optional n)
-  "Move across a sexp according to DIRECTION.
+  "Move across an sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 With N, do it that many times. Negative arg -N means move
 backward across N sexps. That means:
@@ -309,7 +311,7 @@ DIRECTION must be either \\='forward or \\='backward."
     (when (/= moved 0) (point))))
 
 (defun brk-sontaku--primitive-skip-sexp (direction)
-  "Move across a sexp according to DIRECTION.
+  "Move across an sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 
 This is similar to `forward-sexp'/`backward-sexp', but it takes care of
@@ -330,49 +332,6 @@ for more details."
       ;; e.g., (foo *') --> 'forward --> (foo '*)
       (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
         (funcall skip-char-fn) (point)))))
-
-(defun brk-sontaku--beginning-of-list-around-point ()
-  "Move to the beginning of the list around point.
-Return the point when successful, otherwise return nil."
-  (let (moved)
-    (while (brk-sontaku--primitive-skip-sexp 'backward)
-      (setq moved t))
-    (when moved (point))))
-
-(defun brk-sontaku--end-of-list-around-point ()
-  "Move to the end of the list around point.
-Return the point when successful, otherwise return nil."
-  (let (moved)
-    (while (brk-sontaku--primitive-skip-sexp 'forward)
-      (setq moved t))
-    (when moved (point))))
-
-(defun brk-sontaku--move-within (action direction &optional limit)
-  "Call ACTION (a function that moves the point according to DIRECTION).
-DIRECTION must be either \\='forward or \\='backward.
-Return t if the resulting point stays within LIMIT.
-Otherwise, restore point and return nil.
-
-LIMIT is the farthest point ACTION is allowed to reach.
-If ACTION moves:
-
-- forward, LIMIT must be >= point.
-- backward, LIMIT must be <= point.
-
-When LIMIT is nil, simply call ACTION."
-  (if (null limit)
-      (funcall action direction)
-    (let* ((from (point))
-           (to (progn (funcall action direction) (point)))
-           (ok t))
-      (setq ok
-            (pcase direction
-              ('forward (<= to limit))
-              ('backward (>= to limit))
-              (_ nil)))
-      (unless ok
-        (goto-char from))
-      ok)))
 
 (defun brk-sontaku--register-navigator (mode fn)
   "Register FN in `brk-sontaku--mode-navigator-registry'
@@ -425,37 +384,45 @@ This refers to `brk-sontaku--expander-registry'."
       fn
     brk-sontaku-default-expander-function))
 
+(defun brk-sontaku--valid-derived-major-mode-symbol-p (symbol)
+  "Return non-nil if SYMBOL is a valid derived major mode."
+  (and (symbolp symbol)
+       (fboundp symbol)
+       (not (memq symbol minor-mode-list))
+       (string-suffix-p "-mode" (symbol-name symbol) t)
+       (> (length (derived-mode-all-parents symbol)) 1)))
+
 ;;;; Syntax Reference & Utils
 
 (defun brk-sontaku--syntax-class-to-char (syntax-class)
   "Return the designator char of SYNTAX-CLASS."
   (aref " .w_()'\"$\\/<>@!|" syntax-class))
 
-(defun brk-sontaku--syntax-char-after (&optional pt)
-  "Return the syntax code after PT, described by a char.
-If PT is nil, return the syntax code after the current point.
-When PT does not exist, or there is no char after PT,
+(defun brk-sontaku--syntax-char-after (&optional pos)
+  "Return the syntax code after POS, described by a char.
+If POS is nil, return the syntax code after the current point.
+When POS does not exist, or there is no char after POS,
 return nil.
 
 For the meaning of the returned char, see `modify-syntax-entry'."
-  (let ((pt (or pt (point))))
-    (unless (or (< pt (point-min))
-                (>= pt (point-max)))
-      (brk-sontaku--syntax-class-to-char (syntax-class (syntax-after pt))))))
+  (let ((pos (or pos (point))))
+    (unless (or (< pos (point-min))
+                (>= pos (point-max)))
+      (brk-sontaku--syntax-class-to-char (syntax-class (syntax-after pos))))))
 
-(defun brk-sontaku--syntactic-depth-at (&optional pt)
-  "Return syntactic depth at PT."
-  (let ((pt (or pt (point))))
-    (car (syntax-ppss pt))))
+(defun brk-sontaku--syntactic-depth-at (&optional pos)
+  "Return syntactic depth at POS."
+  (let ((pos (or pos (point))))
+    (car (syntax-ppss pos))))
 
-(defun brk-sontaku--syntax-string-start (&optional pt)
-  "Return the beginning position of string or comment at PT.
-If PT is not inside either of them, return nil."
-  (let ((pt (or pt (point))))
-    (nth 8 (syntax-ppss pt))))
+(defun brk-sontaku--syntax-string-start (&optional pos)
+  "Return the beginning position of string or comment at POS.
+If POS is not inside either of them, return nil."
+  (let ((pos (or pos (point))))
+    (nth 8 (syntax-ppss pos))))
 
-(defun brk-sontaku--safe-scan-lists (n depth &optional pt)
-  "Safely scan and return the position N lists away from PT.
+(defun brk-sontaku--safe-scan-lists (n depth &optional pos)
+  "Safely scan and return the position N lists away from POS.
 Return nil if:
 
 - the scan reaches the beginning or end of the accessible part
@@ -463,27 +430,27 @@ in the middle.
 - the depth at that point is zero
 
 For more detailed information, see `scan-lists'."
-  (let ((pt (or pt (point))))
-    (ignore-errors (scan-lists pt n depth))))
+  (let ((pos (or pos (point))))
+    (ignore-errors (scan-lists pos n depth))))
 
-(defun brk-sontaku--safe-scan-sexps (n &optional pt)
-  "Safely scan and return the position N sexps away from PT.
+(defun brk-sontaku--safe-scan-sexps (n &optional pos)
+  "Safely scan and return the position N sexps away from POS.
 Return nil if the scan reaches the beginning or end of the
 accessible part in the middle.
 
 For more detailed information, see `scan-sexps'."
-  (let ((pt (or pt (point))))
-    (ignore-errors (scan-sexps pt n))))
+  (let ((pos (or pos (point))))
+    (ignore-errors (scan-sexps pos n))))
 
 ;;;; Navigator Predicates & Unit Actions
 
 ;;;;; Empty line
 
-(defun brk-sontaku--at-empty-line-p (&optional pt)
-  "Return non-nil if text at PT is an empty line."
-  (let ((pt (or pt (point))))
+(defun brk-sontaku--at-empty-line-p (&optional pos)
+  "Return non-nil if text at POS is an empty line."
+  (let ((pos (or pos (point))))
     (save-excursion
-      (goto-char pt)
+      (goto-char pos)
       (beginning-of-line)
       (looking-at-p (rx (* (any " \t")) eol)))))
 
@@ -516,12 +483,18 @@ If BOUND is before or after point and DIRECTION is
 
 ;;;;; Whitespace
 
-(defun brk-sontaku--at-whitespace-p (&optional pt)
-  "Return non-nil if the character at PT is whitespace.
+(defun brk-sontaku--at-whitespace-p (&optional pos)
+  "Return non-nil if the character at POS is whitespace.
 i.e., a whitespace or a newline."
-  (let ((pt (or pt (point))))
+  (let ((pos (or pos (point))))
     ;; "? " stands for whitespace syntax class.
-    (eq (brk-sontaku--syntax-char-after pt) ? )))
+    (eq (brk-sontaku--syntax-char-after pos) ? )))
+
+(defun brk-sontaku--between-whitespace-p (&optional pos)
+  "Return non-nil if POS is in between whitespaces."
+  (let ((pos (or pos (point))))
+    (and (brk-sontaku--at-whitespace-p pos)
+         (brk-sontaku--at-whitespace-p (1- pos)))))
 
 (defun brk-sontaku--whitespace-action (direction &optional bound)
   "Move across contiguous whitespace according to DIRECTION.
@@ -554,12 +527,12 @@ If BOUND is before or after point and DIRECTION is
 
 ;;;;; Character
 
-(defun brk-sontaku--match-char-p (char &optional pt)
-  "Return non-nil if CHAR equals the character at PT.
+(defun brk-sontaku--match-char-p (char &optional pos)
+  "Return non-nil if CHAR equals the character at POS.
 CHAR is either a one-length string or a char."
-  (let* ((pt (or pt (point)))
-         (ch (char-after pt)))
-    (when (and ch (<= (1+ pt) (point-max)))
+  (let* ((pos (or pos (point)))
+         (ch (char-after pos)))
+    (when (and ch (<= (1+ pos) (point-max)))
       (cond
        ((characterp char)
         (eq ch char))
@@ -568,13 +541,13 @@ CHAR is either a one-length string or a char."
        (t (user-error "CHAR must be a char or a string, got %S"
                       char))))))
 
-(defun brk-sontaku--match-chars-p (chars &optional pt)
-  "Return non-nil if the character at PT matches any element in CHARS.
+(defun brk-sontaku--match-chars-p (chars &optional pos)
+  "Return non-nil if the character at POS matches any element in CHARS.
 CHARS is a list whose elements may be characters, one-length strings,
 or a mixture of them."
-  (let* ((pt (or pt (point)))
-         (ch (char-after pt)))
-    (when (and ch (<= (1+ pt) (point-max)))
+  (let* ((pos (or pos (point)))
+         (ch (char-after pos)))
+    (when (and ch (<= (1+ pos) (point-max)))
       (let ((targets
              (mapcar
               (lambda (elt)
@@ -617,14 +590,14 @@ Return nil if it fails and the final point after move if successful."
 
 ;;;;; Comment
 
-(defun brk-sontaku--in-comment-p (&optional pt)
-  "Return non-nil if PT is inside a comment."
-  (let ((pt (or pt (point))))
-    (eq (syntax-ppss-context (syntax-ppss pt)) 'comment)))
+(defun brk-sontaku--in-comment-p (&optional pos)
+  "Return non-nil if POS is inside a comment."
+  (let ((pos (or pos (point))))
+    (eq (syntax-ppss-context (syntax-ppss pos)) 'comment)))
 
-(defun brk-sontaku--at-first-comment-starter-p (&optional pt)
-  "Return non-nil if PT is at the first comment starter.
-Technically, it returns non-nil when PT is at:
+(defun brk-sontaku--at-first-comment-starter-p (&optional pos)
+  "Return non-nil if POS is at the first comment starter.
+Technically, it returns non-nil when POS is at:
 
 - a syntactic comment starter and the beginning of a comment line.
 (e.g., \"|;; comment.\" in Emacs Lisp)
@@ -634,9 +607,9 @@ starter.
 
 When it comes to a comment block that traverses multiple lines,
 it implys the first line's one."
-  (let* ((pt (or pt (point)))
-         (next-pos (1+ pt))
-         (prev-pos (1- pt)))
+  (let* ((pos (or pos (point)))
+         (next-pos (1+ pos))
+         (prev-pos (1- pos)))
     (save-excursion
       (cl-labels
           ((in-comment-p (pos)
@@ -660,27 +633,27 @@ it implys the first line's one."
                     (= pos (point)))))
            (prev-line-beg-of-comment-p ()
              (save-excursion
-               (goto-char pt)
+               (goto-char pos)
                (previous-logical-line)
                (first-starter-p (point)))))
         (or
          ;; At the beginning of buffer and either a syntactic
          ;; comment starter or a comment delimiter.
          (and (bobp)
-              (or (starter-p pt) (comment-delim-p pt)))
-         (and (not (in-comment-p pt))
+              (or (starter-p pos) (comment-delim-p pos)))
+         (and (not (in-comment-p pos))
               (or
                ;; At the first comment starter and the beginning
                ;; of a comment line.
-               (first-starter-p pt)
+               (first-starter-p pos)
                ;; At the first comment delimiter and the beginning
                ;; of a comment line.
-               (first-comment-delim-p pt))
+               (first-comment-delim-p pos))
               (not (prev-line-beg-of-comment-p))))))))
 
-(defun brk-sontaku--at-last-comment-ender-p (&optional pt)
-  "Return non-nil if PT is at the last comment ender.
-Technically, it returns non-nil when PT is at:
+(defun brk-sontaku--at-last-comment-ender-p (&optional pos)
+  "Return non-nil if POS is at the last comment ender.
+Technically, it returns non-nil when POS is at:
 
 - a syntactic comment ender but not in a comment block.
 (e.g., \"/* comment. */|\" in JavaScript)
@@ -689,9 +662,9 @@ Technically, it returns non-nil when PT is at:
 
 When it comes to a comment block that traverses multiple lines,
 it implys the last line's one."
-  (let* ((pt (or pt (point)))
-         (next-pos (1+ pt))
-         (prev-pos (1- pt)))
+  (let* ((pos (or pos (point)))
+         (next-pos (1+ pos))
+         (prev-pos (1- pos)))
     (save-excursion
       (cl-labels
           ((ender-p (pos)
@@ -712,21 +685,21 @@ it implys the last line's one."
                       (not (in-comment-p (point))))))))
         (or
          ;; At a comment ender and in a comment block.
-         (and (in-comment-p pt)
-              (ender-p pt)
+         (and (in-comment-p pos)
+              (ender-p pos)
               (or (and (at-empty-line-p next-pos)
                        (ender-p next-pos))
                   (next-line-end-of-comment-p)))
          ;; At a comment ender but not in a comment block.
-         (and (not (in-comment-p pt))
+         (and (not (in-comment-p pos))
               (in-comment-p prev-pos)
-              (not (save-excursion (goto-char pt) (bolp)))
+              (not (save-excursion (goto-char pos) (bolp)))
               (or (and (at-empty-line-p next-pos)
                        (ender-p next-pos))
                   (next-line-end-of-comment-p))))))))
 
-(defun brk-sontaku--at-comment-sentence-beg-p (&optional pt)
-  "Return non-nil if PT is at the beginning of a comment
+(defun brk-sontaku--beg-of-comment-sentence-p (&optional pos)
+  "Return non-nil if POS is at the beginning of a comment
 sentence.
 In a comment block, for example:
 
@@ -735,7 +708,7 @@ In a comment block, for example:
 
 When it comes to a comment block that traverses multiple lines,
 it implys the first line's one."
-  (let ((pt (or pt (point))))
+  (let ((pos (or pos (point))))
     (cl-labels
         ((in-comment-p (pos)
            (brk-sontaku--in-comment-p pos))
@@ -778,11 +751,11 @@ it implys the first line's one."
                              (progn (backward-word)
                                     (not (in-comment-p (point))))
                            t)))))))
-      (and (in-comment-p pt)
-           (beg-of-comment-sentence-p pt)))))
+      (and (in-comment-p pos)
+           (beg-of-comment-sentence-p pos)))))
 
-(defun brk-sontaku--at-comment-sentence-end-p (&optional pt)
-  "Return non-nil if PT is at the end of a comment sentence.
+(defun brk-sontaku--end-of-comment-sentence-p (&optional pos)
+  "Return non-nil if POS is at the end of a comment sentence.
 In a comment block, for example:
 
 - \";; Comment|\"
@@ -790,7 +763,7 @@ In a comment block, for example:
 
 When it comes to a comment block that traverses multiple lines,
 it implys the last line's one."
-  (let ((pt (or pt (point))))
+  (let ((pos (or pos (point))))
     (cl-labels
         ((goto-comment-start (pos)
            (goto-char (brk-sontaku--syntax-string-start pos)))
@@ -819,8 +792,8 @@ it implys the last line's one."
                         (progn (forward-word)
                                (not (in-comment-p (point))))
                       t))))))
-      (and (in-comment-p pt)
-           (end-of-comment-sentence-p pt)))))
+      (and (in-comment-p pos)
+           (end-of-comment-sentence-p pos)))))
 
 (defun brk-sontaku--comment-action (direction)
   "Move across a comment block according to DIRECTION.
@@ -876,16 +849,16 @@ reaches the end of buffer."
 
 ;;;;; Syntax
 
-(defun brk-sontaku--match-syntax-p (syntax &optional pt)
-  "Return non-nil if the char at PT belongs to SYNTAX class.
+(defun brk-sontaku--match-syntax-p (syntax &optional pos)
+  "Return non-nil if the char at POS belongs to SYNTAX class.
 SYNTAX must be:
 
 - a single syntax class char, e.g., ?w, ?_, ?., etc.
 - a list of such chars, e.g., \\='(?w ?_ ?.)
 
 For the meaning of syntax class chars, see `modify-syntax-entry'."
-  (let* ((pt (or pt (point)))
-         (actual (brk-sontaku--syntax-char-after pt)))
+  (let* ((pos (or pos (point)))
+         (actual (brk-sontaku--syntax-char-after pos)))
     (when actual
       (cond
        ((characterp syntax)
@@ -928,23 +901,26 @@ If BOUND is non-nil, stop before BOUND."
 
 ;;;;; S-Expression
 
-(defun brk-sontaku--at-top-level-p (&optional pt)
-  "Return non-nil if PT is at the outermost of the current buffer.
+(defconst brk-sontaku--extra-paren-pairs
+  '(("＜" . "＞"))
+  "Extra bracket pairs considered by `brk-sontaku--in-paren-p'.")
+
+(defun brk-sontaku--at-top-level-p (&optional pos)
+  "Return non-nil if POS is at the outermost of the current buffer.
 That is, it is not enclosed in any parenthetical constructs,
 string, or comment."
-  (let ((pt (or pt (point))))
-    (and (not (brk-sontaku--in-string-p pt))
-         (not (brk-sontaku--in-comment-p pt))
-         (not (brk-sontaku--in-parens-p pt)))))
+  (let ((pos (or pos (point))))
+    (and (not (brk-sontaku--in-string-p pos))
+         (not (brk-sontaku--in-comment-p pos))
+         (not (brk-sontaku--in-parens-p pos)))))
 
-(defun brk-sontaku--in-parens-p (&optional pt)
-  "Return non-nil if PT is inside any parenthetical constructs:
-(), [], {}, or those in `brk-sontaku--extra-paren-pairs'.
+(defun brk-sontaku--at-opening-paren-p (&optional pos)
+  "Return non-nil if POS is at an opening parenthesis.
 
 Note that this function temporarily modifies the in-buffer syntax table
 by `modify-syntax-entry' to add extra bracket-like pairs
 from `brk-sontaku--extra-paren-pairs'."
-  (let ((pt (or pt (point))))
+  (let ((pos (or pos (point))))
     (cl-some
      (lambda (pair)
        (let ((open (car pair))
@@ -952,21 +928,56 @@ from `brk-sontaku--extra-paren-pairs'."
          (with-syntax-table (copy-syntax-table (syntax-table))
            (modify-syntax-entry (string-to-char open) (concat "(" close))
            (modify-syntax-entry (string-to-char close) (concat ")" open))
-           ;; Check if PT is surrounded by any pairs registered as parentheses
-           ;; in the in-buffer syntax table.
-           (> (nth 0 (syntax-ppss pt)) 0))))
+           (and (memq (brk-sontaku--syntax-char-after pos) '(?\()) t))))
      brk-sontaku--extra-paren-pairs)))
 
-(defun brk-sontaku--in-delims-p (&optional pt)
-  "Return non-nil if PT is inside any syntactic delimiter constructs:
+(defun brk-sontaku--at-closing-paren-p (&optional pos)
+  "Return non-nil if POS is at a closing parenthesis.
+
+Note that this function temporarily modifies the in-buffer syntax table
+by `modify-syntax-entry' to add extra bracket-like pairs
+from `brk-sontaku--extra-paren-pairs'."
+  (let ((pos (or pos (point))))
+    (cl-some
+     (lambda (pair)
+       (let ((open (car pair))
+             (close (cdr pair)))
+         (with-syntax-table (copy-syntax-table (syntax-table))
+           (modify-syntax-entry (string-to-char open) (concat "(" close))
+           (modify-syntax-entry (string-to-char close) (concat ")" open))
+           (and (memq (brk-sontaku--syntax-char-after pos) '(?\))) t))))
+     brk-sontaku--extra-paren-pairs)))
+
+(defun brk-sontaku--in-parens-p (&optional pos)
+  "Return non-nil if POS is inside any parenthetical constructs:
+(), [], {}, or those in `brk-sontaku--extra-paren-pairs'.
+
+Note that this function temporarily modifies the in-buffer syntax table
+by `modify-syntax-entry' to add extra bracket-like pairs
+from `brk-sontaku--extra-paren-pairs'."
+  (let ((pos (or pos (point))))
+    (cl-some
+     (lambda (pair)
+       (let ((open (car pair))
+             (close (cdr pair)))
+         (with-syntax-table (copy-syntax-table (syntax-table))
+           (modify-syntax-entry (string-to-char open) (concat "(" close))
+           (modify-syntax-entry (string-to-char close) (concat ")" open))
+           ;; Check if POS is surrounded by any pairs registered as parentheses
+           ;; in the in-buffer syntax table.
+           (> (nth 0 (syntax-ppss pos)) 0))))
+     brk-sontaku--extra-paren-pairs)))
+
+(defun brk-sontaku--in-delims-p (&optional pos)
+  "Return non-nil if POS is inside any syntactic delimiter constructs:
 parentheses, brackets, braces, strings, comments, or paired tag-like constructs."
-  (let ((pt (or pt (point))))
-    (or (brk-sontaku--in-string-p pt)
-        (brk-sontaku--in-comment-p pt)
-        (brk-sontaku--in-parens-p pt))))
+  (let ((pos (or pos (point))))
+    (or (brk-sontaku--in-string-p pos)
+        (brk-sontaku--in-comment-p pos)
+        (brk-sontaku--in-parens-p pos))))
 
 (defun brk-sontaku--sexp-action (direction &optional bound)
-  "Move across a sexp according to DIRECTION.
+  "Move across an sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 If BOUND is non-nil, stop before BOUND.
 
@@ -986,15 +997,15 @@ For the meaning of \"string\", see `brk-sontaku--string-action'."
         (at-string-peak-p
          (brk-sontaku--resolve-direction
           direction
-          #'brk-sontaku--at-string-sentence-end-p
-          #'brk-sontaku--at-string-sentence-beg-p)))
+          #'brk-sontaku--end-of-string-sentence-p
+          #'brk-sontaku--beg-of-string-sentence-p)))
     (cond
      ((brk-sontaku--in-comment-p)
-      (let* ((orig (point))
+      (let* ((orig-pos (point))
              (next (save-excursion
-                     (goto-char orig)
+                     (goto-char orig-pos)
                      (brk-sontaku--primitive-skip-sexp direction)))
-             (beg (brk-sontaku--syntax-string-start orig))
+             (beg (brk-sontaku--syntax-string-start orig-pos))
              (end (save-excursion
                     (goto-char beg)
                     (forward-comment 1)
@@ -1008,25 +1019,25 @@ For the meaning of \"string\", see `brk-sontaku--string-action'."
 
 ;;;;; Symbol
 
-(defun brk-sontaku--at-symbol-p (&optional pt)
-  "Return non-nil if char at PT has symbol or word syntax.
+(defun brk-sontaku--at-symbol-p (&optional pos)
+  "Return non-nil if char at POS has symbol or word syntax.
 That classification is based on the docstring of `forward-symbol'.
 
 This function also takes care of a preceding escape syntax
 followed by a char of symbol or word syntax. (e.g., \"\\foo\")"
-  (let ((pt (or pt (point))))
-    (or (memq (brk-sontaku--syntax-char-after pt) '(?_ ?w))
-        (and (eq (brk-sontaku--syntax-char-after pt) ?\\)
-             (memq (brk-sontaku--syntax-char-after (1+ pt)) '(?_ ?w))))))
+  (let ((pos (or pos (point))))
+    (or (memq (brk-sontaku--syntax-char-after pos) '(?_ ?w))
+        (and (eq (brk-sontaku--syntax-char-after pos) ?\\)
+             (memq (brk-sontaku--syntax-char-after (1+ pos)) '(?_ ?w))))))
 
-(defun brk-sontaku--at-symbol-prefix-p (&optional pt)
-  "Return non-nil if char at PT is a symbol prefix.
+(defun brk-sontaku--at-symbol-prefix-p (&optional pos)
+  "Return non-nil if char at POS is a symbol prefix.
 That is, it returns non-nil when there is a char with a preceding
-single quotation mark and PT is right before it.
-(e.g., \"*'foo\" where \"*\" is PT)"
-  (let ((pt (or pt (point))))
+single quotation mark and POS is right before it.
+(e.g., \"*'foo\" where \"*\" is POS)"
+  (let ((pos (or pos (point))))
     (save-excursion
-      (goto-char pt)
+      (goto-char pos)
       (and (brk-sontaku--skip-syntax "'" 'forward)
            (brk-sontaku--at-symbol-p)))))
 
@@ -1069,29 +1080,29 @@ Unlike `forward-symbol', it returns nil when the current point is:
 
 ;;;;; String
 
-(defun brk-sontaku--in-string-p (&optional pt)
-  "Return non-nil if PT is inside a string."
-  (let ((pt (or pt (point))))
-    (eq (syntax-ppss-context (syntax-ppss pt)) 'string)))
+(defun brk-sontaku--in-string-p (&optional pos)
+  "Return non-nil if POS is inside a string."
+  (let ((pos (or pos (point))))
+    (eq (syntax-ppss-context (syntax-ppss pos)) 'string)))
 
-(defun brk-sontaku--at-string-sentence-beg-p (&optional pt)
-  "Return non-nil if PT is at the beginning of a sentence
+(defun brk-sontaku--beg-of-string-sentence-p (&optional pos)
+  "Return non-nil if POS is at the beginning of a sentence
 in a string: right after an opening quotation mark."
-  (let ((pt (or pt (point))))
-    (and (brk-sontaku--in-string-p pt)
-         (= pt (1+ (brk-sontaku--syntax-string-start))))))
+  (let ((pos (or pos (point))))
+    (and (brk-sontaku--in-string-p pos)
+         (= pos (1+ (brk-sontaku--syntax-string-start))))))
 
-(defun brk-sontaku--at-string-sentence-end-p (&optional pt)
-  "Return non-nil if PT is at the end of a sentence in a string:
+(defun brk-sontaku--end-of-string-sentence-p (&optional pos)
+  "Return non-nil if POS is at the end of a sentence in a string:
 right before an closing quotation mark."
-  (let* ((pt (or pt (point)))
-         (string-beg (brk-sontaku--syntax-string-start pt))
+  (let* ((pos (or pos (point)))
+         (string-beg (brk-sontaku--syntax-string-start pos))
          (string-end (brk-sontaku--safe-scan-sexps 1 string-beg)))
-    (and (brk-sontaku--in-string-p pt)
-         (= pt (1- string-end)))))
+    (and (brk-sontaku--in-string-p pos)
+         (= pos (1- string-end)))))
 
-(defun brk-sontaku--match-string-case-p (style &optional case-state pt)
-  "Return non-nil if the element at PT matches STYLE-case in CASE-STATE.
+(defun brk-sontaku--match-string-case-p (style &optional case-state pos)
+  "Return non-nil if the element at POS matches STYLE-case in CASE-STATE.
 STYLE must be either of:
 
 - \\='camel: \"camelCase\"
@@ -1109,12 +1120,12 @@ CASE-STATE is either \\='upper, \\='lower, or nil.  When STYLE is either
     (user-error "STYLE must be either \\='camel, \\='dot, \\='kebab, \\='pascal or \\='snake, got %S" style))
   (when (and case-state (not (memq case-state '(upper lower))))
     (user-error "CASE-STATE must be either \\='upper, \\='lower or nil, got %S" case-state))
-  (let* ((pt (or pt (point)))
+  (let* ((pos (or pos (point)))
          (case-state (if (memq style '(camel pascal))
                          nil
                        case-state))
          (bounds (save-excursion
-                   (goto-char pt)
+                   (goto-char pos)
                    (skip-chars-backward "A-Za-z0-9_.-")
                    (let ((beg (point)))
                      (skip-chars-forward "A-Za-z0-9_.-")
@@ -1189,32 +1200,32 @@ themselves at bay."
 
 ;;;;; Word
 
-(defun brk-sontaku--at-word-p (&optional pt)
-  "Return non-nil if char at PT has word syntax."
-  (let ((pt (or pt (point))))
-    (eq (brk-sontaku--syntax-char-after pt) ?w)))
+(defun brk-sontaku--at-word-p (&optional pos)
+  "Return non-nil if char at POS has word syntax."
+  (let ((pos (or pos (point))))
+    (eq (brk-sontaku--syntax-char-after pos) ?w)))
 
-(defun brk-sontaku--match-word-p (word &optional pt)
-  "Return non-nil if the word at PT equals WORD.
+(defun brk-sontaku--match-word-p (word &optional pos)
+  "Return non-nil if the word at POS equals WORD.
 This behaves like:
 
-- Find the contiguous word or symbol zone around PT
+- Find the contiguous word or symbol zone around POS
 using `skip-syntax-forward' and `skip-syntax-backward' with \"w_\".
-- Return non-nil if the text of that zone equals WORD and PT is
-inside that zone, but no at its trailing end. (i.e. beg <= PT < end)"
+- Return non-nil if the text of that zone equals WORD and POS is
+inside that zone, but no at its trailing end. (i.e. beg <= POS < end)"
   (unless (stringp word)
     (user-error "WORD must be a string, got %S" word))
-  (let* ((pt (or pt (point)))
+  (let* ((pos (or pos (point)))
          (beg (save-excursion
-                (goto-char pt)
+                (goto-char pos)
                 (brk-sontaku--skip-syntax "w_" 'backward)
                 (point)))
          (end (save-excursion
-                (goto-char pt)
+                (goto-char pos)
                 (brk-sontaku--skip-syntax "w_" 'forward)
                 (point))))
     ;; Do not regard the trailing end of the word as part of it.
-    (when (and (<= beg pt) (< pt end))
+    (when (and (<= beg pos) (< pos end))
       (let ((text (buffer-substring-no-properties beg end)))
         (string= text word)))))
 
@@ -1254,7 +1265,9 @@ If BOUND is non-nil, stop before BOUND."
     (cl-loop while (or (brk-sontaku--at-word-p (funcall point-fn))
                        (funcall str-cases-p))
              ;; "? " stands for whitespace syntax class.
-             if (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ? )
+             ;; This conditional takes care of some quirks `forward-word' manifests.
+             if (memq (brk-sontaku--syntax-char-after (funcall point-fn))
+                      '(?' ?\\ ?> ?\) ? ))
              do (cl-return nil)
              else do (funcall skip-fn)
              when (and bound
@@ -1268,8 +1281,8 @@ If BOUND is non-nil, stop before BOUND."
 
 ;;;;; Regexp
 
-(defun brk-sontaku--with-regexp-p (regexp &optional direction bound pt)
-  "Return non-nil if REGEXP matches relative to PT.
+(defun brk-sontaku--with-regexp-p (regexp &optional direction bound pos)
+  "Return non-nil if REGEXP matches relative to POS.
 REGEXP may be:
 
 - a string regexp
@@ -1280,13 +1293,13 @@ DIRECTION must be either:
 - nil: test REGEXP at point.
 - \\='forward: test REGEXP ahead within BOUND.
 - \\='backward: test REGEXP behind within BOUND."
-  (let ((pt (or pt (point)))
+  (let ((pos (or pos (point)))
         (pattern (if (stringp regexp)
                      regexp
                    (rx-to-string regexp))))
     (save-match-data
       (save-excursion
-        (goto-char pt)
+        (goto-char pos)
         (pcase direction
           ('nil
            (looking-at-p pattern))
@@ -1299,17 +1312,20 @@ DIRECTION must be either:
 ;;;;; Dispatch Tables
 
 (defconst brk-sontaku--navigator-pred-dispatch-table
-  '((at-comment-sentense-beg . brk-sontaku--at-comment-sentence-beg-p)
-    (at-comment-sentense-end . brk-sontaku--at-comment-sentence-end-p)
+  '((at-closing-paren . brk-sontaku--at-closing-paren-p)
     (at-empty-line . brk-sontaku--at-empty-line-p)
     (at-first-comment-starter . brk-sontaku--at-first-comment-starter-p)
     (at-last-comment-ender . brk-sontaku--at-last-comment-ender-p)
-    (at-string-sentence-beg . brk-sontaku--at-string-sentence-beg-p)
-    (at-string-sentence-end . brk-sontaku--at-string-sentence-end-p)
+    (at-opening-paren . brk-sontaku--at-opening-paren-p)
     (at-symbol . brk-sontaku--at-symbol-p)
     (at-symbol-prefix . brk-sontaku--at-symbol-prefix-p)
     (at-whitespace . brk-sontaku--at-whitespace-p)
     (at-word . brk-sontaku--at-word-p)
+    (beg-of-comment-sentence . brk-sontaku--beg-of-comment-sentence-p)
+    (beg-of-string-sentence . brk-sontaku--beg-of-string-sentence-p)
+    (between-whitespace . brk-sontaku--between-whitespace-p)
+    (end-of-comment-sentence . brk-sontaku--end-of-comment-sentence-p)
+    (end-of-string-sentence . brk-sontaku--end-of-string-sentence-p)
     (in-string . brk-sontaku--in-string-p)
     (in-comment . brk-sontaku--in-comment-p)
     (in-parens . brk-sontaku--in-parens-p)
@@ -1345,7 +1361,7 @@ DIRECTION must be either:
 calling the navigator according to DIRECTION.
 
 DIRECTION must be either \\='forward or \\='backward when specified.
-If nil, call the navigator in both ways."
+If nil, verify the predicate after calling the navigator in both ways."
   (let ((orig-line-num (line-number-at-pos))
         (beg (if (use-region-p)
                  (brk-sontaku--call-navigator 'backward (region-beginning))
@@ -1360,30 +1376,6 @@ If nil, call the navigator in both ways."
        (= orig-line-num (line-number-at-pos beg)))
       (_
        (= orig-line-num (line-number-at-pos beg) (line-number-at-pos end))))))
-
-(defun brk-sontaku--bounds-of-navigator-at-point ()
-  "Return resulting bounds of the navigator action at point.
-It is a cons cell of integer \"(beg . end)\"."
-  (let ((from (point))
-        forward-beg forward-end backward-beg backward-end smaller-bounds)
-    (save-excursion
-      (setq forward-end (brk-sontaku--call-navigator 'forward)
-            forward-beg (brk-sontaku--call-navigator 'backward)))
-    (save-excursion
-      (setq backward-beg (brk-sontaku--call-navigator 'backward)
-            backward-end (brk-sontaku--call-navigator 'forward)))
-    (cond
-     ((eq forward-beg from)
-      (cons forward-beg forward-end))
-     ((eq backward-end from)
-      (cons backward-beg backward-end))
-     ((and (setq smaller-bounds
-                 (brk-sontaku--interval-winner-between
-                  (cons forward-beg forward-end)
-                  (cons backward-beg backward-end)
-                  'smaller))
-           (<= (car smaller-bounds) from (cdr smaller-bounds)))
-      smaller-bounds))))
 
 (defun brk-sontaku--bounds-of-forward-navigator ()
   "Return resulting bounds of the forward navigator action.
@@ -1504,6 +1496,11 @@ It is a cons cell of integer \"(beg . end)\"."
               (end (line-end-position)))
     (cons beg end)))
 
+(defun brk-sontaku--bounds-of-line-around-point ()
+  "Return bounds of the line around point.
+It is a cons cell of integer \"(beg . end)\"."
+  (cons (line-beginning-position) (line-end-position)))
+
 (defun brk-sontaku--bounds-of-line-around-region ()
   "Return bounds of the line around region.
 It is a cons cell of integer \"(beg . end)\".
@@ -1551,6 +1548,35 @@ multi-line region cases."
 
 ;;;;; S-Expression
 
+(defun brk-sontaku--beginning-of-list-around-point ()
+  "Move to the beginning of the list around point.
+Return the point when successful, otherwise return nil."
+  (let (moved)
+    (while (brk-sontaku--sexp-action 'backward)
+      (setq moved t))
+    (when moved (point))))
+
+(defun brk-sontaku--end-of-list-around-point ()
+  "Move to the end of the list around point.
+Return the point when successful, otherwise return nil."
+  (let (moved)
+    (while (brk-sontaku--sexp-action 'forward)
+      (setq moved t))
+    (when moved (point))))
+
+(defun brk-sontaku--sexp-list-filled-with-region-p ()
+  "Return non-nil if the sexp list is filled with region.
+If no enclosing sexp is found, return nil."
+  (when (use-region-p)
+    (let ((open-paren-pos (nth 1 (syntax-ppss)))
+          (closing-paren-pos (brk-sontaku--safe-scan-lists 1 1))
+          (reg-beg (region-beginning))
+          (reg-end (region-end)))
+      (or (and (= open-paren-pos (1- reg-beg))
+               (= closing-paren-pos (1+ reg-end)))
+          (and (brk-sontaku--beg-of-string-sentence-p reg-beg)
+               (brk-sontaku--end-of-string-sentence-p reg-end))))))
+
 (defun brk-sontaku--bounds-of-sexp-at-point ()
   "Return bounds of the sexp at point.
 It is a cons cell of integer \"(beg . end)\".
@@ -1558,11 +1584,11 @@ If not present, return nil."
   (let ((from (point))
         forward-beg forward-end backward-beg backward-end smaller-bounds)
     (save-excursion
-      (setq forward-end (brk-sontaku--primitive-skip-sexp 'forward)
-            forward-beg (brk-sontaku--primitive-skip-sexp 'backward)))
+      (setq forward-end (brk-sontaku--sexp-action 'forward)
+            forward-beg (brk-sontaku--sexp-action 'backward)))
     (save-excursion
-      (setq backward-beg (brk-sontaku--primitive-skip-sexp 'backward)
-            backward-end (brk-sontaku--primitive-skip-sexp 'forward)))
+      (setq backward-beg (brk-sontaku--sexp-action 'backward)
+            backward-end (brk-sontaku--sexp-action 'forward)))
     (cond
      ((eq forward-beg from)
       (cons forward-beg forward-end))
@@ -1596,49 +1622,53 @@ see `brk-sontaku--at-top-level-p'."
   "Return bounds of the outer sexp around point.
 It is a cons cell of integer \"(beg . end)\".
 If no enclosing sexp is found, return nil."
-  (when-let* ((beg (nth 1 (syntax-ppss)))
-              (end (brk-sontaku--safe-scan-lists 1 1)))
+  (when-let* ((beg (save-excursion
+                     (brk-sontaku--beginning-of-list-around-point)
+                     (brk-sontaku--skip-syntax " " 'backward)
+                     (backward-char)
+                     (point)))
+              (end (save-excursion
+                     (goto-char beg)
+                     (brk-sontaku--sexp-action 'forward))))
     (cons beg end)))
 
-;;;;; Word
+;;;;; Miscellaneous Things
 
-(defun brk-sontaku--bounds-of-word-at-point ()
-  "Return bounds of the word at point.
-It is a cons cell of integer \"(beg . end)\"."
-  (let ((from (point))
-        forward-beg forward-end backward-beg backward-end smaller-bounds)
-    (save-excursion
-      (setq forward-end (progn (forward-word) (point))
-            forward-beg (progn (backward-word) (point))))
-    (save-excursion
-      (setq backward-beg (progn (backward-word) (point))
-            backward-end (progn (forward-word) (point))))
-    (cond
-     ((eq forward-beg from)
-      (cons forward-beg forward-end))
-     ((eq backward-end from)
-      (cons backward-beg backward-end))
-     ((and (setq smaller-bounds
-                 (brk-sontaku--interval-winner-between
-                  (cons forward-beg forward-end)
-                  (cons backward-beg backward-end)
-                  'smaller))
-           (<= (car smaller-bounds) from (cdr smaller-bounds)))
-      smaller-bounds))))
+(defun brk-sontaku--match-thing-at-point-p (thing)
+  "Return non-nil if THING matches the thing at point.
+
+This is a mere thin wrapper of `bounds-of-thing-at-point'.
+For the possible THING candidates, see `bounds-of-thing-at-point'."
+  (and (bounds-of-thing-at-point thing) t))
+
+(defun brk-sontaku--bounds-of-url-at-point ()
+  "Return bounds of the url at point.
+It is a cons cell of integer \"(beg . end)\".
+If no url is found, return nil."
+  (bounds-of-thing-at-point 'url))
 
 ;;;;; Dispatch Tables
 
 (defconst brk-sontaku--expander-pred-dispatch-table
-  '((match-line-and-region-beg . brk-sontaku--match-line-and-region-beg-p)
-    (match-line-and-region-end . brk-sontaku--match-line-and-region-end-p)
-    (navigator-within-line . brk-sontaku--navigator-within-line-p))
-  "Alist mapping expander predicates to the corresponding predicate functions.")
+  (cl-remove-duplicates
+   (append
+    '((match-line-and-region-beg . brk-sontaku--match-line-and-region-beg-p)
+      (match-line-and-region-end . brk-sontaku--match-line-and-region-end-p)
+      (match-thing-at-point . brk-sontaku--match-thing-at-point-p)
+      (navigator-within-line . brk-sontaku--navigator-within-line-p)
+      (sexp-list-filled-with-region . brk-sontaku--sexp-list-filled-with-region-p))
+    brk-sontaku--navigator-pred-dispatch-table)
+   :key #'car
+   :test #'eq)
+  "Alist mapping expander predicates to the corresponding predicate functions.
+This contains all the entries from `brk-sontaku--navigator-pred-dispatch-table'.")
 
 (defconst brk-sontaku--bounds-fn-dispatch-table
   '((alternate-navigator . brk-sontaku--bounds-of-alternate-navigator)
     (backward-navigator . brk-sontaku--bounds-of-backward-navigator)
     (forward-navigator . brk-sontaku--bounds-of-forward-navigator)
     (line-ahead . brk-sontaku--bounds-of-line-ahead)
+    (line-around-point . brk-sontaku--bounds-of-line-around-point)
     (line-around-region . brk-sontaku--bounds-of-line-around-region)
     (line-at-point . brk-sontaku--bounds-of-line-at-point)
     (navigator-at-point . brk-sontaku--bounds-of-navigator-at-point)
@@ -1646,6 +1676,7 @@ It is a cons cell of integer \"(beg . end)\"."
     (sexp-around-point . brk-sontaku--bounds-of-sexp-around-point)
     (sexp-at-point . brk-sontaku--bounds-of-sexp-at-point)
     (sexp-list-around-point . brk-sontaku--bounds-of-sexp-list-around-point)
+    (url-at-point . brk-sontaku--bounds-of-url-at-point)
     (word-at-point . brk-sontaku--bounds-of-word-at-point))
   "Alist mapping bounds function names to the corresponding bounds functions.")
 
@@ -1685,13 +1716,13 @@ For more details, see `brk-sontaku-define-mode-navigator'."
 
 ;;;###autoload
 (defun brk-sontaku-expand-region ()
-  "Expand the active region according to the expander enabled on
+  "Expand the active region according to the expander enabled in
 or the navigator designed for the current major mode.
 
 This command performs region expansion based on the expander
 enabled for the current `major-mode'.  Each invocation expands
 the region outward one step, following the strategies defined for
-that mode.
+the expander style associated with that mode.
 
 They can be defined via `brk-sontaku--define-expander'.
 
@@ -1753,7 +1784,7 @@ PRED-FORM should look like:
 - logical combinators: (and ...), (or ...), (not ...)
 - \\='default symbol
 - (in-string), (at-char \"@\"), (with-pred (lambda () (...)))
-- a user-defined predicate function symbol: treat it as a function
+- a predicate function symbol
 
 Otherwise, it signals an error.
 For the valid predicate keywords, see `brk-sontaku--navigator-pred-dispatch-table'.
@@ -1784,9 +1815,10 @@ For the valid values, see `brk-sontaku--resolve-direction'."
      ;; Dispatch reserved predicate cases.
      (pred
       `(,pred ,@(cdr pred-form) (funcall ,point-fn)))
-     ;; If it is a symbol/predicate name, assume it is a predicate to call.
-     ((symbolp pred-form)
-      `(funcall #',pred-form))
+     ;; If it is a function symbol, simply call it regarding the rest
+     ;; as a set of params.
+     ((functionp head)
+      `(funcall #',head ,@(cdr pred-form)))
      ;; Otherwise, signal an error.
      (t (user-error "Invalid navigator predicate form: %S" pred-form)))))
 
@@ -1866,7 +1898,7 @@ the next region to expand to."
               (brk-sontaku--valid-derived-major-mode-symbol-p mode))
     (user-error "MODE must be either one of them as a symbol or \\='default, got %s" mode))
   (unless strategies
-    (user-error "STRATEGIES not provided. \":strategies\" keyword must be given"))
+    (user-error "STRATEGIES not provided"))
   (unless (listp strategies)
     (user-error "STRATEGIES must be a list, got %S" strategies))
   (dolist (sf strategies)
@@ -1905,9 +1937,9 @@ and is the default value of `brk-sontaku-default-navigator-function'.
 
 When no navigator is provided for a certain mode, this works as a fallback."
   :strategies
-  (((at-word) . (unit word))
-   ((match-syntax '(?\( ?\) ?$)) . (unit syntax))
+  (((match-syntax '(?\( ?\) ?\\ ?$ ?< ?>)) . (unit syntax))
    ((at-whitespace) . (unit whitespace))
+   ((at-word) . (unit word))
    (default . (unit char))))
 
 (defun brk-sontaku--compile-expander-pred-form (pred-form)
@@ -1917,8 +1949,8 @@ PRED-FORM should look like:
 
 - logical combinators: (and ...), (or ...), (not ...)
 - \\='default symbol
-- (match-line-and-region-beg), (), ()
-- a user-defined predicate function symbol: treat it as a function
+- (match-line-and-region-beg), (navigator-within-line), etc.
+- a predicate function symbol
 
 Otherwise, it signals an error.
 For the valid predicate keywords, see `brk-sontaku--expander-pred-dispatch-table'."
@@ -1940,9 +1972,10 @@ For the valid predicate keywords, see `brk-sontaku--expander-pred-dispatch-table
      ;; Dispatch reserved predicate cases.
      (pred
       `(,pred ,@(cdr pred-form)))
-     ;; If it is a symbol/predicate name, assume it is a predicate to call.
-     ((symbolp pred-form)
-      `(funcall #',pred-form))
+     ;; If it is a function symbol, simply call it regarding the rest
+     ;; as a set of params.
+     ((functionp head)
+      `(funcall #',head ,@(cdr pred-form)))
      ;; Otherwise, signal an error.
      (t (error "Invalid expander predicate form: %S" pred-form)))))
 
@@ -1950,7 +1983,7 @@ For the valid predicate keywords, see `brk-sontaku--expander-pred-dispatch-table
   "Compile BOUNDS-FORM into a valid bounds function operation.
 BOUNDS-FORM should look like \"(bounds NAME)\" where NAME is
 a key of an alist reserved in `brk-sontaku--bounds-fn-dispatch-table'.
-(e.g., \"(bounds navigator-both)\")
+(e.g., \"(bounds alternate-navigator)\")
 
 This validates NAME against `brk-sontaku--bounds-fn-dispatch-table'
 and returns the corresponding bounds function when matched
@@ -1985,7 +2018,7 @@ and registered in `brk-sontaku--expander-registry' under the STYLE symbol."
   (unless (symbolp style)
     (error "STYLE must be a symbol, got %S" style))
   (unless strategies
-    (error "STRATEGIES not provided."))
+    (error "STRATEGIES not provided"))
   (unless (listp strategies)
     (error "STRATEGIES must be a list, got %S" strategies))
   (dolist (sf strategies)
@@ -2003,7 +2036,7 @@ and registered in `brk-sontaku--expander-registry' under the STYLE symbol."
        (defun ,fn-name ()
          ,docstring
          (when (or (bobp) (eobp)
-                   (and (null brk-sontaku-expand-to-whole-buffer-at-top-level)
+                   (and (null brk-sontaku-expand-to-whole-buffer-at-top-level-p)
                         (brk-sontaku--at-top-level-p)))
            (user-error "Reached top level boundary. Expansion aborted"))
          (cond ,@cond-clauses))
@@ -2029,13 +2062,21 @@ By \"balanced\", it means the structured editing-based style
 that shines in Lisp family languages.  The algorithm is as follows
 in order:
 
-- Expand to the sexp at point if it exists.
-\"(foo* bar)\" --> \"(|foo*| bar)\"
-- Expand to the list around point if it exists.
-\"(|foo*| bar)\" --> \"(|foo bar*|)\"
-- Expand to the sexp around point if it exists.
-\"(|foo bar*|)\" --> \"|(foo bar)*|\""
-  :strategies ((default . (bounds sexp-at-point))))
+- Expand to the sexp at point if no region active and the point is
+not floating in whitespace.
+(e.g., \"(foo* bar)\" --> \"(|foo*| bar)\")
+- Expand to the sexp list around point if the current region does not
+fill the entire list.
+(e.g., \"(|foo*| bar)\" --> \"(|foo bar*|)\")
+- Expand to the sexp around point if none of the above-mentioned conditions
+are met.
+(e.g., \"(|foo bar*|)\" --> \"|(foo bar)*|\")"
+  :strategies (((and (not (use-region-p))
+                     (not (between-whitespace)))
+                . (bounds sexp-at-point))
+               ((not (sexp-list-filled-with-region))
+                . (bounds sexp-list-around-point))
+               (default . (bounds sexp-around-point))))
 
 (brk-sontaku--define-expander linear
   "Expander for linear region expansion.
@@ -2044,16 +2085,31 @@ The algorithm is as follows in order:
 
 - Expand at the mercy of the user-defined navigator as long as
 expansion moves the point within the current line.
-- Expand to the whole current line when the above condition is
-no longer met.
+- Expand to the whole current line if no active region.
 - Expand to the previous line beginning or next line end
-depending on which region end the point is located at.
-(region beg --> prev line beg, region end --> next line end)"
+depending on which region end the point is located at
+if either the region beginning or end matches that of line.
+(i.e., region beg = line beg --> prev line beg
+region end = line end --> next line end)
+- Expand to the whole current line if none of the above-mentioned
+condition are met."
   :strategies (((navigator-within-line) . (bounds normal-navigator))
-               ((or (not (match-line-and-region-beg))
-                    (not (match-line-and-region-end)))
-                . (bounds line-around-region))
-               (default . (bounds line-ahead))))
+               ((not (use-region-p)) . (bounds line-around-point))
+               ((and (match-line-and-region-beg)
+                     (match-line-and-region-end))
+                . (bounds line-ahead))
+               (default . (bounds line-around-region))))
+
+(brk-sontaku--define-expander sontaku
+  "Expander for sontaku region expansion.
+This is the default value of `brk-sontaku-default-expander-function'.
+
+By \"sontaku\", it means acting on user's unspoken expectations.
+The algorithm is as follows in order:
+
+- Expand at the mercy of the user-defined navigator."
+  :strategies (((match-thing-at-point 'url) . (bounds url-at-point))
+               (default . (bounds normal-navigator))))
 
 ;;;; Sontaku mode
 
@@ -2062,14 +2118,6 @@ depending on which region end the point is located at.
   "M-f" #'brk-sontaku-forward
   "M-b" #'brk-sontaku-backward
   "C-c SPC" #'brk-sontaku-expand-region)
-
-(defvar-keymap sontaku-navigation-repeat-map
-  :doc "Repeat keymap for navigation commands in `sontaku-mode'."
-  :repeat t
-  "f" #'brk-sontaku-forward
-  "M-f" #'brk-sontaku-forward
-  "b" #'brk-sontaku-backward
-  "M-b" #'brk-sontaku-backward)
 
 (defvar-keymap sontaku-expansion-repeat-map
   :doc "Repeat keymap for expansion/contraction commands in `sontaku-mode'."
