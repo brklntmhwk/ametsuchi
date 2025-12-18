@@ -80,25 +80,10 @@ Otherwise, region expansion stops when no broader syntactic unit exists."
 
 (defcustom brk-sontaku-mode-expander-alist
   '((emacs-lisp-mode . balanced)
-    (org-mode . linear))
+    (org-mode . sontaku))
   "Alist mapping derived major modes to expander functions' styles.
 It must be one of the style names registered in `brk-sontaku--expander-registry'."
   :type '(alist :key-type symbol :value-type symbol))
-
-;;;; Error handling
-
-(defun brk-sontaku--error-if-wrong-bound-pos (direction bound)
-  "Signal an error when BOUND is invalid for given DIRECTION.
-DIRECTION must be either \\='forward or \\='backward."
-  (let ((correct-bound-pos-p (pcase direction
-                               ('forward (lambda () (and bound (< bound (point)))))
-                               ('backward (lambda () (and bound (> bound (point)))))
-                               (_ (error "Invalid DIRECTION: %S" direction)))))
-    (when (funcall correct-bound-pos-p)
-      (error "Invalid bound position: %s is %s the point for %s movement"
-             bound
-             (if (eq direction 'forward) "before" "after")
-             direction))))
 
 ;;;; Misc
 
@@ -115,6 +100,24 @@ If DIRECTION is:
     ('forward forward-val)
     ('backward backward-val)
     (_ (error "Invalid DIRECTION: %S (must be 'forward or 'backward)" direction))))
+
+(defun brk-sontaku--error-if-wrong-bound-pos (direction bound)
+  "Signal an error when BOUND is invalid for given DIRECTION.
+DIRECTION must be either \\='forward or \\='backward."
+  (let ((correct-bound-pos-p (brk-sontaku--resolve-direction
+                              direction
+                              (lambda () (and bound (< bound (point))))
+                              (lambda () (and bound (> bound (point)))))))
+    (when (funcall correct-bound-pos-p)
+      (error "Invalid bound position: %s is %s the point for %s movement"
+             bound
+             (if (eq direction 'forward) "before" "after")
+             direction))))
+
+(defun brk-sontaku--point-in-direction (direction)
+  "Return a point function according to DIRECTION."
+  (brk-sontaku--resolve-direction
+   direction #'point (lambda () (1- (point)))))
 
 (defun brk-sontaku--active-region-direction ()
   "Return the direction of active region.
@@ -210,61 +213,76 @@ neither of them contains the other, return nil."
                       ((brk-sontaku--interval-contains-p i2 i1 'inclusive) i1)))
       (_ (error "Invalid WINNER: %S (must be 'bigger or 'smaller)" winner)))))
 
-(defun brk-sontaku--beyond-bound-p (direction bound &optional pos)
-  "Return non-nil if POS is beyond BOUND according to DIRECTION.
+(defun brk-sontaku--beyond-limit-p (direction limit &optional pos)
+  "Return non-nil if POS is beyond LIMIT according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
 Technically, it returns non-nil when:
 
-- DIRECTION is \\='forward and POS > BOUND
-- DIRECTION is \\='backward and POS < BOUND."
+- DIRECTION is \\='forward and POS > LIMIT
+- DIRECTION is \\='backward and POS < LIMIT."
   (let* ((pos (or pos (point)))
-         (beyond-bound-p (brk-sontaku--resolve-direction
+         (beyond-limit-p (brk-sontaku--resolve-direction
                           direction
-                          (lambda (bound pos) (> pos bound))
-                          (lambda (bound pos) (< pos bound)))))
-    (funcall beyond-bound-p)))
+                          (lambda (limit pos) (> pos limit))
+                          (lambda (limit pos) (< pos limit)))))
+    (funcall beyond-limit-p)))
 
-(defun brk-sontaku--move-within (action direction &optional limit)
+;; TODO: Make this so that LIMIT is simply passed to the action function.
+(defun brk-sontaku--move-within-limit (action direction &optional limit restore)
   "Call ACTION (a function that moves the point according to DIRECTION).
 DIRECTION must be either \\='forward or \\='backward.
-Return t if the resulting point stays within LIMIT.
-Otherwise, restore point and return nil.
+LIMIT is the farthest point ACTION is allowed to reach and should be
+integer when provided.
 
-LIMIT is the farthest point ACTION is allowed to reach.
+When LIMIT is nil, simply call ACTION.
+(\* ACTION returns the resulting point if successful)
+Otherwise, call ACTION and verify whether the resulting point stays within LIMIT:
+
+- If it stays within LIMIT, return what ACTION returns.
+- If it goes beyond LIMIT and RESTORE is non-nil, restore and return
+the original point.
+- If it goes beyond LIMIT and RESTORE is nil, move the point to LIMIT
+and return it.
+
 If ACTION moves:
 
 - forward, LIMIT must be >= point.
-- backward, LIMIT must be <= point.
-
-When LIMIT is nil, simply call ACTION."
+- backward, LIMIT must be <= point."
   (if (null limit)
       (funcall action direction)
     (let* ((from (point))
            (to (progn (funcall action direction) (point)))
+           (direction (brk-sontaku--resolve-direction
+                       direction 'forward 'backward))
            (ok t))
       (setq ok
             (pcase direction
               ('forward (<= to limit))
               ('backward (>= to limit))
+              ;; DIRECTION is already resolved, so it should not
+              ;; reach here though.
               (_ nil)))
       (unless ok
-        (goto-char from))
-      ok)))
+        (if restore
+            (goto-char from)
+          (goto-char limit)))
+      (point))))
 
 (defun brk-sontaku--skip-chars (string direction &optional bound)
   "Behave like `skip-chars-forward' or `skip-chars-backward' given DIRECTION,
 except that:
 
-- it signals an error if BOUND is before or after point and DIRECTION is
+- this signals an error if BOUND is before or after point and DIRECTION is
 'forward and 'backward, respectively.
-- it returns nil if it fails and the point after move if successful.
+- this returns nil if it fails
+- thes returns the point after movement if successful.
 
 For more specific definitions of STRING, see `skip-chars-forward'.
 DIRECTION must be either \\='forward or \\='backward."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
-  (let* ((skip-fn (brk-sontaku--resolve-direction
-                   direction #'skip-chars-forward #'skip-chars-backward))
-         (moved (funcall skip-fn string bound)))
+  (let* ((skip-chars (brk-sontaku--resolve-direction
+                      direction #'skip-chars-forward #'skip-chars-backward))
+         (moved (funcall skip-chars string bound)))
     (when (/= moved 0) (point))))
 
 (defun brk-sontaku--skip-sexp (direction &optional n)
@@ -285,11 +303,11 @@ depending on the major modes:
 - In `web-mode', it does nothing and returns nil.
 
 This fixes that variability, always returning nil if it fails."
-  (let ((skip-fn (brk-sontaku--resolve-direction
-                  direction #'forward-sexp #'backward-sexp)))
+  (let ((skip-sexp (brk-sontaku--resolve-direction
+                    direction #'forward-sexp #'backward-sexp)))
     (condition-case _
         (let ((from (point))
-              (to (progn (funcall skip-fn n) (point))))
+              (to (progn (funcall skip-sexp n) (point))))
           (unless (eq from to) to))
       (error nil))))
 
@@ -297,17 +315,17 @@ This fixes that variability, always returning nil if it fails."
   "Behave like `skip-syntax-forward' or `skip-syntax-backward' given DIRECTION
 except that:
 
-- it signals an error if BOUND is before or after point and DIRECTION is
+- this signals an error if BOUND is before or after point and DIRECTION is
 'forward and 'backward, respectively.
-- it returns nil if it fails, and the point after move
-if successful, respectively.
+- this returns nil if it fails.
+- this returns the point after movement if successful.
 
 SYNTAX is a string of syntax code characters and will be passed onto either of them.
 DIRECTION must be either \\='forward or \\='backward."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
-  (let* ((skip-fn (brk-sontaku--resolve-direction
-                   direction #'skip-syntax-forward #'skip-syntax-backward))
-         (moved (funcall skip-fn syntax bound)))
+  (let* ((skip-syntax (brk-sontaku--resolve-direction
+                       direction #'skip-syntax-forward #'skip-syntax-backward))
+         (moved (funcall skip-syntax syntax bound)))
     (when (/= moved 0) (point))))
 
 (defun brk-sontaku--primitive-skip-sexp (direction)
@@ -317,21 +335,17 @@ DIRECTION must be either \\='forward or \\='backward.
 This is similar to `forward-sexp'/`backward-sexp', but it takes care of
 some behavioral glitches (quirks?) they have.  See the implementation
 for more details."
-  (let ((skip-syntax-direction (brk-sontaku--resolve-direction
-                                direction 'backward 'forward))
-        (point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point)))))
-        (skip-char-fn (brk-sontaku--resolve-direction
-                       direction #'forward-char #'backward-char)))
+  (let ((reverse-direction (brk-sontaku--resolve-direction
+                            direction 'backward 'forward))
+        (point-fn (brk-sontaku--point-in-direction direction)))
     (if (brk-sontaku--skip-sexp direction)
         ;; Play it safe and skip back whitespace ahead of the point.
-        (progn (brk-sontaku--skip-syntax " " skip-syntax-direction)
-               (point))
+        (progn (brk-sontaku--skip-syntax " " reverse-direction) (point))
       ;; Skip an expression prefix ahead if present.
       ;; In the example below, "*" is the point.
-      ;; e.g., (foo *') --> 'forward --> (foo '*)
+      ;; e.g., (foo *') --> forward --> (foo '*)
       (when (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
-        (funcall skip-char-fn) (point)))))
+        (brk-sontaku--skip-syntax "'" direction) (point)))))
 
 (defun brk-sontaku--register-navigator (mode fn)
   "Register FN in `brk-sontaku--mode-navigator-registry'
@@ -421,18 +435,6 @@ If POS is not inside either of them, return nil."
   (let ((pos (or pos (point))))
     (nth 8 (syntax-ppss pos))))
 
-(defun brk-sontaku--safe-scan-lists (n depth &optional pos)
-  "Safely scan and return the position N lists away from POS.
-Return nil if:
-
-- the scan reaches the beginning or end of the accessible part
-in the middle.
-- the depth at that point is zero
-
-For more detailed information, see `scan-lists'."
-  (let ((pos (or pos (point))))
-    (ignore-errors (scan-lists pos n depth))))
-
 (defun brk-sontaku--safe-scan-sexps (n &optional pos)
   "Safely scan and return the position N sexps away from POS.
 Return nil if the scan reaches the beginning or end of the
@@ -457,19 +459,17 @@ For more detailed information, see `scan-sexps'."
 (defun brk-sontaku--empty-line-action (direction &optional bound)
   "Move across contiguous empty lines according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
-If BOUND is before or after point and DIRECTION is
-'forward and 'backward, respectively, signal an error."
+If BOUND is non-nil, stop before BOUND."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((n (brk-sontaku--resolve-direction
             direction 1 -1))
-        (point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point)))))
+        (point-fn (brk-sontaku--point-in-direction direction))
         moved)
     (cl-block nil
       (while t
         (let ((next-pos (+ (point) n)))
           (when (and bound
-                     (brk-sontaku--beyond-bound-p direction bound next-pos))
+                     (brk-sontaku--beyond-limit-p direction bound next-pos))
             (cl-return))
           (when (or (<= next-pos (point-min))
                     (>= next-pos (point-max)))
@@ -499,19 +499,17 @@ i.e., a whitespace or a newline."
 (defun brk-sontaku--whitespace-action (direction &optional bound)
   "Move across contiguous whitespace according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
-If BOUND is before or after point and DIRECTION is
-'forward and 'backward, respectively, signal an error."
+If BOUND is non-nil, stop before BOUND."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((n (brk-sontaku--resolve-direction
             direction 1 -1))
-        (point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point)))))
+        (point-fn (brk-sontaku--point-in-direction direction))
         moved)
     (cl-block nil
       (while t
         (let ((next-pos (+ (point) n)))
           (when (and bound
-                     (brk-sontaku--beyond-bound-p direction bound next-pos))
+                     (brk-sontaku--beyond-limit-p direction bound next-pos))
             (cl-return))
           (when (or (<= next-pos (point-min))
                     (>= next-pos (point-max)))
@@ -563,15 +561,18 @@ or a mixture of them."
               chars)))
         (memq ch targets)))))
 
-(defun brk-sontaku--char-action (direction)
+;; TODO: add a bound processing part.
+(defun brk-sontaku--char-action (direction &optional bound)
   "Move across a single character according to DIRECTION.
 
 This simply integrates `forward-char' and `backward-char'
 into a single function by taking DIRECTION as an argument.
-DIRECTION must be either \\='forward or \\='backward."
-  (let ((skip-fn (brk-sontaku--resolve-direction
-                  direction #'forward-char #'backward-char)))
-    (funcall skip-fn)
+DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
+  (let ((skip-char (brk-sontaku--resolve-direction
+                    direction #'forward-char #'backward-char)))
+    (funcall skip-char)
     (point)))
 
 (defun brk-sontaku--same-chars-action (direction &optional bound)
@@ -579,6 +580,7 @@ DIRECTION must be either \\='forward or \\='backward."
 DIRECTION must be either \\='forward or \\='backward.
 If BOUND is non-nil, stop before BOUND.
 Return nil if it fails and the final point after move if successful."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((bob-or-eob-p (brk-sontaku--resolve-direction
                        direction #'eobp #'bobp))
         (char-before-or-after (brk-sontaku--resolve-direction
@@ -795,9 +797,11 @@ it implys the last line's one."
       (and (in-comment-p pos)
            (end-of-comment-sentence-p pos)))))
 
-(defun brk-sontaku--comment-action (direction)
+;; TODO: add a bound processing part.
+(defun brk-sontaku--comment-action (direction &optional bound)
   "Move across a comment block according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND.
 
 This function behaves like `forward-comment' except that:
 
@@ -811,9 +815,9 @@ returning nil.
 - instead of nil, it returns the point when it skips before
 a single line comment, there is no trailing newline, and
 reaches the end of buffer."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((arg (brk-sontaku--resolve-direction direction 1 -1))
-        (point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point))))))
+        (point-fn (brk-sontaku--point-in-direction direction)))
     (if (brk-sontaku--at-whitespace-p (funcall point-fn))
         nil
       (let* ((from (point))
@@ -875,14 +879,14 @@ DIRECTION must be either \\='forward or \\='backward.
 If BOUND is non-nil, stop before BOUND.
 
 This function is an enhanced version of `forward-same-syntax' in that
-it takes `syntax-table' text properties into account. More precisely:
+it takes `syntax-table' text properties into account.  Technically:
 
 - `forward-same-syntax' internally uses `char-syntax'
 - `char-syntax' does not take `syntax-table' text properties into account.
 - The docstring of `char-syntax' recommends using `syntax-after' instead when
 the syntax of chars is what you are after."
-  (let ((point-fn (brk-sontaku--resolve-direction
-                   direction #'point (lambda () (1- (point))))))
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
+  (let ((point-fn (brk-sontaku--point-in-direction direction)))
     (when-let* ((syntax (brk-sontaku--syntax-char-after (funcall point-fn))))
       (brk-sontaku--skip-syntax (char-to-string syntax) direction bound))))
 
@@ -976,6 +980,7 @@ parentheses, brackets, braces, strings, comments, or paired tag-like constructs.
         (brk-sontaku--in-comment-p pos)
         (brk-sontaku--in-parens-p pos))))
 
+;; TODO: add a bound processing part.
 (defun brk-sontaku--sexp-action (direction &optional bound)
   "Move across an sexp according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
@@ -993,29 +998,64 @@ inside a comment block and:
 
 For the meaning of \"string\", see `brk-sontaku--string-action'."
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
-  (let ((from (point))
+  (let ((point-fn (brk-sontaku--point-in-direction direction))
         (at-string-peak-p
          (brk-sontaku--resolve-direction
           direction
           #'brk-sontaku--end-of-string-sentence-p
           #'brk-sontaku--beg-of-string-sentence-p)))
-    (cond
-     ((brk-sontaku--in-comment-p)
-      (let* ((orig-pos (point))
-             (next (save-excursion
-                     (goto-char orig-pos)
-                     (brk-sontaku--primitive-skip-sexp direction)))
-             (beg (brk-sontaku--syntax-string-start orig-pos))
-             (end (save-excursion
-                    (goto-char beg)
-                    (forward-comment 1)
-                    (point))))
-        (when (and (< beg next) (> end next))
-          (brk-sontaku--primitive-skip-sexp direction))))
-     ((brk-sontaku--in-string-p)
-      (unless (funcall at-string-peak-p)
-        (brk-sontaku--primitive-skip-sexp direction)))
-     (t (brk-sontaku--primitive-skip-sexp direction)))))
+    (if (or (and (eq direction 'forward)
+                 (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ?')
+                 (save-excursion
+                   (brk-sontaku--skip-syntax "'" direction)
+                   ;; "? " stands for whitespace syntax class.
+                   (eq (brk-sontaku--syntax-char-after (funcall point-fn)) ? )))
+            (and (eq direction 'backward)
+                 (brk-sontaku--at-symbol-prefix-p (funcall point-fn))))
+        ;; In the examples below, "*" is the point.
+        ;; Skip them instead of performing `brk-sontaku--primitive-skip-sexp
+        ;; if DIRECTION is:
+        ;; \\='forward, the point is at an expression prefix followed by
+        ;; a whitespace.
+        ;; e.g., \"foo\"*, bar  --> forward --> \"foo\",* bar
+        ;; \\='backward and the thing(s) ahead of the point is a symbol prefix(es).
+        ;; e.g., (foo #'*baz) --> backward --> (foo *#'baz)
+        (progn (brk-sontaku--skip-syntax "'" direction) (point))
+      (cond
+       ((brk-sontaku--in-comment-p)
+        (let* ((orig-pos (point))
+               (next (save-excursion
+                       (goto-char orig-pos)
+                       (brk-sontaku--primitive-skip-sexp direction)))
+               (beg (brk-sontaku--syntax-string-start orig-pos))
+               (end (save-excursion
+                      (goto-char beg)
+                      (forward-comment 1)
+                      (point))))
+          (when (and (< beg next) (> end next))
+            (brk-sontaku--primitive-skip-sexp direction))))
+       ((brk-sontaku--in-string-p)
+        (unless (funcall at-string-peak-p)
+          (brk-sontaku--primitive-skip-sexp direction)))
+       (t (brk-sontaku--primitive-skip-sexp direction))))))
+
+(defun brk-sontaku--sexp-list-action (direction &optional bound)
+  "Move to the beginning or end of an sexp list around point.
+DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND.
+
+This moves the point to:
+
+- the beginning of an sexp list if DIRECTION is \\='backward
+- the end of an sexp list if DIRECTION is \\='forward
+
+Return the point when successful, otherwise return nil."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
+  (let (moved)
+    (while (brk-sontaku--move-within-limit
+            #'brk-sontaku--sexp-action direction bound)
+      (setq moved t))
+    (when moved (point))))
 
 ;;;;; Symbol
 
@@ -1041,14 +1081,15 @@ single quotation mark and POS is right before it.
       (and (brk-sontaku--skip-syntax "'" 'forward)
            (brk-sontaku--at-symbol-p)))))
 
+;; TODO: Revisit the bound processing part.
 (defun brk-sontaku--symbol-action (direction &optional bound)
   "Move across a symbol according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND.
 
 This function skips contiguous chars of the same syntax altogether,
 regarding them as a symbol.  That could be helpful to handle operators
 in some programming languages.
-If BOUND is non-nil, stop before BOUND.
 
 Unlike `forward-symbol', it returns nil when the current point is:
 
@@ -1061,8 +1102,7 @@ Unlike `forward-symbol', it returns nil when the current point is:
                                    (brk-sontaku--primitive-skip-sexp direction)))
          (min-or-max (brk-sontaku--resolve-direction
                       direction #'min #'max))
-         (point-fn (brk-sontaku--resolve-direction
-                    direction #'point (lambda () (1- (point)))))
+         (point-fn (brk-sontaku--point-in-direction direction))
          (bound (if (and peek-of-primitive-sexp bound)
                     (funcall min-or-max peek-of-primitive-sexp bound)
                   (or peek-of-primitive-sexp bound))))
@@ -1169,9 +1209,11 @@ CASE-STATE is either \\='upper, \\='lower, or nil.  When STYLE is either
          (case-fold-search nil))
     (and str (string-match-p re str) t)))
 
-(defun brk-sontaku--string-action (direction)
+;; TODO: add a bound processing part.
+(defun brk-sontaku--string-action (direction &optional bound)
   "Move across a string in the specified DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND.
 
 By \"string\", it specifically means:
 
@@ -1179,9 +1221,9 @@ By \"string\", it specifically means:
 - String delimiters
 
 Note that this function does nothing when the current point
-is inside \"string\".  That built-in logic
-keeps unexpected behaviors occurred when called within
-themselves at bay."
+is inside \"string\".  That built-in logic prevents unexpected
+behaviors from happening when called within themselves."
+  (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let ((from (point))
         quote to)
     (unless (brk-sontaku--in-string-p)
@@ -1232,6 +1274,7 @@ inside that zone, but no at its trailing end. (i.e. beg <= POS < end)"
 (defun brk-sontaku--word-action (direction &optional bound)
   "Move across a word according to DIRECTION.
 DIRECTION must be either \\='forward or \\='backward.
+If BOUND is non-nil, stop before BOUND.
 
 Unlike `forward-word' and `backward-word', this returns nil
 and does nothing when the current point is:
@@ -1244,37 +1287,37 @@ cases as a word:
 
 - \"dot.case\"
 - \"kebab-case\"
-- \"snake_case\"
-
-If BOUND is non-nil, stop before BOUND."
+- \"snake_case\""
   (brk-sontaku--error-if-wrong-bound-pos direction bound)
   (let* ((from (point))
-         (before-bound (brk-sontaku--resolve-direction
-                        direction
-                        (lambda (bound) (1- bound))
-                        (lambda (bound) (1+ bound))))
-         (skip-fn (brk-sontaku--resolve-direction
-                   direction #'forward-word #'backward-word))
-         (point-fn (brk-sontaku--resolve-direction
-                    direction #'point (lambda () (1- (point)))))
+         (limit-adjust-fn (brk-sontaku--resolve-direction
+                           direction
+                           (lambda (bound) (1- bound))
+                           (lambda (bound) (1+ bound))))
+         (skip-word (brk-sontaku--resolve-direction
+                     direction #'forward-word #'backward-word))
+         (point-fn (brk-sontaku--point-in-direction direction))
+         (string-beg (brk-sontaku--syntax-string-start from))
+         (string-end (brk-sontaku--safe-scan-sexps 1 string-beg))
          (str-cases-p
-          (lambda ()
-            (cl-some (lambda (case)
-                       (brk-sontaku--match-string-case-p case nil (funcall point-fn)))
-                     '(dot kebab snake)))))
+          (let ((cases '(dot kebab snake)))
+            (lambda ()
+              (cl-some
+               (lambda (case)
+                 (brk-sontaku--match-string-case-p case nil (funcall point-fn)))
+               cases)))))
     (cl-loop while (or (brk-sontaku--at-word-p (funcall point-fn))
                        (funcall str-cases-p))
              ;; "? " stands for whitespace syntax class.
              ;; This conditional takes care of some quirks `forward-word' manifests.
              if (memq (brk-sontaku--syntax-char-after (funcall point-fn))
-                      '(?' ?\\ ?> ?\) ? ))
+                      '(?' ?\" ?\\ ?> ?\) ? ))
              do (cl-return nil)
-             else do (funcall skip-fn)
+             else do (funcall skip-word)
              when (and bound
-                       (brk-sontaku--beyond-bound-p direction bound (point)))
-             do (progn
-                  (goto-char (funcall before-bound bound))
-                  (cl-return nil))
+                       (brk-sontaku--beyond-limit-p direction bound (point)))
+             do (progn (goto-char (funcall limit-adjust-fn bound))
+                       (cl-return nil))
              finally (cl-return nil))
     (let ((to (point)))
       (unless (eq from to) to))))
@@ -1346,6 +1389,7 @@ DIRECTION must be either:
     (same-chars . brk-sontaku--same-chars-action)
     (same-chars-and-syntax . brk-sontaku--same-chars-and-syntax-action)
     (sexp . brk-sontaku--sexp-action)
+    (sexp-list . brk-sontaku--sexp-list-action)
     (symbol . brk-sontaku--symbol-action)
     (syntax . brk-sontaku--syntax-action)
     (whitespace . brk-sontaku--whitespace-action)
@@ -1471,7 +1515,7 @@ The returned value is a cons cell of integer \"(beg . end)\"."
 
 ;;;;; Line
 
-(defun brk-sontaku--match-line-and-region-beg-p ()
+(defun brk-sontaku--match-beg-of-line-and-region-p ()
   "Return non-nil if the point of the current region beginning
 matches that of the current line beginning."
   (let* ((reg-beg (region-beginning))
@@ -1480,7 +1524,7 @@ matches that of the current line beginning."
                      (line-beginning-position))))
     (= reg-beg line-beg)))
 
-(defun brk-sontaku--match-line-and-region-end-p ()
+(defun brk-sontaku--match-end-of-line-and-region-p ()
   "Return non-nil if the point of the current region end
 matches that of the current line end."
   (let* ((reg-end (region-end))
@@ -1548,32 +1592,20 @@ multi-line region cases."
 
 ;;;;; S-Expression
 
-(defun brk-sontaku--beginning-of-list-around-point ()
-  "Move to the beginning of the list around point.
-Return the point when successful, otherwise return nil."
-  (let (moved)
-    (while (brk-sontaku--sexp-action 'backward)
-      (setq moved t))
-    (when moved (point))))
-
-(defun brk-sontaku--end-of-list-around-point ()
-  "Move to the end of the list around point.
-Return the point when successful, otherwise return nil."
-  (let (moved)
-    (while (brk-sontaku--sexp-action 'forward)
-      (setq moved t))
-    (when moved (point))))
-
 (defun brk-sontaku--sexp-list-filled-with-region-p ()
   "Return non-nil if the sexp list is filled with region.
 If no enclosing sexp is found, return nil."
   (when (use-region-p)
-    (let ((open-paren-pos (nth 1 (syntax-ppss)))
-          (closing-paren-pos (brk-sontaku--safe-scan-lists 1 1))
+    (let ((open-paren-pos (save-excursion
+                            (or (brk-sontaku--sexp-list-action 'backward)
+                                (point))))
+          (closing-paren-pos (save-excursion
+                               (or (brk-sontaku--sexp-list-action 'forward)
+                                   (point))))
           (reg-beg (region-beginning))
           (reg-end (region-end)))
-      (or (and (= open-paren-pos (1- reg-beg))
-               (= closing-paren-pos (1+ reg-end)))
+      (or (and (= open-paren-pos reg-beg)
+               (= closing-paren-pos reg-end))
           (and (brk-sontaku--beg-of-string-sentence-p reg-beg)
                (brk-sontaku--end-of-string-sentence-p reg-end))))))
 
@@ -1600,7 +1632,9 @@ If not present, return nil."
                   (cons backward-beg backward-end)
                   'smaller))
            (<= (car smaller-bounds) from (cdr smaller-bounds)))
-      smaller-bounds))))
+      smaller-bounds)
+     (t (error "Invalid bounds, got %S and %S"
+               (cons forward-beg forward-end) (cons backward-beg backward-end))))))
 
 (defun brk-sontaku--bounds-of-sexp-list-around-point ()
   "Return bounds of the sexp list around point.
@@ -1611,10 +1645,10 @@ the beginning and end of buffer when the point is
 at the top level.  For the meaning of \"top level\",
 see `brk-sontaku--at-top-level-p'."
   (when-let* ((beg (save-excursion
-                     (or (brk-sontaku--beginning-of-list-around-point)
+                     (or (brk-sontaku--sexp-list-action 'backward)
                          (point))))
               (end (save-excursion
-                     (or (brk-sontaku--end-of-list-around-point)
+                     (or (brk-sontaku--sexp-list-action 'forward)
                          (point)))))
     (cons beg end)))
 
@@ -1623,7 +1657,7 @@ see `brk-sontaku--at-top-level-p'."
 It is a cons cell of integer \"(beg . end)\".
 If no enclosing sexp is found, return nil."
   (when-let* ((beg (save-excursion
-                     (brk-sontaku--beginning-of-list-around-point)
+                     (brk-sontaku--sexp-list-action 'backward)
                      (brk-sontaku--skip-syntax " " 'backward)
                      (backward-char)
                      (point)))
@@ -1637,23 +1671,26 @@ If no enclosing sexp is found, return nil."
 (defun brk-sontaku--match-thing-at-point-p (thing)
   "Return non-nil if THING matches the thing at point.
 
-This is a mere thin wrapper of `bounds-of-thing-at-point'.
+This is a mere thin wrapper around `bounds-of-thing-at-point'.
 For the possible THING candidates, see `bounds-of-thing-at-point'."
   (and (bounds-of-thing-at-point thing) t))
 
-(defun brk-sontaku--bounds-of-url-at-point ()
-  "Return bounds of the url at point.
+(defun brk-sontaku--bounds-of-thing-at-point (thing)
+  "Return bounds of THING at point.
 It is a cons cell of integer \"(beg . end)\".
-If no url is found, return nil."
-  (bounds-of-thing-at-point 'url))
+If no THING is found, return nil.
+
+This is a mere thin wrapper around `bounds-of-thing-at-point'.
+For the possible THING candidates, see `bounds-of-thing-at-point'."
+  (bounds-of-thing-at-point thing))
 
 ;;;;; Dispatch Tables
 
 (defconst brk-sontaku--expander-pred-dispatch-table
   (cl-remove-duplicates
    (append
-    '((match-line-and-region-beg . brk-sontaku--match-line-and-region-beg-p)
-      (match-line-and-region-end . brk-sontaku--match-line-and-region-end-p)
+    '((match-beg-of-line-and-region . brk-sontaku--match-beg-of-line-and-region-p)
+      (match-end-of-line-and-region . brk-sontaku--match-end-of-line-and-region-p)
       (match-thing-at-point . brk-sontaku--match-thing-at-point-p)
       (navigator-within-line . brk-sontaku--navigator-within-line-p)
       (sexp-list-filled-with-region . brk-sontaku--sexp-list-filled-with-region-p))
@@ -1676,7 +1713,7 @@ This contains all the entries from `brk-sontaku--navigator-pred-dispatch-table'.
     (sexp-around-point . brk-sontaku--bounds-of-sexp-around-point)
     (sexp-at-point . brk-sontaku--bounds-of-sexp-at-point)
     (sexp-list-around-point . brk-sontaku--bounds-of-sexp-list-around-point)
-    (url-at-point . brk-sontaku--bounds-of-url-at-point)
+    (thing-at-point . brk-sontaku--bounds-of-thing-at-point)
     (word-at-point . brk-sontaku--bounds-of-word-at-point))
   "Alist mapping bounds function names to the corresponding bounds functions.")
 
@@ -1794,12 +1831,11 @@ runtime direction.  The generated code will refer to this variable.
 For the valid values, see `brk-sontaku--resolve-direction'."
   (let* ((head (brk-sontaku--form-head pred-form))
          (pred (alist-get head brk-sontaku--navigator-pred-dispatch-table))
-         (point-fn `(brk-sontaku--resolve-direction
-                     ,direction-sym #'point (lambda () (1- (point))))))
+         (point-fn `(brk-sontaku--point-in-direction ,direction-sym)))
     (cond
      ;; Handle the default case here.
      ((eq pred-form 'default) 't)
-     ;; Accept built-in `and', and `or'. Recurse this for the inner.
+     ;; Accept built-in `and', and `or'. recurse these for the inner.
      ((eq head 'and)
       `(and ,@(mapcar (lambda (f) (brk-sontaku--compile-navigator-pred-form
                                    f direction-sym))
@@ -1930,7 +1966,6 @@ the next region to expand to."
 
        (brk-sontaku--register-navigator ',mode ',fn-name))))
 
-;; TODO: Improve this.
 (brk-sontaku-define-mode-navigator default
   "This function is automatically generated via `brk-sontaku-define-mode-navigator'
 and is the default value of `brk-sontaku-default-navigator-function'.
@@ -1940,6 +1975,7 @@ When no navigator is provided for a certain mode, this works as a fallback."
   (((match-syntax '(?\( ?\) ?\\ ?$ ?< ?>)) . (unit syntax))
    ((at-whitespace) . (unit whitespace))
    ((at-word) . (unit word))
+   ((match-chars '(".")) . (unit symbol))
    (default . (unit char))))
 
 (defun brk-sontaku--compile-expander-pred-form (pred-form)
@@ -1949,7 +1985,7 @@ PRED-FORM should look like:
 
 - logical combinators: (and ...), (or ...), (not ...)
 - \\='default symbol
-- (match-line-and-region-beg), (navigator-within-line), etc.
+- (match-beg-of-line-and-region), (navigator-within-line), etc.
 - a predicate function symbol
 
 Otherwise, it signals an error.
@@ -1959,7 +1995,7 @@ For the valid predicate keywords, see `brk-sontaku--expander-pred-dispatch-table
     (cond
      ;; Handle the default case here.
      ((eq pred-form 'default) 't)
-     ;; Accept built-in `and', and `or'. Recurse this for the inner.
+     ;; Accept built-in `and', and `or'. recurse these for the inner.
      ((eq head 'and)
       `(and ,@(mapcar (lambda (f) (brk-sontaku--compile-expander-pred-form f))
                       (cdr pred-form))))
@@ -1994,8 +2030,8 @@ When called at runtime, it returns a cons cell of integer \"(beg . end)\"."
     (unless bounds-fn
       (error "Unknown bounds function: %S" bounds-fn))
     (pcase bounds-form
-      (`(bounds ,bounds-fn-name)
-       `(,bounds-fn))
+      (`(bounds ,bounds-fn-name . ,rest)
+       `(,bounds-fn ,@rest))
       (_ (error "Invalid bounds function syntax: %S" bounds-form)))))
 
 (cl-defmacro brk-sontaku--define-expander (style docstring &key strategies)
@@ -2038,7 +2074,7 @@ and registered in `brk-sontaku--expander-registry' under the STYLE symbol."
          (when (or (bobp) (eobp)
                    (and (null brk-sontaku-expand-to-whole-buffer-at-top-level-p)
                         (brk-sontaku--at-top-level-p)))
-           (user-error "Reached top level boundary. Expansion aborted"))
+           (user-error "Reached top level boundary"))
          (cond ,@cond-clauses))
 
        (brk-sontaku--register-expander ',style ',fn-name))))
@@ -2095,8 +2131,8 @@ region end = line end --> next line end)
 condition are met."
   :strategies (((navigator-within-line) . (bounds normal-navigator))
                ((not (use-region-p)) . (bounds line-around-point))
-               ((and (match-line-and-region-beg)
-                     (match-line-and-region-end))
+               ((and (match-beg-of-line-and-region)
+                     (match-end-of-line-and-region))
                 . (bounds line-ahead))
                (default . (bounds line-around-region))))
 
@@ -2104,11 +2140,16 @@ condition are met."
   "Expander for sontaku region expansion.
 This is the default value of `brk-sontaku-default-expander-function'.
 
-By \"sontaku\", it means acting on user's unspoken expectations.
+By \"sontaku\", it means acting on users' unspoken expectations.
 The algorithm is as follows in order:
 
+- Expand to the thing at point if it is either url or email address.
 - Expand at the mercy of the user-defined navigator."
-  :strategies (((match-thing-at-point 'url) . (bounds url-at-point))
+  :strategies (((match-thing-at-point 'url) . (bounds thing-at-point 'url))
+               ((match-thing-at-point 'email) . (bounds thing-at-point 'email))
+               ((and (in-parens)
+                     (not (use-region-p)))
+                . (bounds sexp-at-point))
                (default . (bounds normal-navigator))))
 
 ;;;; Sontaku mode
