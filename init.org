@@ -1748,6 +1748,15 @@ basic editing commands for Emacs
   (line-number-mode nil)
   (read-extended-command-predicate 'command-completion-default-include-p))
 #+end_src
+**** sontaku
+#+begin_quote
+Context-aware navigator and region expander
+#+end_quote
+#+begin_src emacs-lisp
+(use-package sontaku
+  :ensure t
+  :hook (after-init-hook . sontaku-mode))
+#+end_src
 **** string-inflection
 #+begin_quote
 foo_bar => FOO_BAR => FooBar => fooBar => foo-bar => Foo_Bar => foo_bar conversion of names
