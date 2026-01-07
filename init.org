@@ -1826,7 +1826,7 @@ Visual undo tree
   :custom
   (vundo-compact-display t)
   (vundo-glyph-alist vundo-unicode-symbols)
-  (vundo-popup-timeout 2.0)
+  (vundo-popup-timeout 1.5)
   (vundo-window-max-height 15)
   :bind
   ((:map vundo-mode-map
