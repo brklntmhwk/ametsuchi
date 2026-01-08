@@ -1444,7 +1444,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   (avy-styles-alist '((avy-goto-char-timer . at-full)))
   (avy-all-windows t)
   (avy-single-candidate-jump nil)
-  (avy-timeout-seconds 0.4)
+  (avy-timeout-seconds 0.35)
   :bind
   (("M-j" . avy-goto-char-timer)
    ("M-J" . avy-goto-char-in-line)
@@ -1457,9 +1457,11 @@ Jump to arbitrary positions in visible text and select text quickly.
          ("M-j" . avy-isearch)))
   :config
   (require 'brk-avy)
+  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim)
   (setf (alist-get ?H avy-dispatch-alist) #'brk-avy-action-helpful)
+  (setf (alist-get ?j avy-dispatch-alist) #'brk-avy-action-xref-definitions)
   (setf (alist-get ?. avy-dispatch-alist) #'brk-avy-action-embark)
-  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim))
+  (setf (alist-get ?  avy-dispatch-alist) #'brk-avy-action-mark-to-char))
 #+end_src
 **** deadgrep
 #+begin_quote

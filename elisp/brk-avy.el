@@ -52,6 +52,12 @@
      (cdr (ring-ref avy-ring 0))))
   t)
 
+;; https://karthinks.com/software/avy-can-do-anything/#mark-the-region-from-point-to-a-candidate
+(defun brk-avy-action-mark-to-char (pt)
+  "Mark the region between PT and the candidate's point."
+  (activate-mark)
+  (goto-char pt))
+
 (defun brk-avy-action-copy-dwim (pt)
   "Copy the entire sexp at PT."
   (save-excursion
@@ -68,7 +74,15 @@
   (let ((dat (ring-ref avy-ring 0)))
     (select-frame-set-input-focus (window-frame (cdr dat)))
     (select-window (cdr dat))
-    (goto-char (car dat))))
+    (goto-char (car dat)))
+  t)
+
+(defun brk-avy-action-xref-definitions (pt)
+  "Jump to the definition of an sexp at PT if it exists."
+  (save-excursion
+    (goto-char pt)
+    (call-interactively #'xref-find-definitions))
+  t)
 
 (provide 'brk-avy)
 ;;; brk-avy.el ends here
