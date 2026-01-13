@@ -26,7 +26,6 @@
     # Nix utils
     flake-parts.url = "github:hercules-ci/flake-parts";
     systems.url = "github:nix-systems/default";
-    nix-bwrapper.url = "github:Naxdy/nix-bwrapper";
     nix-filter.url = "github:numtide/nix-filter";
 
     # Emacs-overlay

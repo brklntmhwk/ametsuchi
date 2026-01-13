@@ -9,7 +9,6 @@ let
 
   overlays = [
     inputs.emacs-overlay.overlays.emacs
-    inputs.nix-bwrapper.overlays.default
   ];
 in
 {
@@ -74,25 +73,6 @@ in
             cat "$file" >> "$out"
           done
         '';
-
-        # TODO: add emacs envs with various emacs build versions
-        # emacs-sandboxed = pkgs.mkBwrapper {
-        #   app = {
-        #     package = emacs-config-no-pgtk.emacs;
-        #     runScript = "emacs";
-        #     execArgs = "--init-directory=$HOME/.local/share/emacs";
-        #     id = "emacs.desktop";
-        #     renameDesktopFile = false;
-        #   };
-        #   mounts = {
-        #     read = [
-        #       "$HOME/.local/state/emacs"
-        #     ];
-        #     readWrite = [
-        #       "$HOME/.local/share/emacs"
-        #     ];
-        #   };
-        # };
       };
 
       apps = emacs-config.makeApps { lockDirName = "lock"; };
