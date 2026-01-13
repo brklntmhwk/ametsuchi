@@ -11,6 +11,7 @@ mkEmacsConfig:
   pkgs,
   ...
 }:
+
 let
   inherit (lib)
     mkDefault
@@ -21,14 +22,12 @@ let
   cfg = config.programs.emacs-twist;
 in
 {
-  options = {
-    programs.emacs-twist = {
-      settings = {
-        extraFeatures = mkOption {
-          type = types.listOf types.str;
-          description = "Add extra features";
-          default = [ ];
-        };
+  options.programs.emacs-twist = {
+    settings = {
+      extraFeatures = mkOption {
+        type = types.listOf types.str;
+        description = "Add extra features";
+        default = [ ];
       };
     };
   };
