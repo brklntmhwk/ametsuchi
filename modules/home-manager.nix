@@ -29,7 +29,7 @@ let
   cfg = config.programs.ametsuchi;
 
   # Get the upstream (twist.nix) module options.
-  upstreamEval = evalModules {
+  twistMods = evalModules {
     modules = [
       inputs.twist.homeModules.emacs-twist
       {
@@ -40,10 +40,10 @@ let
       inherit config lib pkgs;
     };
   };
-  twistOpts = upstreamEval.options.programs.emacs-twist;
+  twistOpts = twistMods.options.programs.emacs-twist;
 
-  # Exclude these options since they are overridden or their values are set
-  # on this Ametsuchi layer.
+  # Exclude these options since they will be overridden or their values
+  # will be set on this Ametsuchi layer.
   excludedOptions = [
     "enable"
     "createInitFile"
