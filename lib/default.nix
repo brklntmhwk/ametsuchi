@@ -1,16 +1,40 @@
 # Copyright (C) 2025 Ohma Togaki
 # SPDX-License-Identifier: MIT
 
-{ inputs, lib, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 let
+  inherit (builtins)
+    concatStringsSep
+    readFile
+    toFile
+    ;
+  inherit (lib)
+    composeExtensions
+    escapeShellArg
+    escapeShellArgs
+    getName
+    makeBinPath
+    mapAttrsToList
+    pipe
+    ;
+  inherit (pkgs)
+    makeWrapper
+    symlinkJoin
+    ;
+
   mkInitFile =
     {
       initPath ? (../. + "/init.org"),
     }:
-    lib.pipe initPath [
-      builtins.readFile
-      (inputs.org-babel.lib.tangleOrgBabel { })
-      (builtins.toFile "init.el")
+    pipe initPath [
+      readFile
+      (inputs.org-babel.tangleOrgBabel { })
+      (toFile "init.el")
     ];
 in
 {
@@ -43,7 +67,7 @@ in
         '';
         exportManifest = true; # Required to use hot-reloading twist.el offers
         initFiles = [ initFile ];
-        initParser = inputs.twist.lib.parseUsePackages {
+        initParser = inputs.twist.parseUsePackages {
           inherit (inputs.nixpkgs) lib;
         } { };
         inputOverrides = (import ../twist/inputs.nix) // {
@@ -69,20 +93,112 @@ in
         ++ (import ../twist/registries.nix { inherit inputs; });
       };
     in
-    (inputs.twist.lib.makeEnv (
+    (inputs.twist.makeEnv (
       twistArgs
       // {
         inherit pkgs emacsPackage;
       }
     )).overrideScope
       (
-        lib.composeExtensions inputs.twist-overrides.overlays.twistScope (
+        composeExtensions inputs.twist-overrides.overlays.twistScope (
           _final: prev: {
             elispPackages = prev.elispPackages.overrideScope (import ../twist/overrides.nix { inherit pkgs; });
           }
         )
       );
-  # TODO: implement a wrapper lib function for making tentative emacs env
-  # NOTE: Consider refactoring this and move to another file (e.g., pkgs.nix)
-  # mkTmpEmacsEnvWrapper = { ... }: { };
+
+  # TODO: Make this an inch-perfect match with that in Yakumo.
+  mkAppWrapper =
+    {
+      pkg,
+      name ? null,
+      bin ? null,
+      flags ? [ ],
+      env ? { },
+      deps ? [ ],
+      desktop ? null,
+    }:
+    let
+      binName =
+        if bin != null then
+          bin
+        else if (pkg.meta ? mainProgram) then
+          pkg.meta.mainProgram
+        else
+          (lib.getName pkg);
+      finalName = if name != null then name else "${getName pkg}-wrapped";
+      flagsStr = escapeShellArgs flags;
+      envStr = concatStringsSep " " (mapAttrsToList (k: v: "--set ${k} ${escapeShellArg v}") env);
+      pathStr = if deps == [ ] then "" else "--prefix PATH : ${makeBinPath deps}";
+      desktopItem =
+        if desktop == null then
+          null
+        else
+          let
+            # Mandatory Field Check
+            _ =
+              if !(desktop ? desktopName) then
+                throw "'desktop.desktopName' is required when 'desktop' is set."
+              else
+                null;
+          in
+          {
+            name = desktop.name or finalName;
+            type = desktop.type or "Application";
+            desktopName = desktop.desktopName;
+            genericName = desktop.genericName or null;
+            noDisplay = desktop.noDisplay or null;
+            comment = desktop.comment or null;
+            icon = desktop.icon or null;
+            onlyShowIn = desktop.onlyShowIn or [ ];
+            notShowIn = desktop.notShowIn or [ ];
+            dbusActivatable = desktop.dbusActivatable or null;
+            terminal = desktop.terminal or false;
+            mimeTypes = if (desktop ? mimeTypes) then concatStringsSep ";" desktop.mimeTypes else null;
+            categories = if (desktop ? categories) then concatStringsSep ";" desktop.categories else null;
+            keywords = if (desktop ? keywords) then concatStringsSep ";" desktop.keywords else null;
+            startupNotify = desktop.startupNotify or false;
+            args = desktop.args or "";
+          };
+    in
+    symlinkJoin {
+      name = finalName;
+      paths = [ pkg ];
+      buildInputs = [ makeWrapper ];
+      desktopTerminal = if (desktopItem != null && desktopItem.terminal) then "true" else "false";
+      desktopStartupNotify =
+        if (desktopItem != null && desktopItem.startupNotify) then "true" else "false";
+      postBuild = ''
+        if [ ! -x "$out/bin/${binName}" ]; then
+            echo "Error: Binary '${binName}' not found in package ${getName pkg}!"
+            echo "       Please assume the auto-detection failed."
+            echo "       Pass the 'bin' argument explicitly to mylib.wrap."
+            echo "       Available binaries: $(ls $out/bin)"
+            exit 1
+        fi
+
+        wrapProgram $out/bin/${binName} \
+          ${envStr} \
+          --add-flags "${flagsStr}" \
+          ${pathStr}
+
+        ${optionalString (desktop != null) ''
+          mkdir -p $out/share/applications
+          cat > $out/share/applications/${desktopItem.name}.desktop <<EOF
+          [Desktop Entry]
+          Type=Application
+          Name=${desktopItem.desktopName}
+          Exec=$out/bin/${binName} ${desktopItem.args}
+          Terminal=$desktopTerminal
+          StartupNotify=$desktopStartupNotify
+          ${optionalString (desktopItem.genericName != null) "GenericName=${desktopItem.genericName}"}
+          ${optionalString (desktopItem.comment != null) "Comment=${desktopItem.comment}"}
+          ${optionalString (desktopItem.icon != null) "Icon=${desktopItem.icon}"}
+          ${optionalString (desktopItem.categories != null) "Categories=${desktopItem.categories};"}
+          ${optionalString (desktopItem.mimeTypes != null) "MimeType=${desktopItem.mimeTypes};"}
+          ${optionalString (desktopItem.keywords != null) "Keywords=${desktopItem.keywords};"}
+          EOF
+        ''}
+      '';
+    };
 }
