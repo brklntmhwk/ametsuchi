@@ -108,6 +108,7 @@
         inherit inputs;
         inherit (lib') mkEmacsConfig;
       };
+      maidModules.default = import ./modules/nix-maid.nix lib'.mkEmacsConfig;
 
       packages = forAllSystems (
         system:
