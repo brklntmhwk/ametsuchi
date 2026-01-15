@@ -4,7 +4,10 @@
 # https://github.com/akirak/emacs-config/commit/14ba1e6673c8c179f122b8bec2397b88dc74b04f
 
 # Take mkEmacsConfig as an arg to make additional configs based on user customization.
-mkEmacsConfig:
+{
+  inputs,
+  mkEmacsConfig,
+}:
 {
   config,
   lib,
@@ -22,6 +25,10 @@ let
   cfg = config.programs.emacs-twist;
 in
 {
+  imports = [
+    inputs.twist.homeModules.emacs-twist
+  ];
+
   options.programs.emacs-twist = {
     settings = {
       extraFeatures = mkOption {
