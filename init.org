@@ -142,7 +142,7 @@ Ametsuchi provides modules for home-manager and nix-maid. If you use Nix Flakes,
 }
 #+end_src
 
-Now you can start using the module options `programs.ametsuchi` anywhere in your module system.
+Now you can start using the module options ~programs.ametsuchi~ anywhere in your module system.
 
 ** Initialization
 :PROPERTIES:
