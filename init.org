@@ -16,6 +16,7 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 - [[#cosmological-principle][Cosmological Principle]]
   - [[#reproducibility][Reproducibility]]
 - [[#big-bang][Big Bang!]]
+  - [[#as-a-module][As a module]]
 - [[#initialization][Initialization]]
   - [[#configuration-macro][Configuration Macro]]
   - [[#package-manager][Package Manager]]
@@ -84,8 +85,65 @@ This Nix-based approach achieves:
 :PROPERTIES:
 :CUSTOM_ID: big-bang
 :END:
+*** As a module
+:PROPERTIES:
+:CUSTOM_ID: as-a-module
+:END:
+Ametsuchi provides modules for home-manager and nix-maid. If you use Nix Flakes, the setup is as simple as:
 
-NOTE: This section is still a work in progress.
+#+begin_src nix
+{
+  inputs = {
+    ametsuchi = {
+      url = "github:brklntmhwk/ametsuchi";
+      inputs.twist.follows = "twist";
+    };
+    twist.url = "github:emacs-twist/twist.nix";
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-maid.url = "github:viperML/nix-maid";
+  };
+
+  outputs =
+    { self, nixpkgs, ametsuchi, home-manager, nix-maid }: { 
+      nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+          # Nix-maid Module
+          nix-maid.nixosModules.default # Ensure to add the nix-maid module for NixOS
+          ametsuchi.maidModules.ametsuchi
+
+          # Home Manager Module
+          home-manager.nixosModules.home-manager # Ensure to add the home-manager module for NixOS
+          {
+            home-manager.users.youruser = { pkgs, ... }: {
+              imports = [
+                ametsuchi.homeManagerModules.ametsuchi
+              ];
+            };
+            # Other configurations follow...
+          }          
+        ];
+      };
+
+      # Home Manager Standalone
+      homeConfigurations.youruser = home-manager.lib.homeManagerConfiguration {
+        system = "x86_64-linux";
+        modules = [
+          ametsuchi.homeManagerModules.ametsuchi
+        ];
+        # Other configurations follow...
+      };
+    };
+}
+#+end_src
+
+Now you can start using the module options `programs.ametsuchi` anywhere in your module system.
 
 ** Initialization
 :PROPERTIES:
