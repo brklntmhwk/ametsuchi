@@ -1742,7 +1742,6 @@ Parentheses Universalistic
   :hook (after-init-hook . puni-global-mode)
   :bind
   ((:map puni-mode-map
-         ([remap mark-sexp] . puni-mark-sexp-at-point)
          ([remap transpose-sexps] . puni-transpose))
    (:map mode-specific-map
          ("SPC" . puni-expand-region)
