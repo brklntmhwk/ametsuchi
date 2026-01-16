@@ -100,15 +100,21 @@
 
       lib' = import ./lib {
         inherit inputs;
-        lib = nixpkgs.lib;
+        inherit (nixpkgs) lib;
       };
     in
     {
-      homeManagerModules.default = import ./modules/home-manager.nix {
-        inherit inputs;
-        inherit (lib') mkEmacsConfig;
+      homeManagerModules = rec {
+        ametsuchi = import ./modules/home-manager.nix {
+          inherit inputs;
+          inherit (lib') mkEmacsConfig;
+        };
+        default = ametsuchi;
       };
-      maidModules.default = import ./modules/nix-maid.nix lib'.mkEmacsConfig;
+      maidModules = rec {
+        ametsuchi = import ./modules/nix-maid.nix lib'.mkEmacsConfig;
+        default = ametsuchi;
+      };
 
       packages = forAllSystems (
         system:
