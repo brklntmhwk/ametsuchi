@@ -19,7 +19,6 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
   - [[#as-a-module][As a module]]
 - [[#initialization][Initialization]]
   - [[#configuration-macro][Configuration Macro]]
-  - [[#package-manager][Package Manager]]
   - [[#library][Library]]
   - [[#system][System]]
   - [[#custom-keymaps][Custom Keymaps]]
@@ -54,13 +53,13 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 :END:
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
 
-|                     | Name          | Alternatives                          |
-|---------------------+---------------+---------------------------------------|
-| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                 |
-| Package build       | twist.nix     | package-build                         |
-| Package manager     | twist.el      | package.el, straight.el, elpaca, etc. |
-| Configuration Macro | use-package   | leaf.el, setup.el, etc.               |
-| Project's framework | flake-parts   | flake-utils, snowfall, denix, etc.    |
+|                     | Name          | Alternatives                                    |
+|---------------------+---------------+-------------------------------------------------|
+| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                           |
+| Package build       | twist.nix     | package-build                                   |
+| Package manager     | N/A           | package.el, straight.el, elpaca, twist.el etc.  |
+| Configuration Macro | use-package   | leaf.el, setup.el, etc.                         |
+| Nix framework | N/A           | flake-parts, flake-utils, snowfall, denix, etc. |
 
 ** Cosmological Principle
 :PROPERTIES:
@@ -185,21 +184,6 @@ A configuration macro for simplifying your .emacs
                   use-package-compute-statistics t)
   (setq-default use-package-verbose nil
                 use-package-expand-minimally t))
-#+end_src
-*** Package Manager
-:PROPERTIES:
-:CUSTOM_ID: package-manager
-:END:
-**** twist
-#+begin_quote
-Hot-reload Emacs Lisp packages configured with twist.nix
-#+end_quote
-#+begin_src emacs-lisp
-(use-package twist
-  :ensure t
-  :hook (emacs-startup-hook . twist-watch-mode)
-  :bind
-  (("<f12>" . twist-update)))
 #+end_src
 *** Library
 :PROPERTIES:
