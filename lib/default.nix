@@ -9,22 +9,12 @@
 }:
 let
   inherit (builtins)
-    concatStringsSep
     readFile
     toFile
     ;
   inherit (lib)
     composeExtensions
-    escapeShellArg
-    escapeShellArgs
-    getName
-    makeBinPath
-    mapAttrsToList
     pipe
-    ;
-  inherit (pkgs)
-    makeWrapper
-    symlinkJoin
     ;
 
   mkInitFile =

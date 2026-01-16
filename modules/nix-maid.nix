@@ -19,11 +19,8 @@ let
   inherit (lib)
     mkEnableOption
     mkIf
-    mkMerge
     mkOption
-    mkOptionType
     optional
-    optionalString
     types
     ;
   inherit (pkgs) makeDesktopItem runCommandLocal;
@@ -96,6 +93,8 @@ let
   # https://github.com/viperML/nix-maid/commit/4ea39e76cdc8f8946bf4474a55962b2dfd8258fb
   userSubmodule = {
     config = mkIf cfg.enable {
+      # Install packages in `users.users.${username}.packages` without
+      # having to declare an option like `username`.
       packages = [
         fonts
         wrappedEmacs
