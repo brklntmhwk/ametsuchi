@@ -71,13 +71,28 @@ in
   config = mkIf cfg.enable {
     programs.emacs-twist =
       let
-        inherit (builtins) attrNames;
-        inherit (lib) genAttrs mkAliasDefinitions;
-        sharedKeys = attrNames inheritedOptions;
+        inherit (builtins) isAttrs;
+        inherit (lib)
+          getAttrFromPath
+          isOption
+          mapAttrs
+          mkAliasDefinitions
+          ;
+        mkRecursiveAlias =
+          currentOpts: currentPath:
+          mapAttrs (
+            n: v:
+            if isOption v then
+              mkAliasDefinitions (getAttrFromPath (currentPath ++ [ n ]) options.programs.ametsuchi)
+            else if isAttrs v then
+              mkRecursiveAlias v (currentPath ++ [ n ])
+            else
+              { }
+          ) currentOpts;
       in
       mkMerge [
         # e.g., `{ name = mkAliasDefinitions options.programs.ametsuchi.name; ... }`
-        (genAttrs sharedKeys (name: mkAliasDefinitions options.programs.ametsuchi.${name}))
+        (mkRecursiveAlias inheritedOptions [ ])
         {
           enable = true;
           createInitFile = true;
