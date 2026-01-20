@@ -4,7 +4,6 @@
 {
   inputs,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -23,7 +22,7 @@ let
     }:
     pipe initPath [
       readFile
-      (inputs.org-babel.tangleOrgBabel { })
+      (inputs.org-babel.lib.tangleOrgBabel { })
       (toFile "init.el")
     ];
 in
@@ -57,7 +56,7 @@ in
         '';
         exportManifest = true; # Required to use hot-reloading twist.el offers
         initFiles = [ initFile ];
-        initParser = inputs.twist.parseUsePackages {
+        initParser = inputs.twist.lib.parseUsePackages {
           inherit (inputs.nixpkgs) lib;
         } { };
         inputOverrides = (import ../twist/inputs.nix) // {
@@ -83,7 +82,7 @@ in
         ++ (import ../twist/registries.nix { inherit inputs; });
       };
     in
-    (inputs.twist.makeEnv (
+    (inputs.twist.lib.makeEnv (
       twistArgs
       // {
         inherit pkgs emacsPackage;
