@@ -39,11 +39,8 @@
     };
     async = {
       flake = false;
-      lastModified = 1451290400;
-      owner = "jwiegley";
-      repo = "emacs-async";
-      rev = "1794ea4955c6eeb62471b232a2d4fd6a6925a2c9";
-      type = "github";
+      type = "tarball";
+      url = "https://elpa.gnu.org/packages/async-1.9.9.tar";
     };
     avy = {
       flake = false;
@@ -140,6 +137,11 @@
       owner = "minad";
       repo = "corfu";
       type = "github";
+    };
+    csv-mode = {
+      flake = false;
+      type = "tarball";
+      url = "https://elpa.gnu.org/packages/csv-mode-1.27.tar";
     };
     dash = {
       flake = false;
@@ -680,7 +682,6 @@
     };
     org-transclusion = {
       flake = false;
-      lastModified = 1716239161;
       type = "tarball";
       url = "https://elpa.gnu.org/packages/org-transclusion-1.4.0.tar";
     };
@@ -740,13 +741,11 @@
     };
     peg = {
       flake = false;
-      lastModified = 1711878471;
       type = "tarball";
-      url = "https://elpa.gnu.org/packages/peg-1.0.1.tar";
+      url = "https://elpa.gnu.org/packages/peg-1.0.2.tar";
     };
     persist = {
       flake = false;
-      lastModified = 1718485631;
       type = "tarball";
       url = "https://elpa.gnu.org/packages/persist-0.8.tar";
     };
@@ -841,6 +840,12 @@
       repo = "shr-tag-pre-highlight.el";
       type = "github";
     };
+    sontaku = {
+      flake = false;
+      owner = "brklntmhwk";
+      repo = "sontaku";
+      type = "github";
+    };
     spinner = {
       flake = false;
       owner = "Malabarba";
@@ -880,12 +885,6 @@
       flake = false;
       owner = "alphapapa";
       repo = "ts.el";
-      type = "github";
-    };
-    twist = {
-      flake = false;
-      owner = "emacs-twist";
-      repo = "twist.el";
       type = "github";
     };
     valign = {
@@ -939,7 +938,7 @@
       flake = false;
       ref = "elpa/ws-butler";
       type = "git";
-      url = "https://git.savannah.gnu.org/git/emacs/nongnu.git";
+      url = "https://https.git.savannah.gnu.org/git/elpa/nongnu.git";
     };
     xterm-color = {
       flake = false;
