@@ -3787,14 +3787,6 @@ Translation framework, configurable and scalable
                         (gt-deepl-engine :if 'not-word))
          :render (gt-buffer-render))))
 #+end_src
-**** mastodon
-#+begin_quote
-Client for fediverse services using the Mastodon API
-#+end_quote
-#+begin_src emacs-lisp
-(use-package mastodon
-  :ensure t)
-#+end_src
 **** nov
 #+begin_quote
 Featureful EPUB reader mode
