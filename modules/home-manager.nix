@@ -77,6 +77,7 @@ in
           isOption
           mapAttrs
           mkAliasDefinitions
+          mkDefault
           ;
         mkRecursiveAlias =
           currentOpts: currentPath:
@@ -97,6 +98,9 @@ in
           enable = true;
           createInitFile = true;
           earlyInitFile = ../early-init.el;
+          # Explicitly set a default value for this to prevent the "no value defined" error.
+          # It looks like the upstream doesn't specify the default value.
+          emacsclient.enable = mkDefault false;
           config = mkEmacsConfig {
             inherit pkgs;
             features = cfg.extraFeatures;
