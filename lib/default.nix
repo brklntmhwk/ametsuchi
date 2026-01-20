@@ -1,16 +1,29 @@
 # Copyright (C) 2025 Ohma Togaki
 # SPDX-License-Identifier: MIT
 
-{ inputs, lib, ... }:
+{
+  inputs,
+  lib,
+  ...
+}:
 let
+  inherit (builtins)
+    readFile
+    toFile
+    ;
+  inherit (lib)
+    composeExtensions
+    pipe
+    ;
+
   mkInitFile =
     {
       initPath ? (../. + "/init.org"),
     }:
-    lib.pipe initPath [
-      builtins.readFile
+    pipe initPath [
+      readFile
       (inputs.org-babel.lib.tangleOrgBabel { })
-      (builtins.toFile "init.el")
+      (toFile "init.el")
     ];
 in
 {
@@ -76,13 +89,10 @@ in
       }
     )).overrideScope
       (
-        lib.composeExtensions inputs.twist-overrides.overlays.twistScope (
+        composeExtensions inputs.twist-overrides.overlays.twistScope (
           _final: prev: {
             elispPackages = prev.elispPackages.overrideScope (import ../twist/overrides.nix { inherit pkgs; });
           }
         )
       );
-  # TODO: implement a wrapper lib function for making tentative emacs env
-  # NOTE: Consider refactoring this and move to another file (e.g., pkgs.nix)
-  # mkTmpEmacsEnvWrapper = { ... }: { };
 }

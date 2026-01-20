@@ -9,3 +9,5 @@ org-mode
 (verse "#+begin_verse" n> r> n> "#+end_verse")
 (src "#+begin_src " p n> r> n> "#+end_src" :post (org-edit-src-code))
 (elisp "#+begin_src emacs-lisp :tangle yes" n> r> n "#+end_src" :post (org-edit-src-code))
+
+(epkg "** " p n "#+begin_quote" n> r> n> "#+end_quote" n "#+begin_src emacs-lisp" n> r> n> "#+end_src" :post (org-edit-src-code))

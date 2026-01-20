@@ -16,9 +16,9 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 - [[#cosmological-principle][Cosmological Principle]]
   - [[#reproducibility][Reproducibility]]
 - [[#big-bang][Big Bang!]]
+  - [[#as-a-module][As a module]]
 - [[#initialization][Initialization]]
   - [[#configuration-macro][Configuration Macro]]
-  - [[#package-manager][Package Manager]]
   - [[#library][Library]]
   - [[#system][System]]
   - [[#custom-keymaps][Custom Keymaps]]
@@ -53,13 +53,13 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 :END:
 This repository is my Emacs configuration suite built using [[https://github.com/akirak/emacs-twist][emacs-twist]], powered by Nix and Nix Flakes. Therefore, by its nature, this configuration is *not* compatible with Windows OS.
 
-|                     | Name          | Alternatives                          |
-|---------------------+---------------+---------------------------------------|
-| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                 |
-| Package build       | twist.nix     | package-build                         |
-| Package manager     | twist.el      | package.el, straight.el, elpaca, etc. |
-| Configuration Macro | use-package   | leaf.el, setup.el, etc.               |
-| Project's framework | flake-parts   | flake-utils, snowfall, denix, etc.    |
+|                     | Name          | Alternatives                                    |
+|---------------------+---------------+-------------------------------------------------|
+| Emacs installation  | emacs-overlay | Direct use of Nixpkgs                           |
+| Package build       | twist.nix     | package-build                                   |
+| Package manager     | N/A           | package.el, straight.el, elpaca, twist.el etc.  |
+| Configuration Macro | use-package   | leaf.el, setup.el, etc.                         |
+| Nix framework | N/A           | flake-parts, flake-utils, snowfall, denix, etc. |
 
 ** Cosmological Principle
 :PROPERTIES:
@@ -84,8 +84,65 @@ This Nix-based approach achieves:
 :PROPERTIES:
 :CUSTOM_ID: big-bang
 :END:
+*** As a module
+:PROPERTIES:
+:CUSTOM_ID: as-a-module
+:END:
+Ametsuchi provides modules for home-manager and nix-maid. If you use Nix Flakes, the setup is as simple as:
 
-NOTE: This section is still a work in progress.
+#+begin_src nix
+{
+  inputs = {
+    ametsuchi = {
+      url = "github:brklntmhwk/ametsuchi";
+      inputs.twist.follows = "twist";
+    };
+    twist.url = "github:emacs-twist/twist.nix";
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-maid.url = "github:viperML/nix-maid";
+  };
+
+  outputs =
+    { self, nixpkgs, ametsuchi, home-manager, nix-maid }: { 
+      nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+          # Nix-maid Module
+          nix-maid.nixosModules.default # Ensure to add the nix-maid module for NixOS
+          ametsuchi.maidModules.ametsuchi
+
+          # Home Manager Module
+          home-manager.nixosModules.home-manager # Ensure to add the home-manager module for NixOS
+          {
+            home-manager.users.youruser = { pkgs, ... }: {
+              imports = [
+                ametsuchi.homeManagerModules.ametsuchi
+              ];
+            };
+            # Other configurations follow...
+          }          
+        ];
+      };
+
+      # Home Manager Standalone
+      homeConfigurations.youruser = home-manager.lib.homeManagerConfiguration {
+        system = "x86_64-linux";
+        modules = [
+          ametsuchi.homeManagerModules.ametsuchi
+        ];
+        # Other configurations follow...
+      };
+    };
+}
+#+end_src
+
+Now you can start using the module options ~programs.ametsuchi~ anywhere in your module system.
 
 ** Initialization
 :PROPERTIES:
@@ -127,21 +184,6 @@ A configuration macro for simplifying your .emacs
                   use-package-compute-statistics t)
   (setq-default use-package-verbose nil
                 use-package-expand-minimally t))
-#+end_src
-*** Package Manager
-:PROPERTIES:
-:CUSTOM_ID: package-manager
-:END:
-**** twist
-#+begin_quote
-Hot-reload Emacs Lisp packages configured with twist.nix
-#+end_quote
-#+begin_src emacs-lisp
-(use-package twist
-  :ensure t
-  :hook (emacs-startup-hook . twist-watch-mode)
-  :bind
-  (("<f12>" . twist-update)))
 #+end_src
 *** Library
 :PROPERTIES:
@@ -806,7 +848,8 @@ Emacs minor mode to automatically balance window margins
   (olivetti-body-width 82)
   :hook
   ((markdown-mode
-    org-mode) . olivetti-mode))
+    org-mode)
+   . olivetti-mode))
 #+end_src
 **** page-break-lines
 #+begin_quote
@@ -1189,7 +1232,8 @@ COmpletion in Region FUnction
   ((comint-mode-hook
     eshell-mode-hook
     prog-mode-hook
-    text-mode-hook) . corfu-mode)
+    text-mode-hook)
+   . corfu-mode)
   (minibuffer-setup-hook . brk/corfu-enable-in-minibuffer)
   :bind
   (:map corfu-map
@@ -1397,7 +1441,8 @@ abbrev mode commands for Emacs
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
     markdown-mode-hook
-    org-mode-hook) . abbrev-mode)
+    org-mode-hook)
+   . abbrev-mode)
   :config
   (define-abbrev-table 'global-abbrev-table
     '(("fixme" "FIXME")
@@ -1444,7 +1489,7 @@ Jump to arbitrary positions in visible text and select text quickly.
   (avy-styles-alist '((avy-goto-char-timer . at-full)))
   (avy-all-windows t)
   (avy-single-candidate-jump nil)
-  (avy-timeout-seconds 0.4)
+  (avy-timeout-seconds 0.35)
   :bind
   (("M-j" . avy-goto-char-timer)
    ("M-J" . avy-goto-char-in-line)
@@ -1457,9 +1502,11 @@ Jump to arbitrary positions in visible text and select text quickly.
          ("M-j" . avy-isearch)))
   :config
   (require 'brk-avy)
+  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim)
   (setf (alist-get ?H avy-dispatch-alist) #'brk-avy-action-helpful)
+  (setf (alist-get ?j avy-dispatch-alist) #'brk-avy-action-xref-definitions)
   (setf (alist-get ?. avy-dispatch-alist) #'brk-avy-action-embark)
-  (setf (alist-get ?c avy-dispatch-alist) #'brk-avy-action-copy-dwim))
+  (setf (alist-get ?  avy-dispatch-alist) #'brk-avy-action-mark-to-char))
 #+end_src
 **** deadgrep
 #+begin_quote
@@ -1572,7 +1619,8 @@ Enchanted Spell Checker
   :hook
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
-    markdown-mode-hook) . jinx-mode)
+    markdown-mode-hook)
+   . jinx-mode)
   :bind
   (([remap ispell-word] . jinx-correct)
    ("C-M-$" . jinx-correct-nearest)))
@@ -1602,7 +1650,8 @@ Major mode for Markdown-formatted text
   (("\\.markdown\\'"
     "\\.md\\'"
     "\\.mdoc\\'"
-    "\\.mdx\\'") . markdown-mode)
+    "\\.mdx\\'")
+   . markdown-mode)
   ("README\\.md\\'" . gfm-mode)
   :hook
   (markdown-mode-hook . dprint-on-save-mode)
@@ -1670,7 +1719,8 @@ See the [[#window-management][window]] configuration for key bindings related to
   (after-init-hook . pixel-scroll-precision-mode)
   ((eww-mode-hook
     find-file-hook
-    help-mode-hook) . pixel-scroll-precision-mode))
+    help-mode-hook)
+   . pixel-scroll-precision-mode))
 #+end_src
 **** puni
 #+begin_quote
@@ -1682,7 +1732,6 @@ Parentheses Universalistic
   :hook (after-init-hook . puni-global-mode)
   :bind
   ((:map puni-mode-map
-         ([remap mark-sexp] . puni-mark-sexp-at-point)
          ([remap transpose-sexps] . puni-transpose))
    (:map mode-specific-map
          ("SPC" . puni-expand-region)
@@ -1747,6 +1796,19 @@ basic editing commands for Emacs
   (kill-whole-line t)
   (line-number-mode nil)
   (read-extended-command-predicate 'command-completion-default-include-p))
+#+end_src
+**** sontaku
+#+begin_quote
+Context-aware navigator and region expander
+#+end_quote
+#+begin_src emacs-lisp
+(use-package sontaku
+  :ensure t
+  :hook
+  (after-init-hook . sontaku-mode)
+  ((markdown-mode-hook
+    org-mode-hook)
+   . sontaku-apply-word-boundaries))
 #+end_src
 **** string-inflection
 #+begin_quote
@@ -1817,7 +1879,7 @@ Visual undo tree
   :custom
   (vundo-compact-display t)
   (vundo-glyph-alist vundo-unicode-symbols)
-  (vundo-popup-timeout 2.0)
+  (vundo-popup-timeout 1.5)
   (vundo-window-max-height 15)
   :bind
   ((:map vundo-mode-map
@@ -1836,7 +1898,8 @@ Unobtrusively remove trailing whitespace
   :ensure t
   :hook
   ((prog-mode-hook
-    text-mode-hook) . ws-butler-mode))
+    text-mode-hook)
+   . ws-butler-mode))
 #+end_src
 *** Visual Aid
 :PROPERTIES:
@@ -1874,7 +1937,8 @@ interface for display-fill-column-indicator
 (use-package display-fill-column-indicator
   :hook
   ((prog-mode-hook
-    text-mode-hook) . display-fill-column-indicator-mode))
+    text-mode-hook)
+   . display-fill-column-indicator-mode))
 #+end_src
 **** display-line-numbers
 #+begin_quote
@@ -1919,7 +1983,8 @@ Pulse modified regions
   (goggles-pulse-iterations 15)
   :hook
   ((prog-mode-hook
-    text-mode-hook) . goggles-mode))
+    text-mode-hook)
+   . goggles-mode))
 #+end_src
 **** highlight-indent-guides
 #+begin_quote
@@ -1932,7 +1997,8 @@ Minor mode to highlight indentation
   (highlight-indent-guides-method 'character)
   :hook
   ((python-mode-hook
-    yaml-mode-hook) . highlight-indent-guides-mode))
+    yaml-mode-hook)
+   . highlight-indent-guides-mode))
 #+end_src
 **** hl-line
 #+begin_quote
@@ -1946,7 +2012,8 @@ highlight the current line
   :hook
   ((prog-mode-hook
     text-mode-hook
-    dired-mode-hook) . hl-line-mode))
+    dired-mode-hook)
+   . hl-line-mode))
 #+end_src
 **** hl-todo
 #+begin_quote
@@ -1959,7 +2026,8 @@ Highlight TODO and similar keywords
   (hl-todo-highlight-punctuation ":")
   :hook
   ((org-mode-hook
-    prog-mode-hook) . hl-todo-mode)
+    prog-mode-hook)
+   . hl-todo-mode)
   :bind
   ((:map hl-todo-mode-map
          :map mode-specific-map
@@ -2007,7 +2075,8 @@ Highlight brackets according to their depth
   ((clojure-mode-hook
     emacs-lisp-mode-hook
     haskell-mode-hook
-    lisp-mode-hook) . rainbow-delimiters-mode))
+    lisp-mode-hook)
+   . rainbow-delimiters-mode))
 #+end_src
 **** shr
 #+begin_quote
