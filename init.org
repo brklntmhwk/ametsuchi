@@ -848,7 +848,8 @@ Emacs minor mode to automatically balance window margins
   (olivetti-body-width 82)
   :hook
   ((markdown-mode
-    org-mode) . olivetti-mode))
+    org-mode)
+   . olivetti-mode))
 #+end_src
 **** page-break-lines
 #+begin_quote
@@ -1231,7 +1232,8 @@ COmpletion in Region FUnction
   ((comint-mode-hook
     eshell-mode-hook
     prog-mode-hook
-    text-mode-hook) . corfu-mode)
+    text-mode-hook)
+   . corfu-mode)
   (minibuffer-setup-hook . brk/corfu-enable-in-minibuffer)
   :bind
   (:map corfu-map
@@ -1439,7 +1441,8 @@ abbrev mode commands for Emacs
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
     markdown-mode-hook
-    org-mode-hook) . abbrev-mode)
+    org-mode-hook)
+   . abbrev-mode)
   :config
   (define-abbrev-table 'global-abbrev-table
     '(("fixme" "FIXME")
@@ -1616,7 +1619,8 @@ Enchanted Spell Checker
   :hook
   ((git-commit-mode-hook
     vc-git-log-edit-mode-hook
-    markdown-mode-hook) . jinx-mode)
+    markdown-mode-hook)
+   . jinx-mode)
   :bind
   (([remap ispell-word] . jinx-correct)
    ("C-M-$" . jinx-correct-nearest)))
@@ -1646,7 +1650,8 @@ Major mode for Markdown-formatted text
   (("\\.markdown\\'"
     "\\.md\\'"
     "\\.mdoc\\'"
-    "\\.mdx\\'") . markdown-mode)
+    "\\.mdx\\'")
+   . markdown-mode)
   ("README\\.md\\'" . gfm-mode)
   :hook
   (markdown-mode-hook . dprint-on-save-mode)
@@ -1714,7 +1719,8 @@ See the [[#window-management][window]] configuration for key bindings related to
   (after-init-hook . pixel-scroll-precision-mode)
   ((eww-mode-hook
     find-file-hook
-    help-mode-hook) . pixel-scroll-precision-mode))
+    help-mode-hook)
+   . pixel-scroll-precision-mode))
 #+end_src
 **** puni
 #+begin_quote
@@ -1798,7 +1804,11 @@ Context-aware navigator and region expander
 #+begin_src emacs-lisp
 (use-package sontaku
   :ensure t
-  :hook (after-init-hook . sontaku-mode))
+  :hook
+  (after-init-hook . sontaku-mode)
+  ((markdown-mode-hook
+    org-mode-hook)
+   . sontaku-apply-word-boundaries))
 #+end_src
 **** string-inflection
 #+begin_quote
@@ -1888,7 +1898,8 @@ Unobtrusively remove trailing whitespace
   :ensure t
   :hook
   ((prog-mode-hook
-    text-mode-hook) . ws-butler-mode))
+    text-mode-hook)
+   . ws-butler-mode))
 #+end_src
 *** Visual Aid
 :PROPERTIES:
@@ -1926,7 +1937,8 @@ interface for display-fill-column-indicator
 (use-package display-fill-column-indicator
   :hook
   ((prog-mode-hook
-    text-mode-hook) . display-fill-column-indicator-mode))
+    text-mode-hook)
+   . display-fill-column-indicator-mode))
 #+end_src
 **** display-line-numbers
 #+begin_quote
@@ -1971,7 +1983,8 @@ Pulse modified regions
   (goggles-pulse-iterations 15)
   :hook
   ((prog-mode-hook
-    text-mode-hook) . goggles-mode))
+    text-mode-hook)
+   . goggles-mode))
 #+end_src
 **** highlight-indent-guides
 #+begin_quote
@@ -1984,7 +1997,8 @@ Minor mode to highlight indentation
   (highlight-indent-guides-method 'character)
   :hook
   ((python-mode-hook
-    yaml-mode-hook) . highlight-indent-guides-mode))
+    yaml-mode-hook)
+   . highlight-indent-guides-mode))
 #+end_src
 **** hl-line
 #+begin_quote
@@ -1998,7 +2012,8 @@ highlight the current line
   :hook
   ((prog-mode-hook
     text-mode-hook
-    dired-mode-hook) . hl-line-mode))
+    dired-mode-hook)
+   . hl-line-mode))
 #+end_src
 **** hl-todo
 #+begin_quote
@@ -2011,7 +2026,8 @@ Highlight TODO and similar keywords
   (hl-todo-highlight-punctuation ":")
   :hook
   ((org-mode-hook
-    prog-mode-hook) . hl-todo-mode)
+    prog-mode-hook)
+   . hl-todo-mode)
   :bind
   ((:map hl-todo-mode-map
          :map mode-specific-map
@@ -2059,7 +2075,8 @@ Highlight brackets according to their depth
   ((clojure-mode-hook
     emacs-lisp-mode-hook
     haskell-mode-hook
-    lisp-mode-hook) . rainbow-delimiters-mode))
+    lisp-mode-hook)
+   . rainbow-delimiters-mode))
 #+end_src
 **** shr
 #+begin_quote
