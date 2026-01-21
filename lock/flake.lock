@@ -2393,11 +2393,11 @@
     "sontaku": {
       "flake": false,
       "locked": {
-        "lastModified": 1768978910,
-        "narHash": "sha256-CxVU7LbKYh4RJunS6Y/Dxz3qyVlqAFWGqCP3YPncbYs=",
+        "lastModified": 1768987124,
+        "narHash": "sha256-SPs6GzLVEdVdIhaz+UZZGz6vGwixv3gKK/KKi1UkAeg=",
         "owner": "brklntmhwk",
         "repo": "sontaku",
-        "rev": "acadf1a25002ea2a68dd810c99ca5ea642beba72",
+        "rev": "c24626ecc0b6376416269fbd5bde16f74f3a03dc",
         "type": "github"
       },
       "original": {
