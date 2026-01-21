@@ -1291,22 +1291,6 @@
         "type": "github"
       }
     },
-    "mastodon": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1764604389,
-        "narHash": "sha256-mm54NW+OHuxEpK5HqYJeQ4GeDGTXEWKTlmTae9ZDeyc=",
-        "ref": "refs/heads/main",
-        "rev": "3c00418bfbb13f450551c28a97f8870e8ce3fef9",
-        "revCount": 3103,
-        "type": "git",
-        "url": "https://codeberg.org/martianh/mastodon.el.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://codeberg.org/martianh/mastodon.el.git"
-      }
-    },
     "minions": {
       "flake": false,
       "locked": {
@@ -2262,7 +2246,6 @@
         "magit-todos": "magit-todos",
         "marginalia": "marginalia",
         "markdown-mode": "markdown-mode",
-        "mastodon": "mastodon",
         "minions": "minions",
         "mlscroll": "mlscroll",
         "modus-themes": "modus-themes",
@@ -2327,7 +2310,6 @@
         "string-inflection": "string-inflection",
         "tablist": "tablist",
         "tempel": "tempel",
-        "tp": "tp",
         "treepy": "treepy",
         "ts": "ts",
         "valign": "valign",
@@ -2486,22 +2468,6 @@
         "owner": "minad",
         "repo": "tempel",
         "type": "github"
-      }
-    },
-    "tp": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1738829549,
-        "narHash": "sha256-us0DE7dFQT0z7UvTsg8ZI+BaApFDhHKfqLAq/huRYMM=",
-        "ref": "refs/heads/main",
-        "rev": "cce2dfe0ec2b5c070cb13a7bdf95695eeb6e3caf",
-        "revCount": 75,
-        "type": "git",
-        "url": "https://codeberg.org/martianh/tp.el.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://codeberg.org/martianh/tp.el.git"
       }
     },
     "treepy": {
