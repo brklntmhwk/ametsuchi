@@ -802,6 +802,10 @@ All faces from both built-in features and external packages are centrally manage
 #+begin_quote
 Emacs Nerd Font Icons Library
 #+end_quote
+#+begin_quote
+[!NOTE]
+Ensure to install Nerd Fonts individually.
+#+end_quote
 #+begin_src emacs-lisp
 (use-package nerd-icons :ensure t)
 #+end_src
@@ -2803,9 +2807,7 @@ Show git blame info about current line
   (blamer-view 'overlay)
   :bind
   ((:map help-map
-         ("M-g" . blamer-show-commit-info)))
-  :config
-  (global-blamer-mode 1))
+         ("M-g" . blamer-show-commit-info))))
 #+end_src
 **** diff-hl
 #+begin_quote
@@ -3495,7 +3497,7 @@ Refile Org Subtrees
 Create reverse date trees in org-mode
 #+end_quote
 
-[2025-10-17 Fri] Migrated my diary system from Org-journal to Org-reverse-datatree, for it can handle date entries in reverse chronological order. That said, it still needs to ally with Org-capture to fully compete against Org-journal.
+[2025-10-17 Fri] Migrated my diary system from Org-journal to Org-reverse-datatree, for it can handle date entries in reverse chronological order. That said, it still needs to ally with Org-capture to fully compete against Org-journal though.
 
 #+begin_src emacs-lisp
 (use-package org-reverse-datetree
