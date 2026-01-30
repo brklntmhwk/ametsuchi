@@ -116,6 +116,9 @@ in
         noto-fonts-emoji
         symbola
         ;
+      inherit (pkgs.nerd-fonts)
+        symbols-only
+        ;
     };
 
     # Generate a desktop file for emacsclient.
