@@ -17,6 +17,7 @@ mkEmacsConfig:
 let
   inherit (builtins) attrValues concatStringsSep listToAttrs;
   inherit (lib)
+    getExe
     mkEnableOption
     mkIf
     mkMerge
