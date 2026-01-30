@@ -19,6 +19,7 @@ let
   inherit (lib)
     mkEnableOption
     mkIf
+    mkMerge
     mkOption
     optional
     types
@@ -72,6 +73,9 @@ let
       sarasa-gothic
       noto-fonts-emoji
       symbola
+      ;
+    inherit (pkgs.nerd-fonts)
+      symbols-only
       ;
   };
 
@@ -195,12 +199,30 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-    services.emacs = mkIf cfg.serviceIntegration.enable {
-      enable = true;
-      # Generate a desktop file for emacsclient.
-      client.enable = true;
-      package = wrappedEmacs;
-    };
-  };
+  config = mkIf cfg.enable (mkMerge [
+    (mkIf cfg.serviceIntegration.enable {
+      # Based on:
+      # https://github.com/NixOS/nixpkgs/commit/958ae22cc3d4dcf6c9ef008ec2c582b4fe9fa083
+      systemd.user.services.emacs = {
+        unitConfig = {
+          After = [ "graphical-session.target" ];
+          Description = "Emacs: Extensible and self-documenting text editor";
+          PartOf = [ "graphical-session.target" ];
+          # Do not kill the Emacs session; it may contain unsaved work.
+          # https://github.com/nix-community/home-manager/commit/bca7415de4565c25a1843cc7baed5b783d70240f
+          X-RestartIfChanged = false;
+        };
+        serviceConfig = {
+          Type = "notify";
+          ExecStart = ''
+            ${pkgs.runtimeShell} -c 'source ${config.system.build.setEnvironment}; ${getExe cfg.packageWrapped} --fg-daemon
+          '';
+          Restart = "on-failure";
+          # Emacs exits with exit code 15 (SIGTERM), when stopped by systemd.
+          SuccessExitStatus = 15;
+        };
+        wantedBy = [ "graphical-session.target" ];
+      };
+    })
+  ]);
 }
