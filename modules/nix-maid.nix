@@ -96,43 +96,46 @@ let
   };
 
   # https://github.com/viperML/nix-maid/commit/4ea39e76cdc8f8946bf4474a55962b2dfd8258fb
-  userSubmodule = {
-    config = mkIf cfg.enable {
-      # Install packages in `users.users.${username}.packages` without
-      # having to declare an option like `username`.
-      packages = [
-        fonts
-        wrappedEmacs
-      ]
-      ++ optional cfg.icons.enable emacsConfig.icons
-      ++ optional (!pkgs.stdenv.isDarwin) desktopItem;
+  userSubmodule =
+    { config, ... }:
+    {
+      # Prevent it from trying to configure system users like 'chrony'.
+      config = mkIf (cfg.enable && config.isNormalUser) {
+        # Install packages in `users.users.${username}.packages` without
+        # having to declare an option like `username`.
+        packages = [
+          wrappedEmacs
+        ]
+        ++ fonts
+        ++ optional cfg.icons.enable emacsConfig.icons
+        ++ optional (!pkgs.stdenv.isDarwin) desktopItem;
 
-      maid = {
-        file = {
-          home = listToAttrs [
-            {
-              name = "${cfg.directory}/init.el";
-              value = {
-                source = "${initFile}/init.el";
-              };
-            }
-            {
-              name = "${cfg.directory}/templates";
-              value = {
-                source = ../templates;
-              };
-            }
-            {
-              name = "${cfg.directory}/early-init.el";
-              value = {
-                source = ../early-init.el;
-              };
-            }
-          ];
+        maid = {
+          file = {
+            home = listToAttrs [
+              {
+                name = "${cfg.directory}/init.el";
+                value = {
+                  source = "${initFile}/init.el";
+                };
+              }
+              {
+                name = "${cfg.directory}/templates";
+                value = {
+                  source = ../templates;
+                };
+              }
+              {
+                name = "${cfg.directory}/early-init.el";
+                value = {
+                  source = ../early-init.el;
+                };
+              }
+            ];
+          };
         };
       };
     };
-  };
 in
 {
   options = {
