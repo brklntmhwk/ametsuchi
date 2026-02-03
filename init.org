@@ -2795,7 +2795,6 @@ Show git blame info about current line
 #+begin_src emacs-lisp
 (use-package blamer
   :ensure t
-  :defer 5
   :custom
   (blamer-idle-time 0.5)
   (blamer-max-commit-message-length 50)
