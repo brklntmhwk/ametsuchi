@@ -626,7 +626,7 @@ Buffer manipulation primitives for GNU Emacs.
               tab-width 2 ; 8 by default
               indicate-empty-lines t ; nil by default
               indicate-buffer-boundaries 'left ; nil by default
-              left-fringe-width 2 ; nil by default
+              left-fringe-width 16 ; nil by default
               right-fringe-width 2 ; nil by default
               left-margin-width 2 ; 0 by default
               right-margin-width 2 ; 0 by default
@@ -801,6 +801,10 @@ All faces from both built-in features and external packages are centrally manage
 **** nerd-icons
 #+begin_quote
 Emacs Nerd Font Icons Library
+#+end_quote
+#+begin_quote
+[!NOTE]
+Ensure to install Nerd Fonts individually.
 #+end_quote
 #+begin_src emacs-lisp
 (use-package nerd-icons :ensure t)
@@ -2791,7 +2795,6 @@ Show git blame info about current line
 #+begin_src emacs-lisp
 (use-package blamer
   :ensure t
-  :defer 5
   :custom
   (blamer-idle-time 0.5)
   (blamer-max-commit-message-length 50)
@@ -2803,9 +2806,7 @@ Show git blame info about current line
   (blamer-view 'overlay)
   :bind
   ((:map help-map
-         ("M-g" . blamer-show-commit-info)))
-  :config
-  (global-blamer-mode 1))
+         ("M-g" . blamer-show-commit-info))))
 #+end_src
 **** diff-hl
 #+begin_quote
@@ -3495,7 +3496,7 @@ Refile Org Subtrees
 Create reverse date trees in org-mode
 #+end_quote
 
-[2025-10-17 Fri] Migrated my diary system from Org-journal to Org-reverse-datatree, for it can handle date entries in reverse chronological order. That said, it still needs to ally with Org-capture to fully compete against Org-journal.
+[2025-10-17 Fri] Migrated my diary system from Org-journal to Org-reverse-datatree, for it can handle date entries in reverse chronological order. That said, it still needs to ally with Org-capture to fully compete against Org-journal though.
 
 #+begin_src emacs-lisp
 (use-package org-reverse-datetree
@@ -3786,14 +3787,6 @@ Translation framework, configurable and scalable
          :engines (list (gt-google-engine :if 'word)
                         (gt-deepl-engine :if 'not-word))
          :render (gt-buffer-render))))
-#+end_src
-**** mastodon
-#+begin_quote
-Client for fediverse services using the Mastodon API
-#+end_quote
-#+begin_src emacs-lisp
-(use-package mastodon
-  :ensure t)
 #+end_src
 **** nov
 #+begin_quote

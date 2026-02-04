@@ -71,17 +71,36 @@ in
   config = mkIf cfg.enable {
     programs.emacs-twist =
       let
-        inherit (builtins) attrNames;
-        inherit (lib) genAttrs mkAliasDefinitions;
-        sharedKeys = attrNames inheritedOptions;
+        inherit (builtins) isAttrs;
+        inherit (lib)
+          getAttrFromPath
+          isOption
+          mapAttrs
+          mkAliasDefinitions
+          mkDefault
+          ;
+        mkRecursiveAlias =
+          currentOpts: currentPath:
+          mapAttrs (
+            n: v:
+            if isOption v then
+              mkAliasDefinitions (getAttrFromPath (currentPath ++ [ n ]) options.programs.ametsuchi)
+            else if isAttrs v then
+              mkRecursiveAlias v (currentPath ++ [ n ])
+            else
+              { }
+          ) currentOpts;
       in
       mkMerge [
         # e.g., `{ name = mkAliasDefinitions options.programs.ametsuchi.name; ... }`
-        (genAttrs sharedKeys (name: mkAliasDefinitions options.programs.ametsuchi.${name}))
+        (mkRecursiveAlias inheritedOptions [ ])
         {
           enable = true;
           createInitFile = true;
           earlyInitFile = ../early-init.el;
+          # Explicitly set a default value for this to prevent the "no value defined" error.
+          # It looks like the upstream doesn't specify the default value.
+          emacsclient.enable = mkDefault false;
           config = mkEmacsConfig {
             inherit pkgs;
             features = cfg.extraFeatures;
@@ -96,6 +115,9 @@ in
         sarasa-gothic
         noto-fonts-emoji
         symbola
+        ;
+      inherit (pkgs.nerd-fonts)
+        symbols-only
         ;
     };
 

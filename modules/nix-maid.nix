@@ -17,8 +17,10 @@ mkEmacsConfig:
 let
   inherit (builtins) attrValues concatStringsSep listToAttrs;
   inherit (lib)
+    getExe
     mkEnableOption
     mkIf
+    mkMerge
     mkOption
     optional
     types
@@ -73,6 +75,9 @@ let
       noto-fonts-emoji
       symbola
       ;
+    inherit (pkgs.nerd-fonts)
+      symbols-only
+      ;
   };
 
   desktopItem = makeDesktopItem {
@@ -91,43 +96,46 @@ let
   };
 
   # https://github.com/viperML/nix-maid/commit/4ea39e76cdc8f8946bf4474a55962b2dfd8258fb
-  userSubmodule = {
-    config = mkIf cfg.enable {
-      # Install packages in `users.users.${username}.packages` without
-      # having to declare an option like `username`.
-      packages = [
-        fonts
-        wrappedEmacs
-      ]
-      ++ optional cfg.icons.enable emacsConfig.icons
-      ++ optional (!pkgs.stdenv.isDarwin) desktopItem;
+  userSubmodule =
+    { config, ... }:
+    {
+      # Prevent it from trying to configure system users like 'chrony'.
+      config = mkIf (cfg.enable && config.isNormalUser) {
+        # Install packages in `users.users.${username}.packages` without
+        # having to declare an option like `username`.
+        packages = [
+          wrappedEmacs
+        ]
+        ++ fonts
+        ++ optional cfg.icons.enable emacsConfig.icons
+        ++ optional (!pkgs.stdenv.isDarwin) desktopItem;
 
-      maid = {
-        file = {
-          home = listToAttrs [
-            {
-              name = "${cfg.directory}/init.el";
-              value = {
-                source = "${initFile}/init.el";
-              };
-            }
-            {
-              name = "${cfg.directory}/templates";
-              value = {
-                source = ../templates;
-              };
-            }
-            {
-              name = "${cfg.directory}/early-init.el";
-              value = {
-                source = ../early-init.el;
-              };
-            }
-          ];
+        maid = {
+          file = {
+            home = listToAttrs [
+              {
+                name = "${cfg.directory}/init.el";
+                value = {
+                  source = "${initFile}/init.el";
+                };
+              }
+              {
+                name = "${cfg.directory}/templates";
+                value = {
+                  source = ../templates;
+                };
+              }
+              {
+                name = "${cfg.directory}/early-init.el";
+                value = {
+                  source = ../early-init.el;
+                };
+              }
+            ];
+          };
         };
       };
     };
-  };
 in
 {
   options = {
@@ -195,12 +203,30 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-    services.emacs = mkIf cfg.serviceIntegration.enable {
-      enable = true;
-      # Generate a desktop file for emacsclient.
-      client.enable = true;
-      package = wrappedEmacs;
-    };
-  };
+  config = mkIf cfg.enable (mkMerge [
+    (mkIf cfg.serviceIntegration.enable {
+      # Based on:
+      # https://github.com/NixOS/nixpkgs/commit/958ae22cc3d4dcf6c9ef008ec2c582b4fe9fa083
+      systemd.user.services.emacs = {
+        unitConfig = {
+          After = [ "graphical-session.target" ];
+          Description = "Emacs: Extensible and self-documenting text editor";
+          PartOf = [ "graphical-session.target" ];
+          # Do not kill the Emacs session; it may contain unsaved work.
+          # https://github.com/nix-community/home-manager/commit/bca7415de4565c25a1843cc7baed5b783d70240f
+          X-RestartIfChanged = false;
+        };
+        serviceConfig = {
+          Type = "notify";
+          ExecStart = ''
+            ${pkgs.runtimeShell} -c 'source ${config.system.build.setEnvironment}; ${getExe cfg.packageWrapped} --fg-daemon
+          '';
+          Restart = "on-failure";
+          # Emacs exits with exit code 15 (SIGTERM), when stopped by systemd.
+          SuccessExitStatus = 15;
+        };
+        wantedBy = [ "graphical-session.target" ];
+      };
+    })
+  ]);
 }
