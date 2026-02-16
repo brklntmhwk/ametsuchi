@@ -217,7 +217,20 @@ minor mode to input Japanese with Mozc
 #+begin_src emacs-lisp
 (use-package mozc
   :ensure t
+  :demand t
   :if (executable-find "mozc"))
+#+end_src
+**** mule
+#+begin_quote
+basic commands for multilingual environment
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mule
+  :config
+  (set-clipboard-coding-system 'utf-8-unix)
+  (set-file-name-coding-system 'utf-8-unix)
+  (set-keyboard-coding-system 'utf-8-unix)
+  (set-terminal-coding-system 'utf-8-unix))
 #+end_src
 **** mule-cmds
 #+begin_quote
@@ -231,7 +244,9 @@ commands for multilingual environment
   ;; Override `set-mark-command'.
   (("C-SPC" . toggle-input-method))
   :config
-  (set-language-environment "UTF-8"))
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8-unix)
+  (prefer-coding-system 'utf-8-unix))
 #+end_src
 **** mwheel
 #+begin_quote
