@@ -70,7 +70,7 @@ let
   fonts = attrValues {
     # Add font packages that will be used in your Emacs config.
     inherit (pkgs)
-      moralerspace-hwnf
+      moralerspace-hw
       sarasa-gothic
       noto-fonts-emoji
       symbola
