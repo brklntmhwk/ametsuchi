@@ -219,7 +219,7 @@ in
         serviceConfig = {
           Type = "notify";
           ExecStart = ''
-            ${pkgs.runtimeShell} -c 'source ${config.system.build.setEnvironment}; ${getExe cfg.packageWrapped} --fg-daemon
+            ${pkgs.runtimeShell} -l -c "${getExe cfg.packageWrapped} --fg-daemon"
           '';
           Restart = "on-failure";
           # Emacs exits with exit code 15 (SIGTERM), when stopped by systemd.
