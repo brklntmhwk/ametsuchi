@@ -202,12 +202,34 @@ Common Lisp extensions for Emacs
 :PROPERTIES:
 :CUSTOM_ID: system
 :END:
+**** pgtkim.c
+#+begin_quote
+Pure Gtk+-3 communication module.
+#+end_quote
+#+begin_src emacs-lisp
+;; Disable Fcitx inputs and switches when using Emacs.
+(setq pgtk-use-im-context-on-new-connection nil)
+#+end_src
+**** mozc
+#+begin_quote
+minor mode to input Japanese with Mozc
+#+end_quote
+#+begin_src emacs-lisp
+(use-package mozc
+  :ensure t
+  :if (executable-find "mozc"))
+#+end_src
 **** mule-cmds
 #+begin_quote
 commands for multilingual environment
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mule-cmds
+  :custom
+  (default-input-method "japanese-mozc")
+  :bind
+  ;; Override `set-mark-command'.
+  (("C-SPC" . toggle-input-method))
   :config
   (set-language-environment "UTF-8"))
 #+end_src
