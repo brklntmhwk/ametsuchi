@@ -72,7 +72,7 @@ let
     inherit (pkgs)
       moralerspace-hw
       sarasa-gothic
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       symbola
       ;
     inherit (pkgs.nerd-fonts)
