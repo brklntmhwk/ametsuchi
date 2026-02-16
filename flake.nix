@@ -27,10 +27,6 @@
     nix-filter.url = "github:numtide/nix-filter";
 
     # Dev
-    git-hooks-nix = {
-      url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -180,18 +176,6 @@
         in
         emacs-config.makeApps { lockDirName = "lock"; }
       );
-
-      checks = forAllSystems (system: {
-        pre-commit-check = inputs.git-hooks-nix.lib.${system}.run {
-          src = ./.;
-          hooks = {
-            nixfmt-rfc-style = {
-              enable = true;
-              excludes = [ "lock/flake\\.nix" ];
-            };
-          };
-        };
-      });
 
       devShells = forAllSystems (
         system:
