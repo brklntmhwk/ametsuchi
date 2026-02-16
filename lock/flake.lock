@@ -1371,6 +1371,22 @@
         "type": "github"
       }
     },
+    "mozc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770886966,
+        "narHash": "sha256-WDFhkwp2OJVS5tGX4VNM8xRMaquinApNiYdNFhtXHkA=",
+        "owner": "google",
+        "repo": "mozc",
+        "rev": "a99841e37b7459d08e5736c3613a6bcd393c9e92",
+        "type": "github"
+      },
+      "original": {
+        "owner": "google",
+        "repo": "mozc",
+        "type": "github"
+      }
+    },
     "multiple-cursors": {
       "flake": false,
       "locked": {
@@ -1832,22 +1848,6 @@
         "type": "github"
       }
     },
-    "origami": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1585649986,
-        "narHash": "sha256-7j/hRE4chooM60N+2UeHXiR3ZIibLdWU6V+yAaxeknk=",
-        "owner": "gregsexton",
-        "repo": "origami.el",
-        "rev": "e558710a975e8511b9386edc81cd6bdd0a5bda74",
-        "type": "github"
-      },
-      "original": {
-        "owner": "gregsexton",
-        "repo": "origami.el",
-        "type": "github"
-      }
-    },
     "osm": {
       "flake": false,
       "locked": {
@@ -2251,6 +2251,7 @@
         "modus-themes": "modus-themes",
         "moody": "moody",
         "move-dup": "move-dup",
+        "mozc": "mozc",
         "multiple-cursors": "multiple-cursors",
         "nerd-icons": "nerd-icons",
         "nerd-icons-completion": "nerd-icons-completion",
@@ -2280,7 +2281,6 @@
         "org-super-links": "org-super-links",
         "org-transclusion": "org-transclusion",
         "org-web-tools": "org-web-tools",
-        "origami": "origami",
         "osm": "osm",
         "ov": "ov",
         "ox-gfm": "ox-gfm",
