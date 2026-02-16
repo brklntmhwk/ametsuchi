@@ -514,6 +514,12 @@
       repo = "move-dup";
       type = "github";
     };
+    mozc = {
+      flake = false;
+      owner = "google";
+      repo = "mozc";
+      type = "github";
+    };
     multiple-cursors = {
       flake = false;
       owner = "magnars";
@@ -684,12 +690,6 @@
       flake = false;
       owner = "alphapapa";
       repo = "org-web-tools";
-      type = "github";
-    };
-    origami = {
-      flake = false;
-      owner = "gregsexton";
-      repo = "origami.el";
       type = "github";
     };
     osm = {
