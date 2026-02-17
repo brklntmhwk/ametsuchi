@@ -259,12 +259,13 @@ commands for multilingual environment
 (use-package mule-cmds
   :custom
   (default-input-method "japanese-mozc")
+  :init
+  ;; Override `set-mark-command'.
+  (keymap-global-set "C-SPC" #'toggle-input-method)
   :config
   (set-language-environment "UTF-8")
   (set-default-coding-systems 'utf-8-unix)
-  (prefer-coding-system 'utf-8-unix)
-  ;; Override `set-mark-command'.
-  (keymap-global-set "C-SPC" #'toggle-input-method))
+  (prefer-coding-system 'utf-8-unix))
 #+end_src
 **** mwheel
 #+begin_quote
@@ -2007,14 +2008,18 @@ Pulse modified regions
    . goggles-mode)
   :config
   (setq-default goggles-pulse t)
+  (defvar-local brk/goggles-mode-saved-state nil)
   ;; To avoid the repetitive pulses every time the point moves across the candidates,
   ;; disable goggles when mozc is enabled.
   (with-eval-after-load 'mozc
     (add-hook 'mozc-mode-hook
               (lambda ()
                 (if mozc-mode
-                    (setq-local goggles-pulse nil)
-                  (setq-local goggles-pulse t))))))
+                    (progn
+                      (setq brk/goggles-mode-saved-state goggles-mode)
+                      (goggles-mode -1))
+                  (when brk/goggles-mode-saved-state
+                    (goggles-mode 1)))))))
 #+end_src
 **** highlight-indent-guides
 #+begin_quote
