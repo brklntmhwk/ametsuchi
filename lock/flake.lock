@@ -65,22 +65,6 @@
         "type": "github"
       }
     },
-    "alert": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1755931820,
-        "narHash": "sha256-ofbFMqHlcrDgq5FF1feIY7XurmRn8fiYtOywTPMLpRk=",
-        "owner": "jwiegley",
-        "repo": "alert",
-        "rev": "79f6936ab4d85227530959811143429347a6971b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "jwiegley",
-        "repo": "alert",
-        "type": "github"
-      }
-    },
     "astro-ts-mode": {
       "flake": false,
       "locked": {
@@ -539,22 +523,6 @@
         "type": "github"
       }
     },
-    "dslide": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1735805941,
-        "narHash": "sha256-JS9vr1FrAXucXTUFBk+94J+pzAmV6fEfmARvMs679k8=",
-        "owner": "positron-solutions",
-        "repo": "dslide",
-        "rev": "be47f2dcb939779067f8c77c3493162bcf242b83",
-        "type": "github"
-      },
-      "original": {
-        "owner": "positron-solutions",
-        "repo": "dslide",
-        "type": "github"
-      }
-    },
     "dumb-jump": {
       "flake": false,
       "locked": {
@@ -907,22 +875,6 @@
         "type": "github"
       }
     },
-    "gntp": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1414205413,
-        "narHash": "sha256-avhib7p0Xot6FZVRuBqtFGV9ogbpXUZ8vzXm5qWUfts=",
-        "owner": "tekai",
-        "repo": "gntp.el",
-        "rev": "767571135e2c0985944017dc59b0be79af222ef5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tekai",
-        "repo": "gntp.el",
-        "type": "github"
-      }
-    },
     "goggles": {
       "flake": false,
       "locked": {
@@ -968,22 +920,6 @@
       "original": {
         "owner": "ragnard",
         "repo": "gptel-magit",
-        "type": "github"
-      }
-    },
-    "grugru": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1701485408,
-        "narHash": "sha256-UmX/fHRy6/xWByVpLWk0uBGQXOTPKVPKkVuCzoWx/fM=",
-        "owner": "ROCKTAKEY",
-        "repo": "grugru",
-        "rev": "3f1bc431f4dc919a7b04e519f1c8add9fb2949f3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ROCKTAKEY",
-        "repo": "grugru",
         "type": "github"
       }
     },
@@ -1179,22 +1115,6 @@
         "type": "github"
       }
     },
-    "log4e": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1706015586,
-        "narHash": "sha256-RPLoHl1G49yJKwatHfw2TrX4fzwFrsYznC7Cj8JvCPQ=",
-        "owner": "aki2o",
-        "repo": "log4e",
-        "rev": "6d71462df9bf595d3861bfb328377346aceed422",
-        "type": "github"
-      },
-      "original": {
-        "owner": "aki2o",
-        "repo": "log4e",
-        "type": "github"
-      }
-    },
     "magit": {
       "flake": false,
       "locked": {
@@ -1368,22 +1288,6 @@
       "original": {
         "owner": "wyuenho",
         "repo": "move-dup",
-        "type": "github"
-      }
-    },
-    "mozc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1770886966,
-        "narHash": "sha256-WDFhkwp2OJVS5tGX4VNM8xRMaquinApNiYdNFhtXHkA=",
-        "owner": "google",
-        "repo": "mozc",
-        "rev": "a99841e37b7459d08e5736c3613a6bcd393c9e92",
-        "type": "github"
-      },
-      "original": {
-        "owner": "google",
-        "repo": "mozc",
         "type": "github"
       }
     },
@@ -1720,22 +1624,6 @@
       "original": {
         "owner": "AntonHakansson",
         "repo": "org-nix-shell",
-        "type": "github"
-      }
-    },
-    "org-pomodoro": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1647620338,
-        "narHash": "sha256-ldzctDWjc6i0yboO+AyXoMkbZTZQwZpEGAcCfcrwdvQ=",
-        "owner": "marcinkoziej",
-        "repo": "org-pomodoro",
-        "rev": "3f5bcfb80d61556d35fc29e5ddb09750df962cc6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "marcinkoziej",
-        "repo": "org-pomodoro",
         "type": "github"
       }
     },
@@ -2169,7 +2057,6 @@
         "ace-window": "ace-window",
         "activities": "activities",
         "aggressive-indent": "aggressive-indent",
-        "alert": "alert",
         "astro-ts-mode": "astro-ts-mode",
         "async": "async",
         "avy": "avy",
@@ -2199,7 +2086,6 @@
         "dired-open-with": "dired-open-with",
         "dired-ranger": "dired-ranger",
         "dired-subtree": "dired-subtree",
-        "dslide": "dslide",
         "dumb-jump": "dumb-jump",
         "eat": "eat",
         "eca": "eca",
@@ -2222,11 +2108,9 @@
         "gcmh": "gcmh",
         "ghub": "ghub",
         "git-auto-commit-mode": "git-auto-commit-mode",
-        "gntp": "gntp",
         "goggles": "goggles",
         "gptel": "gptel",
         "gptel-magit": "gptel-magit",
-        "grugru": "grugru",
         "gt": "gt",
         "helpful": "helpful",
         "hide-mode-line": "hide-mode-line",
@@ -2239,7 +2123,6 @@
         "language-detection": "language-detection",
         "link-hint": "link-hint",
         "llama": "llama",
-        "log4e": "log4e",
         "magit": "magit",
         "magit-delta": "magit-delta",
         "magit-section": "magit-section",
@@ -2251,7 +2134,6 @@
         "modus-themes": "modus-themes",
         "moody": "moody",
         "move-dup": "move-dup",
-        "mozc": "mozc",
         "multiple-cursors": "multiple-cursors",
         "nerd-icons": "nerd-icons",
         "nerd-icons-completion": "nerd-icons-completion",
@@ -2273,7 +2155,6 @@
         "org-make-toc": "org-make-toc",
         "org-modern": "org-modern",
         "org-nix-shell": "org-nix-shell",
-        "org-pomodoro": "org-pomodoro",
         "org-ql": "org-ql",
         "org-recur": "org-recur",
         "org-reverse-datetree": "org-reverse-datetree",
