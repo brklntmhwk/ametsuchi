@@ -484,6 +484,18 @@
       repo = "move-dup";
       type = "github";
     };
+    mozc = {
+      flake = false;
+      owner = "google";
+      repo = "mozc";
+      type = "github";
+    };
+    mozc-popup = {
+      flake = false;
+      owner = "d5884";
+      repo = "mozc-popup";
+      type = "github";
+    };
     multiple-cursors = {
       flake = false;
       owner = "magnars";
