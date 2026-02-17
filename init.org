@@ -2007,18 +2007,14 @@ Pulse modified regions
    . goggles-mode)
   :config
   (setq-default goggles-pulse t)
-  (defvar-local brk/goggles-mode-saved-state nil)
   ;; To avoid the repetitive pulses every time the point moves across the candidates,
   ;; disable goggles when mozc is enabled.
   (with-eval-after-load 'mozc
     (add-hook 'mozc-mode-hook
               (lambda ()
                 (if mozc-mode
-                    (progn
-                      (setq brk/goggles-mode-saved-state goggles-mode)
-                      (goggles-mode -1))
-                  (when brk/goggles-mode-saved-state
-                    (goggles-mode 1)))))))
+                    (setq-local goggles-pulse nil)
+                  (setq-local goggles-pulse t))))))
 #+end_src
 **** highlight-indent-guides
 #+begin_quote
