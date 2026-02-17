@@ -217,7 +217,16 @@ minor mode to input Japanese with Mozc
 #+begin_src emacs-lisp
 (use-package mozc
   :ensure t
-  :demand t)
+  :demand t
+  :config
+  (defun brk/mozc-candidate-next ()
+    (interactive)
+    (mozc-handle-event 'down))
+  (defun brk/mozc-candidate-prev ()
+    (interactive)
+    (mozc-handle-event 'up))
+  (keymap-set mozc-mode-map "C-n" #'brk/mozc-candidate-next)
+  (keymap-set mozc-mode-map "C-p" #'brk/mozc-candidate-prev))
 #+end_src
 ***** mozc-popup
 #+begin_quote
@@ -225,7 +234,6 @@ Mozc with popup
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mozc-popup
-  :disabled
   :ensure t
   :after mozc
   :config
@@ -256,7 +264,7 @@ commands for multilingual environment
   (set-default-coding-systems 'utf-8-unix)
   (prefer-coding-system 'utf-8-unix)
   ;; Override `set-mark-command'.
-  (keymap-global-set "C-SPC" #'toggle-input-method)
+  (keymap-global-set "C-SPC" #'toggle-input-method))
 #+end_src
 **** mwheel
 #+begin_quote
