@@ -217,16 +217,7 @@ minor mode to input Japanese with Mozc
 #+begin_src emacs-lisp
 (use-package mozc
   :ensure t
-  :demand t
-  :config
-  (defun brk/mozc-candidate-next ()
-    (interactive)
-    (mozc-handle-event 'down))
-  (defun brk/mozc-candidate-prev ()
-    (interactive)
-    (mozc-handle-event 'up))
-  (keymap-set mozc-mode-map "C-n" #'brk/mozc-candidate-next)
-  (keymap-set mozc-mode-map "C-p" #'brk/mozc-candidate-prev))
+  :demand t)
 #+end_src
 ***** mozc-popup
 #+begin_quote
@@ -234,7 +225,6 @@ Mozc with popup
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mozc-popup
-  :disabled
   :ensure t
   :after mozc
   :config
