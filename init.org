@@ -1583,45 +1583,6 @@ Automatically insert matching delimiters
 (use-package elec-pair
   :hook (after-init-hook . electric-pair-mode))
 #+end_src
-**** grugru
-#+begin_quote
-Rotate text at point
-#+end_quote
-#+begin_src emacs-lisp
-(use-package grugru
-  :ensure t
-  :bind
-  (:map mode-specific-map
-        ("@ <right>" . grugru-forward)
-        ("@ <left>" . grugru-backward)
-        ("@ >" . grugru-forward)
-        ("@ <" . grugru-backward)
-        ("@ SPC" . grugru-select))
-  (:repeat-map grugru-repeat-map
-               ("<right>" . grugru-forward)
-               ("<left>" . grugru-backward)
-               (">" . grugru-forward)
-               ("<" . grugru-backward)
-               ("SPC" . grugru-select))
-  :config
-  (grugru-default-setup)
-  (grugru-define-global 'symbol '("yes" "no"))
-  (grugru-define-global 'symbol '("true" "false"))
-  (grugru-define-multiple
-    ((nix-mode rust-mode)
-     (non-alphabet "==" "!="))
-    (nix-mode
-     (symbol "fetchurl" "fetchGit" "fetchTarball" "fetchClosure")
-     (symbol "mkShell" "mkShellNoCC"))
-    (rust-mode
-     (non-alphabet "&&" "||")
-     (non-alphabet "+=" "-=")
-     (non-alphabet "*=" "/=" "%=")
-     (non-alphabet "&=" "|=" "^=")
-     (non-alphabet "<" "<=" ">" ">=")
-     (non-alphabet ">>=" "<<=")
-     (symbol "const" "let" "static"))))
-#+end_src
 **** hippie-exp
 #+begin_quote
 expand text trying various ways to find its expansion
@@ -3101,23 +3062,6 @@ Outline-based notes management and organizer
     (setq-local tab-width 8)
     (setq-local line-spacing 0.2)))
 #+end_src
-**** dslide
-#+begin_quote
-Domain Specific sLIDEs. Programmable Presentation
-#+end_quote
-#+begin_src emacs-lisp
-(use-package dslide
-  :ensure t
-  :after org
-  :custom
-  (dslide-header nil)
-  (dslide-header-author nil)
-  (dslide-header-date nil)
-  (dslide-header-email nil)
-  (dslide-breadcrumb-separator nil)
-  :hook
-  (dslide-start-hook . hide-mode-line-mode))
-#+end_src
 **** org-agenda
 #+begin_quote
 Dynamic task and appointment lists for Org
@@ -3454,20 +3398,6 @@ Org local nix-shell
 (use-package org-nix-shell
   :ensure t
   :hook (org-mode-hook . org-nix-shell-mode))
-#+end_src
-**** org-pomodoro
-#+begin_quote
-Pomodoro implementation for org-mode.
-#+end_quote
-#+begin_src emacs-lisp
-(use-package org-pomodoro
-  :ensure t
-  :after org-agenda
-  :commands org-pomodoro
-  :custom
-  (org-pomodoro-length 25)
-  (org-pomodoro-short-break-length 5)
-  (org-pomodoro-long-break-length 20))
 #+end_src
 **** org-ql
 #+begin_quote
