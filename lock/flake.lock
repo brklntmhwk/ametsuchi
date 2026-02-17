@@ -1291,6 +1291,38 @@
         "type": "github"
       }
     },
+    "mozc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770886966,
+        "narHash": "sha256-WDFhkwp2OJVS5tGX4VNM8xRMaquinApNiYdNFhtXHkA=",
+        "owner": "google",
+        "repo": "mozc",
+        "rev": "a99841e37b7459d08e5736c3613a6bcd393c9e92",
+        "type": "github"
+      },
+      "original": {
+        "owner": "google",
+        "repo": "mozc",
+        "type": "github"
+      }
+    },
+    "mozc-popup": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1424738093,
+        "narHash": "sha256-ts4FAlUWGv22ajM+Phe62HLmBS2q5KpfxfhMbZicd9U=",
+        "owner": "d5884",
+        "repo": "mozc-popup",
+        "rev": "f0684b875a7427ec08f8df13939a486e5d5cf420",
+        "type": "github"
+      },
+      "original": {
+        "owner": "d5884",
+        "repo": "mozc-popup",
+        "type": "github"
+      }
+    },
     "multiple-cursors": {
       "flake": false,
       "locked": {
@@ -2134,6 +2166,8 @@
         "modus-themes": "modus-themes",
         "moody": "moody",
         "move-dup": "move-dup",
+        "mozc": "mozc",
+        "mozc-popup": "mozc-popup",
         "multiple-cursors": "multiple-cursors",
         "nerd-icons": "nerd-icons",
         "nerd-icons-completion": "nerd-icons-completion",
