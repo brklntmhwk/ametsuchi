@@ -2112,7 +2112,11 @@ fill-column for visual-line-mode
   :custom
   (visual-fill-column-center-text t)
   (visual-fill-column-extra-text-width '(5 . 0))
-  (visual-fill-column-width 100))
+  (visual-fill-column-width 100)
+  :hook
+  ((markdown-mode-hook
+    org-mode-hook)
+   . visual-fill-column-mode))
 #+end_src
 **** whitespace
 #+begin_quote
@@ -3704,6 +3708,7 @@ Browse the Emacsmirror package database
 #+end_quote
 #+begin_src emacs-lisp
 (use-package epkg
+  :defer 3
   :custom
   (epkg-repository (concat brk-directory-data-home "epkgs/")))
 #+end_src
@@ -3715,10 +3720,9 @@ Show Epkg information in completion annotations
 (use-package epkg-marginalia
   :ensure t
   :after (epkg marginalia)
-  :demand t
   :config
-  (cl-pushnew 'epkg-marginalia-annotate-package
-              (alist-get 'package marginalia-annotator-registry)))
+  (setcar (alist-get 'package marginalia-annotators)
+          #'epkg-marginalia-annotate-package))
 #+end_src
 **** gt
 #+begin_quote
