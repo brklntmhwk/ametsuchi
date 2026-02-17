@@ -240,13 +240,12 @@ commands for multilingual environment
 (use-package mule-cmds
   :custom
   (default-input-method "japanese-mozc")
-  :bind
-  ;; Override `set-mark-command'.
-  (("C-SPC" . toggle-input-method))
   :config
   (set-language-environment "UTF-8")
   (set-default-coding-systems 'utf-8-unix)
-  (prefer-coding-system 'utf-8-unix))
+  (prefer-coding-system 'utf-8-unix)
+  ;; Override `set-mark-command'.
+  (keymap-global-set "C-SPC" #'toggle-input-method)
 #+end_src
 **** mwheel
 #+begin_quote
