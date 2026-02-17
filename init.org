@@ -727,9 +727,9 @@ Set Emacs font configurations using presets
   :custom
   (fontaine-presets
    '((regular
-      :default-family "Moralerspace Neon HWNF"
+      :default-family "Moralerspace Neon HW"
       :default-height 130
-      :fixed-pitch-family "Moralerspace Neon HWNF"
+      :fixed-pitch-family "Moralerspace Neon HW"
       :fixed-pitch-height 1.0
       :variable-pitch-family "Sarasa Mono"
       :variable-pitch-height 1.0
