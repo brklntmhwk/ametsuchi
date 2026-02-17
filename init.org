@@ -236,8 +236,8 @@ Mozc with popup
 (use-package mozc-popup
   :ensure t
   :after mozc
-  :custom
-  (mozc-candidate-style 'popup))
+  :config
+  (setq mozc-candidate-style 'popup))
 #+end_src
 **** mule
 #+begin_quote
