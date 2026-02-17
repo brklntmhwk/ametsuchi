@@ -874,6 +874,7 @@ Icons for completion via nerd-icons
   :ensure t
   :after marginalia
   :config
+  (nerd-icons-completion-mode 1)
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 #+end_src
 ***** nerd-icons-corfu
@@ -894,8 +895,9 @@ Icons for dired via nerd-icons
 #+begin_src emacs-lisp
 (use-package nerd-icons-dired
   :ensure t
-  :hook
-  (dired-mode-hook . nerd-icons-dired-mode))
+  :after dired
+  :config
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
 #+end_src
 **** olivetti
 #+begin_quote
