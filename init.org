@@ -20,11 +20,11 @@ Table of Contents (auto-generated using [[https://github.com/alphapapa/org-make-
 - [[#initialization][Initialization]]
   - [[#configuration-macro][Configuration Macro]]
   - [[#library][Library]]
+  - [[#performance-enhancement][Performance Enhancement]]
   - [[#system][System]]
   - [[#custom-keymaps][Custom Keymaps]]
   - [[#customization][Customization]]
   - [[#data-management][Data Management]]
-  - [[#performance-enhancement][Performance Enhancement]]
   - [[#help][Help]]
   - [[#window-management][Window Management]]
   - [[#appearance][Appearance]]
@@ -197,6 +197,55 @@ Common Lisp extensions for Emacs
 ;; Use macros only.
 (eval-when-compile
   (require 'cl-lib))
+#+end_src
+*** Performance Enhancement
+:PROPERTIES:
+:CUSTOM_ID: performance-enhancement
+:END:
+**** Initialization time
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs initialized in %.03fs with %d garbage collection(s)."
+                     (float-time (time-subtract after-init-time before-init-time))
+                     gcs-done)))
+#+end_src
+**** banchmark-init
+#+begin_quote
+Benchmarks for require and load calls
+#+end_quote
+#+begin_quote
+Add this as early as possible to the init file.
+#+end_quote
+#+begin_src emacs-lisp
+(use-package benchmark-init
+  :ensure t
+  :demand t
+  :hook (after-init-hook . benchmark-init/deactivate))
+#+end_src
+**** edebug
+#+begin_quote
+a source-level debugger for Emacs Lisp
+#+end_quote
+#+begin_src emacs-lisp
+(use-package edebug
+  :config
+  ;; Prevent `edebug' default bindings from interfering with those of `activities-map'.
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t))
+#+end_src
+**** gcmh
+#+begin_quote
+the Garbage Collector Magic Hack
+#+end_quote
+#+begin_src emacs-lisp
+(use-package gcmh
+  :ensure t
+  :custom
+  (gcmh-idle-delay 'auto)
+  (gcmh-high-cons-threshold (* 128 1024 1024))
+  (gcmh-verbose init-file-debug)
+  :hook
+  (after-init-hook . gcmh-mode))
 #+end_src
 *** System
 :PROPERTIES:
@@ -387,52 +436,6 @@ Help keeping ~/.config/emacs clean
   :custom
   (no-littering-var-directory brk-directory-cache-home)
   (no-littering-etc-directory brk-directory-data-home))
-#+end_src
-*** Performance Enhancement
-:PROPERTIES:
-:CUSTOM_ID: performance-enhancement
-:END:
-**** Initialization time
-#+begin_src emacs-lisp
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs initialized in %.03fs with %d garbage collection(s)."
-                     (float-time (time-subtract after-init-time before-init-time))
-                     gcs-done)))
-#+end_src
-**** banchmark-init
-#+begin_quote
-Benchmarks for require and load calls
-#+end_quote
-#+begin_src emacs-lisp
-(use-package benchmark-init
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'benchmark-init/deactivate))
-#+end_src
-**** edebug
-#+begin_quote
-a source-level debugger for Emacs Lisp
-#+end_quote
-#+begin_src emacs-lisp
-(use-package edebug
-  :config
-  ;; Prevent `edebug' default bindings from interfering with those of `activities-map'.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t))
-#+end_src
-**** gcmh
-#+begin_quote
-the Garbage Collector Magic Hack
-#+end_quote
-#+begin_src emacs-lisp
-(use-package gcmh
-  :ensure t
-  :custom
-  (gcmh-idle-delay 'auto)
-  (gcmh-high-cons-threshold (* 128 1024 1024))
-  (gcmh-verbose init-file-debug)
-  :hook
-  (after-init-hook . gcmh-mode))
 #+end_src
 *** Help
 :PROPERTIES:
@@ -895,9 +898,8 @@ Icons for dired via nerd-icons
 #+begin_src emacs-lisp
 (use-package nerd-icons-dired
   :ensure t
-  :after dired
-  :config
-  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
+  :hook
+  (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 **** olivetti
 #+begin_quote
