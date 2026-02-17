@@ -225,6 +225,7 @@ Mozc with popup
 #+end_quote
 #+begin_src emacs-lisp
 (use-package mozc-popup
+  :disabled
   :ensure t
   :after mozc
   :config
