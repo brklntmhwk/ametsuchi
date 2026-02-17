@@ -26,12 +26,6 @@
       repo = "aggressive-indent-mode";
       type = "github";
     };
-    alert = {
-      flake = false;
-      owner = "jwiegley";
-      repo = "alert";
-      type = "github";
-    };
     astro-ts-mode = {
       flake = false;
       type = "git";
@@ -203,12 +197,6 @@
       repo = "dired-hacks";
       type = "github";
     };
-    dslide = {
-      flake = false;
-      owner = "positron-solutions";
-      repo = "dslide";
-      type = "github";
-    };
     dumb-jump = {
       flake = false;
       owner = "jacktasia";
@@ -340,12 +328,6 @@
       repo = "git-auto-commit-mode";
       type = "github";
     };
-    gntp = {
-      flake = false;
-      owner = "tekai";
-      repo = "gntp.el";
-      type = "github";
-    };
     goggles = {
       flake = false;
       owner = "minad";
@@ -362,12 +344,6 @@
       flake = false;
       owner = "ragnard";
       repo = "gptel-magit";
-      type = "github";
-    };
-    grugru = {
-      flake = false;
-      owner = "ROCKTAKEY";
-      repo = "grugru";
       type = "github";
     };
     gt = {
@@ -442,12 +418,6 @@
       repo = "llama";
       type = "github";
     };
-    log4e = {
-      flake = false;
-      owner = "aki2o";
-      repo = "log4e";
-      type = "github";
-    };
     magit = {
       flake = false;
       owner = "magit";
@@ -512,12 +482,6 @@
       flake = false;
       owner = "wyuenho";
       repo = "move-dup";
-      type = "github";
-    };
-    mozc = {
-      flake = false;
-      owner = "google";
-      repo = "mozc";
       type = "github";
     };
     multiple-cursors = {
@@ -643,12 +607,6 @@
       flake = false;
       owner = "AntonHakansson";
       repo = "org-nix-shell";
-      type = "github";
-    };
-    org-pomodoro = {
-      flake = false;
-      owner = "marcinkoziej";
-      repo = "org-pomodoro";
       type = "github";
     };
     org-ql = {
