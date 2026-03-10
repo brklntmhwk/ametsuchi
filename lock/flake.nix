@@ -146,7 +146,7 @@
     dashboard = {
       flake = false;
       owner = "emacs-dashboard";
-      repo = "emacs-dashboard";
+      repo = "dashboard";
       type = "github";
     };
     deadgrep = {
