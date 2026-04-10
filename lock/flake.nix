@@ -366,7 +366,7 @@
     };
     highlight-indent-guides = {
       flake = false;
-      owner = "DarthFennec";
+      owner = "bumblepup";
       repo = "highlight-indent-guides";
       type = "github";
     };
