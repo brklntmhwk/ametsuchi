@@ -15,6 +15,16 @@ let
     composeExtensions
     pipe
     ;
+  inherit (pkgs) callPackage;
+  inherit (inputs)
+    emacs-overlay
+    nixpkgs
+    nix-filter
+    org-babel
+    self
+    twist
+    twist-overrides
+    ;
 
   mkInitFile =
     {
@@ -22,7 +32,7 @@ let
     }:
     pipe initPath [
       readFile
-      (inputs.org-babel.lib.tangleOrgBabel { })
+      (org-babel.lib.tangleOrgBabel { })
       (toFile "init.el")
     ];
 in
@@ -32,7 +42,7 @@ in
   mkEmacsConfig =
     {
       pkgs,
-      emacsPackage ? inputs.emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk,
+      emacsPackage ? emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk,
       initFile ? mkInitFile { },
       features ? [ ],
       prependToInitFile ? null,
@@ -42,27 +52,18 @@ in
         # https://github.com/akirak/emacs-config/commit/9940dc91e3ecf2b3faf861c2492867c9165202f3
         extraSiteStartElisp = ''
           (add-to-list 'treesit-extra-load-path "${
-            pkgs.emacs.pkgs.treesit-grammars.with-grammars (
-              _:
-              (pkgs.tree-sitter.override {
-                extraGrammars = {
-                  tree-sitter-astro = {
-                    src = inputs.tree-sitter-astro.outPath;
-                  };
-                };
-              }).allGrammars
-            )
+            callPackage ./treesit-grammars.nix { inherit inputs; }
           }/lib/")
         '';
         exportManifest = true; # Required to use hot-reloading twist.el offers
         initFiles = [ initFile ];
-        initParser = inputs.twist.lib.parseUsePackages {
-          inherit (inputs.nixpkgs) lib;
+        initParser = twist.lib.parseUsePackages {
+          inherit (nixpkgs) lib;
         } { };
         inputOverrides = (import ../twist/inputs.nix) // {
           brk = _: _: {
-            src = inputs.nix-filter.lib {
-              root = inputs.self;
+            src = nix-filter.lib {
+              root = self;
               include = [ "elisp" ];
             };
           };
@@ -82,14 +83,14 @@ in
         ++ (import ../twist/registries.nix { inherit inputs; });
       };
     in
-    (inputs.twist.lib.makeEnv (
+    (twist.lib.makeEnv (
       twistArgs
       // {
         inherit pkgs emacsPackage;
       }
     )).overrideScope
       (
-        composeExtensions inputs.twist-overrides.overlays.twistScope (
+        composeExtensions twist-overrides.overlays.twistScope (
           _final: prev: {
             elispPackages = prev.elispPackages.overrideScope (import ../twist/overrides.nix { inherit pkgs; });
           }
