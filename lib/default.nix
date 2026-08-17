@@ -15,7 +15,6 @@ let
     composeExtensions
     pipe
     ;
-  inherit (pkgs) callPackage;
   inherit (inputs)
     emacs-overlay
     nixpkgs
@@ -52,7 +51,7 @@ in
         # https://github.com/akirak/emacs-config/commit/9940dc91e3ecf2b3faf861c2492867c9165202f3
         extraSiteStartElisp = ''
           (add-to-list 'treesit-extra-load-path "${
-            callPackage ./treesit-grammars.nix { inherit inputs; }
+            pkgs.callPackage ./treesit-grammars.nix { inherit inputs; }
           }/lib/")
         '';
         exportManifest = true; # Required to use hot-reloading twist.el offers
