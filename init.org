@@ -1981,8 +1981,8 @@ interface for display-line-numbers
   (global-display-line-numbers-mode 1)
   :config
   (defun brk/display-line-numbers-fixed-width ()
-    (when (< display-line-numbers-width 5)
-      (setq display-line-numbers-width 5)))
+    (when (< display-line-numbers-width 4)
+      (setq display-line-numbers-width 4)))
 
   (add-hook 'display-line-numbers-mode-hook #'brk/display-line-numbers-fixed-width)
 
