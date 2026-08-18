@@ -2428,6 +2428,7 @@ Collapse unique nested paths in dired listing
 #+end_quote
 #+begin_src emacs-lisp
 (use-package dired-collapse
+  :disabled
   :ensure t
   :after dired
   :hook
