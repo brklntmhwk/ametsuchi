@@ -1742,6 +1742,37 @@ Multiple cursors for emacs.
    ("C-S-d" . mc/mark-previous-like-this)
    ("M-d" . mc/mark-all-like-this)))
 #+end_src
+**** newcomment
+#+begin_quote
+(un)comment regions of buffers
+#+end_quote
+#+begin_src emacs-lisp
+(use-package newcomment
+  :bind
+  ([remap comment-dwim] . brk/comment-real-dwim)
+  :config
+  (defun brk/comment-real-dwim ()
+    "True DWIM comment command.
+If a region is active, comment or uncomment the line(s) spanned by the region, otherwise
+the current line."
+    (interactive)
+    (let ((beg (if (use-region-p)
+                   (save-excursion
+                     (goto-char (region-beginning))
+                     (line-beginning-position))
+                 (line-beginning-position)))
+          (end (if (use-region-p)
+                   (save-excursion
+                     (goto-char (region-end))
+                     ;; Exclude that new line if the region end is at the beginning of
+                     ;; the next line.
+                     (if (and (bolp) (not (eq (region-beginning) (region-end))))
+                         (point)
+                       (line-end-position)))
+                 (line-end-position))))
+      (save-excursion
+        (comment-or-uncomment-region beg end)))))
+#+end_src
 **** pixel-scroll
 #+begin_quote
 Scroll a line smoothly
