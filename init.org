@@ -2991,10 +2991,13 @@ A Git porcelain inside Emacs
   (defun brk/magit-restore-status-sync-ad (orig-fn &rest args)
     "Synchronously restore `magit-status' after `with-editor-finish'.
 This prevents aggressive fallback to the Dashboard buffer while waiting for you to complete
-git signing (e.g., a YubiKey touch)."
-    (let ((repo-dir default-directory))
+git signing (e.g., a YubiKey touch).
+Restricted to run only if you are finishing a git-commit buffer to prevent side-effects."
+    (let ((is-git-commit (derived-mode-p 'git-commit-mode))
+          (repo-dir default-directory))
       (apply orig-fn args)
-      (magit-status repo-dir)))
+      (when is-git-commit
+        (magit-status repo-dir))))
   (advice-add 'with-editor-finish :around #'brk/magit-restore-status-sync-ad))
 #+end_src
 ***** magit-delta
