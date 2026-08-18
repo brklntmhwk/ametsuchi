@@ -2616,7 +2616,23 @@ The Emacs Client for LSP servers
   (dolist (entry '((just-mode . ("just-lsp"))
                    ((nix-ts-mode nix-mode) . ("nil"))
                    (zig-ts-mode . ("zls"))))
-    (cl-pushnew entry eglot-server-programs :test #'equal)))
+    (cl-pushnew entry eglot-server-programs :test #'equal))
+
+  (defun brk/eglot-xref-fallback-ad (orig-fn backend identifier)
+    "Fix Eglot's xref delegation bug when falling back to another backend (e.g., `dumb-jump')."
+    (let ((res (funcall orig-fn backend identifier)))
+      (if (and (null res)
+               (consp backend)
+               (eq (car backend) 'eglot)
+               (cdr backend))
+          ;; If Eglot finds no definitions, recalculate the actual symbol at point for the fallback
+          ;; backend, instead of propagating the dummy string "LSP identifier at point".
+          (let* ((fallback (cdr backend))
+                 (fallback-id (xref-backend-identifier-at-point fallback)))
+            (when fallback-id
+              (xref-backend-definitions fallback fallback-id)))
+        res)))
+  (advice-add 'xref-backend-definitions :around #'brk/eglot-xref-fallback-ad))
 #+end_src
 ***** eglot-booster
 #+begin_quote
