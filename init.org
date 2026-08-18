@@ -2665,22 +2665,17 @@ The Emacs Client for LSP servers
                    (zig-ts-mode . ("zls"))))
     (cl-pushnew entry eglot-server-programs :test #'equal))
 
-  (defun brk/eglot-xref-fallback-ad (orig-fn backend identifier)
-    "Force fallback to `dumb-jump' when `eglot-xref-backend' returns nil."
-    (let ((action (car args))
-          (res (apply orig-fn args)))
-      ;; If Eglot finds no definitions or references either...
-      (if (and (memq action '(definitions references)) (null res))
-          (let ((dj-backend (and (fboundp 'dumb-jump-xref-activate)
-                                 (dumb-jump-xref-activate))))
-            (if dj-backend
-                ;; Ignore the dummy string "LSP identifier at point", passing the
-                ;; actual symbol at point to `dumb-jump' and looking it up again.
-                (let ((identifier (xref-backend-identifier-at-point dj-backend)))
-                  (xref-backend-definitions dj-backend identifier))
-                res))
-        res)))
-  (advice-add 'eglot-xref-backend :around #'brk/eglot-xref-fallback-ad))
+  (defun brk/fix-eglot-fallback-ad (orig-fn backend identifier)
+    "Fix Eglot's bug where it passes its dummy identifier to fallback backends."
+    (if (and (stringp identifier)
+             (string= identifier "LSP identifier at point")
+             (not (eq backend 'eglot)))
+        (let ((real-id (xref-backend-identifier-at-point backend)))
+          (if real-id
+              (funcall orig-fn backend real-id)
+            nil))
+      (funcall orig-fn backend identifier)))
+  (advice-add 'eglot-xref-backend :around #'brk/fix-eglot-fallback-ad))
 #+end_src
 ***** eglot-booster
 #+begin_quote
