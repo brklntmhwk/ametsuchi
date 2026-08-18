@@ -881,7 +881,9 @@ Icons for completion via nerd-icons
   :after marginalia
   :config
   (nerd-icons-completion-mode 1)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  ;; Call the dedicated setup function directly not to miss the hook timing.
+  ;; (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+  (nerd-icons-completion-marginalia-setup))
 #+end_src
 ***** nerd-icons-corfu
 #+begin_quote
@@ -902,7 +904,17 @@ Icons for dired via nerd-icons
 (use-package nerd-icons-dired
   :ensure t
   :hook
-  (dired-mode-hook . nerd-icons-dired-mode))
+  (dired-mode-hook . nerd-icons-dired-mode)
+  :config
+  (defun brk/nerd-icons-dired-fix-hook-order ()
+    "Ensure `nerd-icons-dired--refresh' runs last in `dired-after-readin-hook'.
+This prevents icons from being wiped out by other packages that reconstruct the Dired
+buffer (e.g, `dired-filter', `dired-collapse', etc)."
+    (when nerd-icons-dired-mode
+      (remove-hook 'dired-after-readin-hook #'nerd-icons-dired--refresh t)
+      ;; Append `nerd-icons-dired--refresh' to `dired-after-readin-hook'.
+      (add-hook 'dired-after-readin-hook #'nerd-icons-dired--refresh t t)))
+  (add-hook 'nerd-icons-dired-mode-hook #'brk/nerd-icons-dired-fix-hook-order))
 #+end_src
 **** olivetti
 #+begin_quote
