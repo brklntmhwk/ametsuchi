@@ -1459,7 +1459,36 @@ VERTical Interactive COmpletion
   :custom
   (vertico-count 20)
   (vertico-resize nil)
-  :hook (after-init-hook . vertico-mode))
+  :hook (after-init-hook . vertico-mode)
+  :bind
+  (:map vertico-map
+        ;; Align this keybinding with the existing `vertico-directory-enter' command.
+        ("C-<return>" . brk/vertico-exit-other-tab))
+  :config
+  (defvar brk/vertico-exit-other-tab-flag nil
+    "Flag to force the next buffer to open in a new tab.")
+
+  ;; Intercept `display-buffer' at the lowest level of Emacs's window management.
+  (defun brk/display-buffer-other-tab-ad (orig-fn buffer-or-name &optional action frame)
+    "Open the buffer in a new tab if `brk/vertico-exit-other-tab-flag' is set."
+    (if brk/vertico-exit-other-tab-flag
+        (progn
+          ;; Consume the flag immediately to keep the state ephemeral and localized.
+          (setq brk/vertico-exit-other-tab-flag nil)
+          ;; Temporarily enforce the overriding rule to open in a new tab.
+          (let ((display-buffer-overriding-action '((display-buffer-in-new-tab))))
+            (funcall orig-fn buffer-or-name action frame)))
+      (funcall orig-fn buffer-or-name action frame)))
+  (advice-add 'display-buffer :around #'brk/display-buffer-other-tab-ad)
+
+  (defun brk/vertico-exit-other-tab ()
+    "Exit completing-read and perform the default action in a new tab."
+    (interactive)
+    (setq brk/vertico-exit-other-tab-flag t)
+    ;; As a safety net, completely purge the flag when Emac turns idle, ensuring
+    ;; no stray state is left behind in case of aborted actions.
+    (run-with-idle-timer 0 nil (lambda () (setq brk/vertico-exit-other-tab-flag nil)))
+    (vertico-exit)))
 #+end_src
 ***** vertico-directory
 #+begin_quote
