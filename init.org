@@ -879,10 +879,9 @@ Icons for completion via nerd-icons
 (use-package nerd-icons-completion
   :ensure t
   :after marginalia
+  :hook (marginalia-mode-hook . nerd-icons-completion-mode)
   :config
-  (nerd-icons-completion-mode 1)
   ;; Call the dedicated setup function directly not to miss the hook timing.
-  ;; (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
   (nerd-icons-completion-marginalia-setup))
 #+end_src
 ***** nerd-icons-corfu
