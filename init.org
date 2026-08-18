@@ -2676,7 +2676,7 @@ The Emacs Client for LSP servers
               (funcall orig-fn backend real-id)
             nil))
       (funcall orig-fn backend identifier)))
-  (advice-add 'eglot-xref-backend :around #'brk/fix-eglot-fallback-ad))
+  (advice-add 'xref-backend-definitions :around #'brk/fix-eglot-fallback-ad))
 #+end_src
 ***** eglot-booster
 #+begin_quote
