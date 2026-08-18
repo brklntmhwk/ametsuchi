@@ -1533,6 +1533,9 @@ Configure Vertico in different forms per command
    '((consult-buffer (:not posframe))
      (consult-line (:not posframe))
      (consult-ripgrep (:not posframe))
+     (embark-act (:not posframe))
+     (embark-dwim (:not posframe))
+     (embark-become (:not posframe))
      (t posframe)))
   :hook
   (vertico-mode-hook . vertico-multiform-mode))
