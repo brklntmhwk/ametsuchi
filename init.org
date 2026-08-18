@@ -1533,7 +1533,7 @@ Using posframe to show Vertico
   :ensure t
   :custom
   (vertico-posframe-border-width 3)
-  (vertico-posframe-min-width 80)
+  (vertico-posframe-min-width 120)
   (vertico-posframe-width nil)
   (vertico-posframe-parameters
    '((left-fringe . 10)
