@@ -2982,9 +2982,20 @@ A Git porcelain inside Emacs
          ("d" . magit-dispatch)
          ("f" . magit-file-dispatch)))
   :config
+  ;; NOTE: We don't rely on this async hook anymore as it fails to handle some edge cases
+  ;; properly (e.g., sign a commit with a YubiKey).
   ;; https://www.reddit.com/r/emacs/comments/11auxod/magit_quits_after_a_commit_happen/
   ;; Explicitly set this to prevent the Dashboard buffer from appearing after every commit.
-  (add-hook 'git-commit-post-finish-hook #'magit))
+  ;; (add-hook 'git-commit-post-finish-hook #'magit)
+
+  (defun brk/magit-restore-status-sync-ad (orig-fn &rest args)
+    "Synchronously restore `magit-status' after `with-editor-finish'.
+This prevents aggressive fallback to the Dashboard buffer while waiting for you to complete
+git signing (e.g., a YubiKey touch)."
+    (let ((repo-dir default-directory))
+      (apply orig-fn args)
+      (magit-status repo-dir)))
+  (advice-add 'with-editor-finish :around #'brk/magit-restore-status-sync-ad))
 #+end_src
 ***** magit-delta
 #+begin_quote
