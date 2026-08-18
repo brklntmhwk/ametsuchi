@@ -624,7 +624,10 @@ frame-local tabs with named persistent window configurations
          ("<" . tab-bar-history-back)))
   :hook (after-init-hook . tab-bar-history-mode)
   :config
-  (advice-add 'tab-new :after #'find-file))
+  ;; Call `find-file' safely in an idle state after executing `tab-new'.
+  (defun brk/tab-new-find-file-advice (&rest _)
+    (run-with-timer 0 nil (lambda () (call-interactively #'find-file))))
+  (advice-add 'tab-new :after #'brk/tab-new-find-file-advice))
 #+end_src
 **** window
 #+begin_quote
