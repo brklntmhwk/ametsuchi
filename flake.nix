@@ -133,7 +133,11 @@
 
           emacs-config-no-pgtk = lib'.mkEmacsConfig {
             inherit pkgs;
-            emacsPackage = inputs.emacs-overlay.packages.${system}.emacs-git;
+            emacsPackage = inputs.emacs-overlay.packages.${system}.emacs-git.overrideAttrs (prev: {
+              meta = (prev.meta or { }) // {
+                mainProgram = "emacs";
+              };
+            });
           };
         in
         {
