@@ -1409,7 +1409,21 @@ Minibuffer and completion functions
 #+begin_src emacs-lisp
 (use-package minibuffer
   :custom
-  (completion-cycle-threshold 3))
+  (completion-cycle-threshold 3)
+  :config
+  (defun brk/minibuffer-isolate-kill-ring-ad (orig-fn &rest args)
+    "Isolate `kill-ring' and clipboard in the minibuffer."
+    (if (minibufferp)
+        ;; Shadow the kill-ring variables locally and prevent OS clipboard syncing,
+        ;; allowing the killed text to vanish without a trace.
+        (let ((kill-ring kill-ring)
+              (kill-ring-yank-pointer kill-ring-yank-pointer)
+              (interprogram-cut-function nil))
+          (apply orig-fn args))
+      ;; Fall back to the default behaviour outside the minibuffer.
+      (apply orig-fn args)))
+  ;; Wrap the foundational kill-region command to intercept all kill operations.
+  (advice-add 'kill-region :around #'brk/minibuffer-isolate-kill-ring-ad))
 #+end_src
 **** orderless
 #+begin_quote
@@ -1446,6 +1460,7 @@ Ido-like directory navigation for Vertico
   (:map vertico-map
         ("RET" . vertico-directory-enter)
         ("DEL" . vertico-directory-delete-char)
+        ;; Delete the previous directory path component cleanly instead of killing it.
         ("M-DEL" . vertico-directory-delete-word))
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 #+end_src
@@ -1772,7 +1787,7 @@ Parentheses Universalistic
                 ("<left>" . puni-contract-region)))
   :config
   (mapc (lambda (k) (keymap-unset puni-mode-map k))
-        '("C-M-a" "C-M-e" "C-M-f" "C-M-b" "C-d" "M-d")))
+        '("C-M-a" "C-M-e" "C-M-f" "C-M-b" "C-d" "M-d" "M-DEL")))
 #+end_src
 **** replace
 #+begin_quote
