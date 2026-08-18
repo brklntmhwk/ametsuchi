@@ -85,7 +85,10 @@
       ...
     }:
     let
-      forAllSystems = nixpkgs.lib.genAttrs [
+      inherit (builtins) concatStringsSep elem substring;
+      inherit (nixpkgs.lib) genAttrs getName;
+
+      forAllSystems = genAttrs [
         "aarch64-linux"
         "x86_64-linux"
         "x86_64-darwin"
@@ -119,7 +122,7 @@
             # https://nixos.wiki/wiki/Unfree_Software
             config.allowUnfreePredicate =
               pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
+              elem (getName pkg) [
                 # Explicitly add unfree packages here.
               ];
           };
@@ -150,12 +153,12 @@
           # https://github.com/akirak/emacs-config/commit/111167fa21e0179ec54de7ee062a3d8164926cae
           elpa-archive = inputs.twist2elpa.lib.buildElpaArchiveAsTar {
             asInitDirectory = true;
-            name = "elpa-archive-${builtins.substring 0 8 (self.lastModifiedDate)}"; # e.g., elpa-archive-19701231.tar
+            name = "elpa-archive-${substring 0 8 (self.lastModifiedDate)}"; # e.g., elpa-archive-19701231.tar
           } emacs-config;
 
           # https://github.com/akirak/emacs-config/commit/a6b5185ece1746b386c0c452605fa37d3fd30a54
           init-file = pkgs.runCommandLocal "init.el" { } ''
-            for file in ${builtins.concatStringsSep " " emacs-config.initFiles}
+            for file in ${concatStringsSep " " emacs-config.initFiles}
             do
               cat "$file" >> "$out"
             done
@@ -170,7 +173,7 @@
           pkgs = import nixpkgs {
             inherit system;
             overlays = [ inputs.emacs-overlay.overlays.emacs ];
-            config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ ];
+            config.allowUnfreePredicate = pkg: elem (getName pkg) [ ];
           };
           emacs-config = lib'.mkEmacsConfig { inherit pkgs; };
         in
