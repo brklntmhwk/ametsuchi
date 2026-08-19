@@ -29,6 +29,14 @@ builtins.intersectAttrs prev {
     }
   );
 
+  mozc = prev.mozc.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      # Forcibly insert the lexical-binding comment to the first line to suppress
+      # the "Missing ‘lexical-binding’ cookie in..." warning at startup.
+      sed -i '1i;; -*- lexical-binding: t -*-' mozc.el
+    '';
+  });
+
   # https://github.com/akirak/emacs-config/blob/1a76845c6f3740578efdc978da6db9b0ebe6bccc/emacs/overrides.nix
   brk = prev.brk.overrideAttrs (old: {
     # The libraries are improperly packaged, so disable byte-compilation for now.

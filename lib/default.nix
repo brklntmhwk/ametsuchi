@@ -53,19 +53,6 @@ in
           (add-to-list 'treesit-extra-load-path "${
             pkgs.callPackage ./treesit-grammars.nix { inherit inputs; }
           }/lib/")
-
-          ;; Suppress the "Missing ‘lexical-binding’ cookie in..." warning at startup.
-          ;; This prevents legacy upstream files (e.g., mozc.el) from triggering missing
-          ;; lexical-binding warnings introduced in Emacs 30+.
-          (defun brk/suppress-lexical-binding-warning-ad (orig-fn type message &rest args)
-            (if (and (eq type 'files)
-                     (stringp message)
-                     ;; Periods surrounding "lexical-binding" handle the difference in
-                     ;; quotation marks (e.g., ` ' and ' ') used.
-                     (string-match-p "Missing .lexical-binding. cookie" message))
-                nil
-              (apply orig-fn type message args)))
-          (advice-add 'display-warning :around #'brk/suppress-lexical-binding-warning-ad)
         '';
         exportManifest = true; # Required to use hot-reloading twist.el offers
         initFiles = [ initFile ];
