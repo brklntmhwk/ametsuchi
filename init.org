@@ -1077,9 +1077,9 @@ print current function in mode line
   ;; Prevent a race condition where `which-func-ff-hook' synchronously requests document
   ;; symbols right after a file is opened, often before the LSP server has fully processed
   ;; the "textDocument/didOpen" notification.
-  ;; This avoids crashing strict servers like nil (i.e., NIx Language server) with "File not loaded"
-  ;; errors, leaving the update safely to the default idle timer instead.
-  (remove-hook 'find-file-hook #'which-func-ff-hook))
+  ;; Since `which-function-mode' aggressively re-adds itself to `find-file-hook' upon
+  ;; activation, completely neutralize the function via advice.
+  (advice-add 'which-func-ff-hook :override #'ignore))
 #+end_src
 *** Completion
 :PROPERTIES:
@@ -2657,15 +2657,13 @@ The Emacs Client for LSP servers
                    (zig-ts-mode . ("zls"))))
     (cl-pushnew entry eglot-server-programs :test #'equal))
 
-  (defun brk/eglot-xref-identifier-ad (orig-fn backend)
-    "Return the real identifier for Eglot fallback instead of the dummy string."
-    (if (and (consp backend)
-             (eq (car backend) 'eglot)
-             (cdr backend))
-        (let ((real-id (xref-backend-identifier-at-point (cdr backend))))
-          (or real-id (funcall orig-fn backend)))
-      (funcall orig-fn backend)))
-  (advice-add 'xref-backend-identifier-at-point :around #'brk/eglot-xref-identifier-ad))
+  (defun brk/eglot-xref-read-id-ad (orig-fn backend)
+    "Replace Eglot's dummy string with the real symbol at point for fallback backends."
+    (let ((id (funcall orig-fn backend)))
+      (if (string= id "LSP identifier at point")
+          (or (thing-at-point 'symbol t) id)
+        id)))
+  (advice-add 'xref-backend-identifier-at-point :around #'brk/eglot-xref-read-id-ad))
 #+end_src
 ***** eglot-booster
 #+begin_quote
