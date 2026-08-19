@@ -21,7 +21,7 @@ builtins.intersectAttrs prev {
     in
     {
       nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.pkg-config ];
-      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.enchant2 ];
+      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.enchant_2 ];
       preBuild = ''
         NIX_CFLAGS_COMPILE="$($PKG_CONFIG --cflags enchant-2) $NIX_CFLAGS_COMPILE"
         $CC -I. -O2 -fPIC -shared -o jinx-mod${modSuffix} jinx-mod.c -lenchant-2
