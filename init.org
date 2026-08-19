@@ -2576,10 +2576,16 @@ process Emacs shell arguments
   (inhibit-startup-echo-area-message t)
   (inhibit-startup-screen t)
   (initial-buffer-choice
-   ; If not present yet, create the Dashboard buffer in advance.
    (lambda () (get-buffer-create "*dashboard*")))
   (initial-scratch-message nil)
-  (initial-major-mode 'fundamental-mode))
+  (initial-major-mode 'fundamental-mode)
+  :config
+  (defun brk/server-edit-prevent-dashboard-ad (orig-fn &rest args)
+    "Temporarily bind `initial-buffer-choice' to nil during `server-edit'
+to prevent Dashboard from hijacking the frame after e.g., a Magit commit."
+    (let ((initial-buffer-choice nil))
+      (apply orig-fn args)))
+  (advice-add 'server-edit :around #'brk/server-edit-prevent-dashboard-ad))
 #+end_src
 *** Development
 :PROPERTIES:
