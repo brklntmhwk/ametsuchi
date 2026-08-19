@@ -223,22 +223,6 @@ Add this as early as possible to the init file.
   :demand t
   :hook (after-init-hook . benchmark-init/deactivate))
 #+end_src
-**** Suppression of lexical binding warnings
-This prevents legacy upstream files (e.g., mozc.el) from triggering missing lexical-binding warnings introduced in Emacs 30+.
-
-#+begin_src emacs-lisp
-(defun brk/suppress-lexical-binding-warning-ad (orig-fn type message &rest args)
-  "Silence specific files-category warnings regarding missing lexical-binding cookies."
-  (if (and (eq type 'files)
-           (stringp message)
-           ;; Periods surrounding "lexical-binding" handle the difference in quotation
-           ;; marks (e.g., ` ' and ' ') used.
-           (string-match-p "Missing .lexical-binding. cookie" message))
-      ;; Negate the warning.
-      nil
-    (apply orig-fn type message args)))
-(advice-add 'display-warning :around #'brk/suppress-lexical-binding-warning-ad)
-#+end_src
 **** edebug
 #+begin_quote
 a source-level debugger for Emacs Lisp
