@@ -2650,17 +2650,15 @@ The Emacs Client for LSP servers
                    (zig-ts-mode . ("zls"))))
     (cl-pushnew entry eglot-server-programs :test #'equal))
 
-  (defun brk/fix-eglot-fallback-ad (orig-fn backend identifier)
-    "Fix Eglot's bug where it passes its dummy identifier to fallback backends."
-    (if (and (stringp identifier)
-             (string= identifier "LSP identifier at point")
-             (not (eq backend 'eglot)))
-        (let ((real-id (xref-backend-identifier-at-point backend)))
-          (if real-id
-              (funcall orig-fn backend real-id)
-            nil))
-      (funcall orig-fn backend identifier)))
-  (advice-add 'xref-backend-definitions :around #'brk/fix-eglot-fallback-ad))
+  (defun brk/eglot-xref-identifier-ad (orig-fn backend)
+    "Return the real identifier for Eglot fallback instead of the dummy string."
+    (if (and (consp backend)
+             (eq (car backend) 'eglot)
+             (cdr backend))
+        (let ((real-id (xref-backend-identifier-at-point (cdr backend))))
+          (or real-id (funcall orig-fn backend)))
+      (funcall orig-fn backend)))
+  (advice-add 'xref-backend-identifier-at-point :around #'brk/eglot-xref-identifier-ad))
 #+end_src
 ***** eglot-booster
 #+begin_quote
