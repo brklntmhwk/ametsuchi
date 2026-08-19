@@ -1072,7 +1072,14 @@ print current function in mode line
      nov-mode
      pdf-view-mode
      minibuffer-mode))
-  :hook (after-init-hook . which-function-mode))
+  :hook (after-init-hook . which-function-mode)
+  :config
+  ;; Prevent a race condition where `which-func-ff-hook' synchronously requests document
+  ;; symbols right after a file is opened, often before the LSP server has fully processed
+  ;; the "textDocument/didOpen" notification.
+  ;; This avoids crashing strict servers like nil (i.e., NIx Language server) with "File not loaded"
+  ;; errors, leaving the update safely to the default idle timer instead.
+  (remove-hook 'find-file-hook #'which-func-ff-hook))
 #+end_src
 *** Completion
 :PROPERTIES:
