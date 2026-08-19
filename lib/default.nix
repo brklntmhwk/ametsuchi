@@ -41,11 +41,7 @@ in
   mkEmacsConfig =
     {
       pkgs,
-      emacsPackage ? emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk.overrideAttrs (prev: {
-        meta = (prev.meta or { }) // {
-          mainProgram = "emacs";
-        };
-      }),
+      emacsPackage ? emacs-overlay.packages.${pkgs.system}.emacs-git-pgtk,
       initFile ? mkInitFile { },
       features ? [ ],
       prependToInitFile ? null,

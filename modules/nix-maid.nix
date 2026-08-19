@@ -49,6 +49,9 @@ let
         propagatedBuildInputs = [
           emacsConfig
         ];
+        # Suppress the build time warning, 'evaluation warning: getExe: Package emacs
+        # does not have the meta.mainProgram attribute...'
+        meta.mainProgram = "emacs";
       }
       ''
         mkdir -p $out/bin
