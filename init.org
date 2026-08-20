@@ -1946,7 +1946,10 @@ basic editing commands for Emacs
   (indent-tabs-mode nil) ;; Use spaces instead of tabs for indentation.
   (kill-whole-line t)
   (line-number-mode nil)
-  (read-extended-command-predicate 'command-completion-default-include-p))
+  (read-extended-command-predicate 'command-completion-default-include-p)
+  :bind
+  (:map system-meta-map
+        ("p" . list-processes)))
 #+end_src
 **** sontaku
 #+begin_quote
