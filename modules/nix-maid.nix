@@ -111,7 +111,7 @@ let
         ]
         ++ fonts
         ++ optional cfg.icons.enable emacsConfig.icons
-        ++ optional (!pkgs.stdenv.isDarwin) desktopItem;
+        ++ optional (!pkgs.stdenv.hostPlatform.isDarwin) desktopItem;
 
         maid = {
           file = {
