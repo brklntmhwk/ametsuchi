@@ -589,6 +589,7 @@ Summon and dismiss buffers as popups
      "^\\*Flymake diagnostics"
      "^\\*Help.*\\*$" help-mode
      "^\\*helpful.*\\*$" helpful-mode
+     "^\\*Process List\\*$" process-menu-mode
      "^\\*Shell Command Output\\*"
      "^\\*Warnings\\*$"))
   :hook
@@ -604,7 +605,33 @@ Summon and dismiss buffers as popups
    (:repeat-map popper-repeat-map
                 ("t" . popper-toggle)
                 ("@" . popper-cycle)
-                ("~" . popper-toggle-type))))
+                ("~" . popper-toggle-type)))
+  :config
+  ;; Based on:
+  ;; https://github.com/seagle0128/.emacs.d/blob/7b88e0852a0e0d85d3e6ceb6041addc9bf9193b8/lisp/init-window.el
+  (defun brk/popper-close-via-keyboard-quit-ad (&rest _)
+    "Dismiss the latest popper window via `keyboard-quit' (usually `C-g').
+This does not close the window if a region is active, or if the user is currently
+inside a terminal/shell popup where `C-g' is needed for interrupts."
+    (when (and (not (region-active-p))
+               popper-open-popup-alist)
+      (let* ((popup (car popper-open-popup-alist))
+             (window (car popup))
+             (buffer (cdr popup)))
+        (when (and (window-live-p window)
+                   (buffer-live-p buffer)
+                   ;; Don't close if the cursor is inside a terminal/shell popup.
+                   ;; This allows `C-g' to safely send interrupts (SIGINT) to the process.
+                   ;; If the cursor is in the main window, `C-g' will dismiss the terminal.
+                   (not (and (eq (selected-window) window)
+                             (with-current-buffer buffer
+                               (derived-mode-p 'eshell-mode
+                                               'comint-mode
+                                               'eat-mode
+                                               'shell-mode
+                                               'term-mode)))))
+          (delete-window window)))))
+  (advice-add 'keyboard-quit :before #'brk/popper-close-via-keyboard-quit-ad))
 #+end_src
 **** tab-bar
 #+begin_quote
