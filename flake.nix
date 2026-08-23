@@ -21,7 +21,7 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "git+https://github.com/nixos/nixpkgs?shallow=1&ref=nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     # Nix utils
     nix-filter.url = "github:numtide/nix-filter";
@@ -35,7 +35,9 @@
     # Emacs-overlay
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
     # Emacs-twist
