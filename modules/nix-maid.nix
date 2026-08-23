@@ -15,17 +15,19 @@ mkEmacsConfig:
 }:
 
 let
-  inherit (builtins) attrValues concatStringsSep listToAttrs;
+  inherit (builtins) attrValues concatStringsSep;
   inherit (lib)
     getExe
+    getExe'
     mkEnableOption
     mkIf
-    mkMerge
     mkOption
     optional
+    optionalString
     types
     ;
-  inherit (pkgs) makeDesktopItem runCommandLocal;
+  inherit (pkgs) makeDesktopItem runCommandLocal stdenv;
+  inherit (stdenv.hostPlatform) isDarwin;
   cfg = config.programs.ametsuchi;
 
   emacsConfig = mkEmacsConfig {
@@ -42,6 +44,9 @@ let
       echo >> $out/init.el
     done
   '';
+
+  emacsBin = getExe emacsConfig;
+  emacsclient = getExe' emacsConfig.emacs "emacsclient";
 
   wrappedEmacs =
     runCommandLocal cfg.name
@@ -61,13 +66,13 @@ let
         # the shell from expanding runtime variables.
         cat > $out/bin/${cfg.name} <<EOF
         #!/bin/sh
-        exec ${emacsConfig}/bin/emacs \
+        exec ${emacsBin} \
         --init-directory="\$HOME/${cfg.directory}" "\$@"
         EOF
 
         chmod +x $out/bin/${cfg.name}
 
-        ${lib.optionalString cfg.emacsclient.enable "ln -t $out/bin -s ${emacsConfig.emacs}/bin/emacsclient"}
+        ${optionalString cfg.emacsclient.enable "ln -t $out/bin -s ${emacsclient}"}
       '';
 
   fonts = attrValues {
@@ -88,13 +93,30 @@ let
     inherit (cfg.desktopItem) desktopName mimeTypes;
     comment = "Edit text";
     genericName = "Text Editor";
-    exec = "${cfg.name} %F";
+    exec = "${emacsBin} %F";
     icon = "emacs";
     startupNotify = true;
     startupWMClass = "Emacs";
     categories = [
-      "TextEditor"
       "Development"
+      "TextEditor"
+    ];
+  };
+  desktopItemClient = makeDesktopItem {
+    inherit (cfg.desktopItem) mimeTypes;
+    name = "${cfg.name}client";
+    desktopName = "${cfg.desktopItem.desktopName} (Client)";
+    comment = "Edit text in existing Emacs session";
+    genericName = "Text Editor";
+    # `-c`: Create a new frame (window)
+    # `-a`: Activate the Emacs daemon if it doesn't yet
+    exec = "${emacsclient} -c -a \"\" %F";
+    icon = "emacs";
+    startupNotify = true;
+    startupWMClass = "Emacs";
+    categories = [
+      "Development"
+      "TextEditor"
     ];
   };
 
@@ -111,30 +133,16 @@ let
         ]
         ++ fonts
         ++ optional cfg.icons.enable emacsConfig.icons
-        ++ optional (!pkgs.stdenv.hostPlatform.isDarwin) desktopItem;
+        ++ optional (!isDarwin) desktopItem
+        ++ optional (!isDarwin && cfg.emacsclient.enable) desktopItemClient;
 
         maid = {
           file = {
-            home = listToAttrs [
-              {
-                name = "${cfg.directory}/init.el";
-                value = {
-                  source = "${initFile}/init.el";
-                };
-              }
-              {
-                name = "${cfg.directory}/templates";
-                value = {
-                  source = ../templates;
-                };
-              }
-              {
-                name = "${cfg.directory}/early-init.el";
-                value = {
-                  source = ../early-init.el;
-                };
-              }
-            ];
+            home = {
+              "${cfg.directory}/init.el".source = "${initFile}/init.el";
+              "${cfg.directory}/templates".source = ../templates;
+              "${cfg.directory}/early-init.el".source = ../early-init.el;
+            };
           };
         };
       };
@@ -206,8 +214,8 @@ in
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
-    (mkIf cfg.serviceIntegration.enable {
+  config = mkIf cfg.enable (
+    mkIf cfg.serviceIntegration.enable {
       # Based on:
       # https://github.com/NixOS/nixpkgs/commit/958ae22cc3d4dcf6c9ef008ec2c582b4fe9fa083
       systemd.user.services.emacs = {
@@ -230,6 +238,6 @@ in
         };
         wantedBy = [ "graphical-session.target" ];
       };
-    })
-  ]);
+    }
+  );
 }
