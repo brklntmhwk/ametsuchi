@@ -93,7 +93,7 @@ let
     inherit (cfg.desktopItem) desktopName mimeTypes;
     comment = "Edit text";
     genericName = "Text Editor";
-    exec = "${emacsBin} %F";
+    exec = "${cfg.name} %F";
     icon = "emacs";
     startupNotify = true;
     startupWMClass = "Emacs";
