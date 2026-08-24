@@ -102,23 +102,6 @@ let
       "TextEditor"
     ];
   };
-  desktopItemClient = makeDesktopItem {
-    inherit (cfg.desktopItem) mimeTypes;
-    name = "${cfg.name}client";
-    desktopName = "${cfg.desktopItem.desktopName} (Client)";
-    comment = "Edit text in existing Emacs session";
-    genericName = "Text Editor";
-    # `-c`: Create a new frame (window)
-    # `-a`: Activate the Emacs daemon if it doesn't yet
-    exec = "${emacsclient} -c -a \"\" %F";
-    icon = "emacs";
-    startupNotify = true;
-    startupWMClass = "Emacs";
-    categories = [
-      "Development"
-      "TextEditor"
-    ];
-  };
 
   # https://github.com/viperML/nix-maid/commit/4ea39e76cdc8f8946bf4474a55962b2dfd8258fb
   userSubmodule =
@@ -133,8 +116,7 @@ let
         ]
         ++ fonts
         ++ optional cfg.icons.enable emacsConfig.icons
-        ++ optional (!isDarwin) desktopItem
-        ++ optional (!isDarwin && cfg.emacsclient.enable) desktopItemClient;
+        ++ optional (!isDarwin) desktopItem;
 
         maid = {
           file = {
