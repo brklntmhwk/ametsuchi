@@ -87,6 +87,11 @@ let
       symbols-only
       ;
   };
+  miscPkgs = attrValues {
+    inherit (pkgs)
+      emacs-lsp-booster # eglot-booster uses this.
+      ;
+  };
 
   desktopItem = makeDesktopItem {
     inherit (cfg) name;
@@ -115,6 +120,7 @@ let
           wrappedEmacs
         ]
         ++ fonts
+        ++ miscPkgs
         ++ optional cfg.icons.enable emacsConfig.icons
         ++ optional (!isDarwin) desktopItem;
 

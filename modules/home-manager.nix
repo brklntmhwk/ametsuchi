@@ -109,12 +109,13 @@ in
       ];
 
     home.packages = attrValues {
-      # Add font packages that will be used in your Emacs config.
+      # Add font and other packages that will be used in your Emacs config.
       inherit (pkgs)
         moralerspace-hw
         sarasa-gothic
         noto-fonts-color-emoji
         symbola
+        emacs-lsp-booster # eglot-booster uses this.
         ;
       inherit (pkgs.nerd-fonts)
         symbols-only
