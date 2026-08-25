@@ -2353,6 +2353,7 @@ A startup screen extracted from Spacemacs
 #+begin_src emacs-lisp
 (use-package dashboard
   :ensure t
+  :demand t
   :custom
   (dashboard-banner-logo-title nil)
   (dashboard-center-content t)
@@ -2605,8 +2606,9 @@ process Emacs shell arguments
   (inhibit-default-init t)
   (inhibit-startup-echo-area-message t)
   (inhibit-startup-screen t)
-  (initial-buffer-choice
-   (lambda () (get-buffer-create "*dashboard*")))
+  ;; `dashboard-setup-startup-hook' takes care of this too.
+  ;; (initial-buffer-choice
+  ;;  (lambda () (get-buffer-create "*dashboard*")))
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
   :config
