@@ -2691,7 +2691,7 @@ The Emacs Client for LSP servers
       (remove-hook 'before-save-hook #'eglot-format-buffer t)))
 
   (dolist (entry '((just-mode . ("just-lsp"))
-                   ((nix-ts-mode nix-mode) . ("nil"))
+                   ((nix-ts-mode nix-mode) . ("nixd"))
                    (zig-ts-mode . ("zls"))))
     (cl-pushnew entry eglot-server-programs :test #'equal))
 
