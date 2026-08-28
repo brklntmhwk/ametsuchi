@@ -19,6 +19,8 @@ let
   inherit (lib)
     getExe
     getExe'
+    literalExpression
+    mdDoc
     mkEnableOption
     mkIf
     mkOption
@@ -163,7 +165,7 @@ in
       };
       serviceIntegration = {
         enable = mkEnableOption (
-          lib.mdDoc ''
+          mdDoc ''
             Enable service integration. For now, only systemd is supported.
           ''
         );

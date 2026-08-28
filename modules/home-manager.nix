@@ -17,9 +17,14 @@
 }:
 
 let
-  inherit (builtins) attrValues removeAttrs;
+  inherit (builtins) attrValues isAttrs removeAttrs;
   inherit (lib)
     evalModules
+    getAttrFromPath
+    isOption
+    mapAttrs
+    mkAliasDefinitions
+    mkDefault
     mkEnableOption
     mkIf
     mkMerge
@@ -71,14 +76,6 @@ in
   config = mkIf cfg.enable {
     programs.emacs-twist =
       let
-        inherit (builtins) isAttrs;
-        inherit (lib)
-          getAttrFromPath
-          isOption
-          mapAttrs
-          mkAliasDefinitions
-          mkDefault
-          ;
         mkRecursiveAlias =
           currentOpts: currentPath:
           mapAttrs (
