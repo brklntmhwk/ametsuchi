@@ -146,14 +146,16 @@ in
       enable = mkEnableOption "Ametsuchi";
       name = mkOption {
         type = types.str;
-        description = "Name of the wrapper script.";
         default = "emacs";
+        description = "Name of the wrapper script.";
         example = "my-emacs";
       };
       directory = mkOption {
         type = types.str;
-        description = "Relative path in string to user-emacs-directory from the home directory";
         default = ".config/emacs";
+        description = ''
+          Relative path in string to user-emacs-directory from the home directory.
+        '';
         example = ".local/share/emacs";
       };
       emacsclient = {
@@ -169,35 +171,43 @@ in
       icons = {
         enable = mkOption {
           type = types.bool;
-          description = "Whether to install Emacs icons.";
           default = true;
+          description = "Whether to install Emacs icons.";
+          example = false;
         };
       };
       desktopItem = {
         desktopName = mkOption {
           type = types.str;
-          description = "Long name of the desktop item.";
           default = "Emacs";
+          description = "Long name of the desktop item.";
+          example = "My Emacs";
         };
         mimeTypes = mkOption {
           type = types.listOf types.str;
-          description = "List of mime types associated with the wrapper.";
           default = [
             "text/plain"
             "inode/directory"
           ];
+          description = "List of mime types associated with the wrapper.";
+          example = [ "text/plain" ];
         };
       };
       extraFeatures = mkOption {
         type = types.listOf types.str;
-        description = "Add extra features";
         default = [ ];
+        description = "Extra features to add to.";
+        example = literalExpression ''
+          [
+          
+          ]
+        '';
       };
       packageWrapped = mkOption {
         type = types.package;
-        description = "The wrapped Emacs package.";
-        readOnly = true;
         default = wrappedEmacs;
+        readOnly = true;
+        description = "The wrapped Emacs package.";
       };
     };
   };

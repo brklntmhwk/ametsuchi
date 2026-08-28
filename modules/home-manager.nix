@@ -63,7 +63,7 @@ in
     enable = mkEnableOption "Ametsuchi";
     extraFeatures = mkOption {
       type = types.listOf types.str;
-      description = "Add extra features";
+      description = "Extra features to add.";
       default = [ ];
     };
   };
