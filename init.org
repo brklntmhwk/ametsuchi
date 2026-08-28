@@ -885,7 +885,12 @@ All faces from both built-in features and external packages are centrally manage
        `(whitespace-trailing ((,c :background ,slate :foreground ,fg-main))))))
   (add-hook 'modus-themes-after-load-theme-hook #'brk/modus-themes-custom-face)
   :config
-  (modus-themes-load-theme 'modus-vivendi-tinted))
+  (defvar brk/noctalia-theme-file (expand-file-name "noctalia-theme.el" user-emacs-directory))
+  (if (file-exists-p brk/noctalia-theme-file)
+      (progn
+        (load brk/noctalia-theme-file)
+        (run-hooks 'modus-themes-after-load-theme-hook))
+    (modus-themes-load-theme 'modus-vivendi-tinted)))
 #+end_src
 **** nerd-icons
 #+begin_quote
