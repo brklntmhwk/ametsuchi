@@ -3117,10 +3117,13 @@ pass a URL to a web browser
 #+begin_src emacs-lisp
 (use-package browse-url
   :custom
-  (browse-url-browser-function 'browse-url-generic)
-  ;; (browse-url-browser-function 'eww-browse-url)
   (browse-url-secondary-browser-function 'eww-browse-url)
-  (browse-url-generic-program "firefox"))
+  :bind
+  (:map system-meta-map
+        ("b" . brk-browse-url-choose-browser))
+  :init
+  (require 'brk-browse-url)
+  (brk-browse-url-initialize-browser))
 #+end_src
 **** eww
 #+begin_quote
