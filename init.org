@@ -2613,15 +2613,7 @@ process Emacs shell arguments
   (initial-buffer-choice
    (lambda () (get-buffer-create "*dashboard*")))
   (initial-scratch-message nil)
-  (initial-major-mode 'fundamental-mode)
-  :config
-  (defun brk/with-editor-prevent-dashboard-ad (orig-fn &rest args)
-    "Temporarily bind `initial-buffer-choice' to nil during with-editor completion
-to prevent Dashboard from hijacking the frame after e.g., a Magit commit."
-    (let ((initial-buffer-choice nil))
-      (apply orig-fn args)))
-  (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
-  (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad))
+  (initial-major-mode 'fundamental-mode))
 #+end_src
 *** Development
 :PROPERTIES:
@@ -3065,7 +3057,24 @@ A Git porcelain inside Emacs
   ;; https://www.reddit.com/r/emacs/comments/11auxod/magit_quits_after_a_commit_happen/
   ;; Explicitly set this to prevent the Dashboard buffer from appearing after every commit.
   ;; (add-hook 'git-commit-post-finish-hook #'magit)
-  )
+
+  (defun brk/with-editor-prevent-dashboard-ad (orig-fn &rest args)
+    "Synchronously restore `magit-status' buffer after with-editor completion.
+Prevents fallback buffers (like Dashboard) from lingering in the commit window
+without destroying the window layout and without screen flickering."
+    (let ((commit-window (selected-window))
+          (is-git-commit (bound-and-true-p git-commit-mode))
+          (repo-dir default-directory))
+      (let ((inhibit-redisplay t))
+        (apply orig-fn args)
+        (when (and is-git-commit
+                   (window-live-p commit-window)
+                   (string= (buffer-name (window-buffer commit-window)) "*dashboard*"))
+          (when-let ((status-buf (magit-status-setup-buffer repo-dir)))
+            (set-window-buffer commit-window status-buf))))))
+
+  (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
+  (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad))
 #+end_src
 ***** magit-delta
 #+begin_quote
