@@ -2421,7 +2421,13 @@ A startup screen extracted from Spacemacs
        ("e" "Mu4e" mu4e)]))
 
   (unless (daemonp)
-    (dashboard-setup-startup-hook)))
+    (dashboard-setup-startup-hook))
+
+  ;; Add "*dashboard*" buffer to the blacklist of target buffers to automatically
+  ;; to switch to as a fallback when a buffer is killed.
+  (setq switch-to-prev-buffer-skip
+        (lambda (_win buf _bury-or-kill)
+          (string= (buffer-name buf) "*dashboard*"))))
 #+end_src
 **** dired
 #+begin_quote
@@ -3060,12 +3066,13 @@ A Git porcelain inside Emacs
 
   (defun brk/with-editor-prevent-dashboard-ad (orig-fn &rest args)
     "Synchronously restore `magit-status' buffer after with-editor completion.
-This prevents fallback buffers (e.g., Dashboard) from lingering in the commit window."
+  This prevents fallback buffers (e.g., Dashboard) from lingering in the commit window
+  while waiting for synchronous tasks like GPG signing."
     (let ((is-git-commit (bound-and-true-p git-commit-mode))
-          (repo-dir default-directory))
+          (repo-dir (magit-toplevel)))
       (let ((inhibit-redisplay t))
         (apply orig-fn args)
-        (when is-git-commit
+        (when (and is-git-commit repo-dir)
           (magit-status repo-dir)))))
 
   (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
