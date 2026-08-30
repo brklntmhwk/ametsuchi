@@ -2377,7 +2377,6 @@ A startup screen extracted from Spacemacs
      (projects . 5)
      (bookmarks . 10)
      (recents . 15)))
-
   (dashboard-item-shortcuts
    '((my-agenda . "a")
      (bookmarks . "s")
@@ -2611,9 +2610,8 @@ process Emacs shell arguments
   (inhibit-default-init t)
   (inhibit-startup-echo-area-message t)
   (inhibit-startup-screen t)
-  ;; `dashboard-setup-startup-hook' takes care of this too.
-  ;; (initial-buffer-choice
-  ;;  (lambda () (get-buffer-create "*dashboard*")))
+  (initial-buffer-choice
+   (lambda () (get-buffer-create "*dashboard*")))
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
   :config
