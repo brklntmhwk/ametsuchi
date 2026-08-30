@@ -2617,12 +2617,13 @@ process Emacs shell arguments
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
   :config
-  (defun brk/server-edit-prevent-dashboard-ad (orig-fn &rest args)
-    "Temporarily bind `initial-buffer-choice' to nil during `server-edit'
+  (defun brk/with-editor-prevent-dashboard-ad (orig-fn &rest args)
+    "Temporarily bind `initial-buffer-choice' to nil during with-editor completion
 to prevent Dashboard from hijacking the frame after e.g., a Magit commit."
     (let ((initial-buffer-choice nil))
       (apply orig-fn args)))
-  (advice-add 'server-edit :around #'brk/server-edit-prevent-dashboard-ad))
+  (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
+  (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad))
 #+end_src
 *** Development
 :PROPERTIES:
@@ -3064,18 +3065,7 @@ A Git porcelain inside Emacs
   ;; https://www.reddit.com/r/emacs/comments/11auxod/magit_quits_after_a_commit_happen/
   ;; Explicitly set this to prevent the Dashboard buffer from appearing after every commit.
   ;; (add-hook 'git-commit-post-finish-hook #'magit)
-
-  (defun brk/magit-restore-status-sync-ad (orig-fn &rest args)
-    "Synchronously restore `magit-status' after `with-editor-finish'.
-This prevents aggressive fallback to the Dashboard buffer while waiting for you to complete
-git signing (e.g., a YubiKey touch).
-Restricted to run only if you are finishing a git-commit buffer to prevent side-effects."
-    (let ((is-git-commit (derived-mode-p 'git-commit-mode))
-          (repo-dir default-directory))
-      (apply orig-fn args)
-      (when is-git-commit
-        (magit-status repo-dir))))
-  (advice-add 'with-editor-finish :around #'brk/magit-restore-status-sync-ad))
+  )
 #+end_src
 ***** magit-delta
 #+begin_quote
