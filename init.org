@@ -3055,6 +3055,9 @@ A Git porcelain inside Emacs
          ("s" . magit-status)
          ("d" . magit-dispatch)
          ("f" . magit-file-dispatch)))
+  :init
+  (with-eval-after-load 'project
+    (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
   :config
   ;; NOTE: We don't rely on this async hook anymore as it fails to handle some edge cases
   ;; properly (e.g., sign a commit with a YubiKey).
