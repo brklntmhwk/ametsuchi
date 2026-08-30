@@ -3060,18 +3060,13 @@ A Git porcelain inside Emacs
 
   (defun brk/with-editor-prevent-dashboard-ad (orig-fn &rest args)
     "Synchronously restore `magit-status' buffer after with-editor completion.
-Prevents fallback buffers (like Dashboard) from lingering in the commit window
-without destroying the window layout and without screen flickering."
-    (let ((commit-window (selected-window))
-          (is-git-commit (bound-and-true-p git-commit-mode))
+This prevents fallback buffers (e.g., Dashboard) from lingering in the commit window."
+    (let ((is-git-commit (bound-and-true-p git-commit-mode))
           (repo-dir default-directory))
       (let ((inhibit-redisplay t))
         (apply orig-fn args)
-        (when (and is-git-commit
-                   (window-live-p commit-window)
-                   (string= (buffer-name (window-buffer commit-window)) "*dashboard*"))
-          (when-let ((status-buf (magit-status-setup-buffer repo-dir)))
-            (set-window-buffer commit-window status-buf))))))
+        (when is-git-commit
+          (magit-status repo-dir)))))
 
   (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
   (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad))
