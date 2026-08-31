@@ -1,1 +1,1 @@
-(sontaku :fetcher github :repo "brklntmhwk/sontaku" :files ("sontaku.el"))
+(sontaku :fetcher codeberg :repo "brklntmhwk/sontaku" :files ("sontaku.el"))
