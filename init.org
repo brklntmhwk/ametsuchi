@@ -770,6 +770,19 @@ Display generation from window structure and buffer text.
               frame-title-format brk/default-frame-title-format
               scroll-conservatively 1)
 #+end_src
+**** auto-dark
+#+begin_quote
+Automatically set the dark-mode theme based on system status
+#+end_quote
+#+begin_src emacs-lisp
+(use-package auto-dark
+  :ensure t
+  :after modus-themes
+  :custom
+  (auto-dark-themes '((modus-vivendi-tinted) (modus-operandi-tinted)))
+  :hook
+  (after-init-hook . auto-dark-mode))
+#+end_src
 **** fontaine
 #+begin_quote
 Set Emacs font configurations using presets
@@ -886,12 +899,7 @@ All faces from both built-in features and external packages are centrally manage
        `(whitespace-trailing ((,c :background ,slate :foreground ,fg-main))))))
   (add-hook 'modus-themes-after-load-theme-hook #'brk/modus-themes-custom-face)
   :config
-  (defvar brk/noctalia-theme-file (expand-file-name "noctalia-theme.el" user-emacs-directory))
-  (if (file-exists-p brk/noctalia-theme-file)
-      (progn
-        (load brk/noctalia-theme-file)
-        (run-hooks 'modus-themes-after-load-theme-hook))
-    (modus-themes-load-theme 'modus-vivendi-tinted)))
+  (modus-themes-load-theme 'modus-vivendi-tinted))
 #+end_src
 **** nerd-icons
 #+begin_quote
