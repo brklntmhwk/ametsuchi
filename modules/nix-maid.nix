@@ -8,7 +8,6 @@
 mkEmacsConfig:
 {
   config,
-  options,
   lib,
   pkgs,
   ...
@@ -18,7 +17,6 @@ let
   inherit (builtins) attrValues concatStringsSep;
   inherit (lib)
     getExe
-    getExe'
     literalExpression
     mdDoc
     mkEnableOption
@@ -47,8 +45,13 @@ let
     done
   '';
 
-  emacsBin = getExe emacsConfig;
-  emacsclient = getExe' emacsConfig.emacs "emacsclient";
+  # NOTE: We avoid using `lib.getExe`/`lib.getExe'` intentionally here.
+  # They try to resolve multi-output derivations and use metadata to find the correct
+  # executable name, which cause the build time warning mentioned below if the target
+  # package doesn't have `meta.mainProgram` set explicitly and correctly (The upstream
+  # emacs packages from emacs-overlay don't).
+  emacs = "${emacsConfig}/bin/emacs";
+  emacsclient = "${emacsConfig.emacs}/bin/emacsclient";
 
   wrappedEmacs =
     runCommandLocal cfg.name
@@ -68,7 +71,7 @@ let
         # the shell from expanding runtime variables.
         cat > $out/bin/${cfg.name} <<EOF
         #!/bin/sh
-        exec ${emacsBin} \
+        exec ${emacs} \
         --init-directory="\$HOME/${cfg.directory}" "\$@"
         EOF
 
@@ -164,11 +167,9 @@ in
         enable = mkEnableOption "emacsclient";
       };
       serviceIntegration = {
-        enable = mkEnableOption (
-          mdDoc ''
-            Enable service integration. For now, only systemd is supported.
-          ''
-        );
+        enable = mkEnableOption (mdDoc ''
+          Enable service integration. For now, only systemd is supported.
+        '');
       };
       icons = {
         enable = mkOption {
@@ -201,7 +202,7 @@ in
         description = "Extra features to add to.";
         example = literalExpression ''
           [
-          
+
           ]
         '';
       };
