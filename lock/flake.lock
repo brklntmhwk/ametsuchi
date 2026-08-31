@@ -94,6 +94,22 @@
         "url": "https://elpa.gnu.org/packages/async-1.9.9.tar"
       }
     },
+    "auto-dark": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773446188,
+        "narHash": "sha256-Jr5EMlXfimrWk8NCqgPjTNQT0jipFalE6JEruNTeck8=",
+        "owner": "LionyxML",
+        "repo": "auto-dark-emacs",
+        "rev": "6d1e8d2fc493dccbf05c9191611805c7e7881c70",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LionyxML",
+        "repo": "auto-dark-emacs",
+        "type": "github"
+      }
+    },
     "avy": {
       "flake": false,
       "locked": {
@@ -2091,6 +2107,7 @@
         "aggressive-indent": "aggressive-indent",
         "astro-ts-mode": "astro-ts-mode",
         "async": "async",
+        "auto-dark": "auto-dark",
         "avy": "avy",
         "benchmark-init": "benchmark-init",
         "blamer": "blamer",
@@ -2308,17 +2325,17 @@
     "sontaku": {
       "flake": false,
       "locked": {
-        "lastModified": 1768987124,
-        "narHash": "sha256-SPs6GzLVEdVdIhaz+UZZGz6vGwixv3gKK/KKi1UkAeg=",
-        "owner": "brklntmhwk",
-        "repo": "sontaku",
-        "rev": "c24626ecc0b6376416269fbd5bde16f74f3a03dc",
-        "type": "github"
+        "lastModified": 1769137440,
+        "narHash": "sha256-Vz/lpB9pSZvUcDgn9HUu/9xi+PVJYe2Fx/o9Df9eIFA=",
+        "ref": "refs/heads/main",
+        "rev": "d99e494c22270850c8260be3c364fc63aaa62cb0",
+        "revCount": 39,
+        "type": "git",
+        "url": "https://codeberg.org/brklntmhwk/sontaku.git"
       },
       "original": {
-        "owner": "brklntmhwk",
-        "repo": "sontaku",
-        "type": "github"
+        "type": "git",
+        "url": "https://codeberg.org/brklntmhwk/sontaku.git"
       }
     },
     "spinner": {

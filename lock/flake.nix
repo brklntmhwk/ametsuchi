@@ -36,6 +36,12 @@
       type = "tarball";
       url = "https://elpa.gnu.org/packages/async-1.9.9.tar";
     };
+    auto-dark = {
+      flake = false;
+      owner = "LionyxML";
+      repo = "auto-dark-emacs";
+      type = "github";
+    };
     avy = {
       flake = false;
       owner = "abo-abo";
@@ -807,9 +813,8 @@
     };
     sontaku = {
       flake = false;
-      owner = "brklntmhwk";
-      repo = "sontaku";
-      type = "github";
+      type = "git";
+      url = "https://codeberg.org/brklntmhwk/sontaku.git";
     };
     spinner = {
       flake = false;
