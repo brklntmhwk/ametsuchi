@@ -715,7 +715,7 @@ Buffer manipulation primitives for GNU Emacs.
               tab-width 2 ; 8 by default
               indicate-empty-lines t ; nil by default
               indicate-buffer-boundaries 'left ; nil by default
-              left-fringe-width 12 ; nil by default
+              left-fringe-width 16 ; nil by default
               right-fringe-width 2 ; nil by default
               left-margin-width 2 ; 0 by default
               right-margin-width 2 ; 0 by default
