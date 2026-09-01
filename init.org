@@ -854,10 +854,6 @@ All faces from both built-in features and external packages are centrally manage
    '((border-mode-line-active unspecified)
      (border-mode-line-inactive unspecified)
      (bg-mode-line-inactive bg-inactive)))
-  (modus-vivendi-tinted-palette-overrides
-   '((bg-mode-line-active bg-lavender)))
-  (modus-operandi-tinted-palette-overrides
-   '((bg-mode-line-active bg-magenta-nuanced)))
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
   :init
   (defun brk/modus-themes-custom-face ()
