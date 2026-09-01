@@ -2091,10 +2091,11 @@ By default, the following major modes are included in `global-colorful-modes`:
   :ensure t
   :custom
   (colorful-use-prefix t)
+  (colorful-prefix-string "■")
   (colorful-only-strings 'only-prog)
   (css-fontify-colors nil)
+  :hook (after-init-hook . global-colorful-mode)
   :config
-  (global-colorful-mode 1)
   (add-to-list 'global-colorful-modes 'helpful-mode))
 #+end_src
 **** display-fill-column-indicator
@@ -2103,10 +2104,7 @@ interface for display-fill-column-indicator
 #+end_quote
 #+begin_src emacs-lisp
 (use-package display-fill-column-indicator
-  :hook
-  ((prog-mode-hook
-    text-mode-hook)
-   . display-fill-column-indicator-mode))
+  :hook (prog-mode-hook . display-fill-column-indicator-mode))
 #+end_src
 **** display-line-numbers
 #+begin_quote
@@ -2119,9 +2117,8 @@ interface for display-line-numbers
   (display-line-numbers-grow-only t)
   (display-line-numbers-width-start t)
   :hook
+  (after-init-hook . global-display-line-numbers-mode)
   (display-line-numbers-mode-hook . header-line-indent-mode)
-  :init
-  (global-display-line-numbers-mode 1)
   :config
   (defun brk/display-line-numbers-fixed-width ()
     (when (< display-line-numbers-width 4)
@@ -3085,7 +3082,10 @@ A Git porcelain inside Emacs
           (magit-status repo-dir)))))
 
   (advice-add 'with-editor-finish :around #'brk/with-editor-prevent-dashboard-ad)
-  (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad))
+  (advice-add 'with-editor-cancel :around #'brk/with-editor-prevent-dashboard-ad)
+
+  (transient-append-suffix 'magit-commit "-S"
+    '("-N" "Sign without gpg" "--no-gpg-sign")))
 #+end_src
 ***** magit-delta
 #+begin_quote
