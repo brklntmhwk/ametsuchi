@@ -781,10 +781,12 @@ Automatically set the dark-mode theme based on system status
   ;; auto-dark uses (e.g., xdg-desktop-portal).
   :if (not (getenv "WSL_DISTRO_NAME")) ; e.g., "NixOS"
   :after modus-themes
-  :custom
-  (auto-dark-themes '((modus-vivendi-tinted) (modus-operandi-tinted)))
   :hook
-  (after-init-hook . auto-dark-mode))
+  (after-init-hook . auto-dark-mode)
+  :config
+  ;; Set this here to ensure the `:set' function for `auto-dark-themes' gets triggered
+  ;; after the package is loaded; configuring this in `:custom' might be too early.
+  (setopt auto-dark-themes '((modus-vivendi-tinted) (modus-operandi-tinted))))
 #+end_src
 **** fontaine
 #+begin_quote
