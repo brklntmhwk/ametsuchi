@@ -2369,6 +2369,7 @@ A startup screen extracted from Spacemacs
   :ensure t
   :demand t
   :custom
+  (dashboard-startup-banner 'ascii)
   (dashboard-banner-ascii "天地 卍 Ametsuchi")
   (dashboard-banner-logo-title
    "Ametsuchi is the universe—It encompasses (almost) everything that forms my ideal Emacs\
@@ -2380,7 +2381,6 @@ workstation, a living cosmos where creativity, logic, and intuition intertwine."
   (dashboard-set-file-icons nil)
   (dashboard-set-heading-icons t)
   (dashboard-show-shortcuts t)
-  ;; (dashboard-startup-banner (concat brk-directory-user-pictures "dashboard-banner.png"))
   (dashboard-startupify-list '(dashboard-insert-banner
                                dashboard-insert-newline
                                dashboard-insert-items))
