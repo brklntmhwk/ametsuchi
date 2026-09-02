@@ -33,6 +33,21 @@
 
 (require 'dashboard)
 
+(defconst brk/dashboard-banner
+  "
+    █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
+   ██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
+   ███████║██╔████╔██║█████╗     ██║   ███████╗██║   ██║██║     ███████║██║
+   ██╔══██║██║╚██╔╝██║██╔══╝     ██║   ╚════██║██║   ██║██║     ██╔══██║██║
+   ██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████║╚██████╔╝╚██████╗██║  ██║██║
+   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝
+
+  Ametsuchi is the universe—It encompasses (almost) everything that forms my
+ ideal Emacs workstation, a living cosmos where creativity, logic, and intuition
+                                  intertwine.
+"
+  "Ametsuchi ASCII dashboard banner.")
+
 (defun brk-dashboard-insert-my-agenda-section (list-size)
   "Insert LIST-SIZE number of agenda entries into the dashboard."
   (dashboard-insert-section

@@ -866,6 +866,8 @@ All faces from both built-in features and external packages are centrally manage
        `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
        ;; blamer
        `(blamer-face ((,c :height 1.0 :background ,bg-hl-line :foreground ,fg-lavender :italic t)))
+       ;; dashboard
+       `(dashboard-text-banner ((,c :family "monospace" :foreground ,blue-warmer)))
        ;; dired-filter
        `(‎dired-filter-group-header‎ ((,c :background ,bg-lavender :box(:line-width 2 :color ,bg-lavender))))
        ;; goggles
@@ -2370,7 +2372,7 @@ A startup screen extracted from Spacemacs
   :demand t
   :custom
   (dashboard-startup-banner 'ascii)
-  (dashboard-banner-ascii "Ametsuchi")
+  (dashboard-banner-ascii brk/dashboard-banner)
   (dashboard-banner-logo-title nil)
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
