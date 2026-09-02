@@ -862,8 +862,8 @@ All faces from both built-in features and external packages are centrally manage
     (modus-themes-with-colors
       (custom-set-faces
        ;; ace-window
-       `(aw-leading-char-face ((,c :height 2.0 :foreground ,blue-warmer)))
-       `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,blue-warmer)))
+       `(aw-leading-char-face ((,c :height 2.0 :foreground ,slate)))
+       `(aw-minibuffer-leading-char-face ((,c :height 1.1 :foreground ,slate)))
        ;; blamer
        `(blamer-face ((,c :height 1.0 :background ,bg-hl-line :foreground ,fg-lavender :italic t)))
        ;; dashboard
