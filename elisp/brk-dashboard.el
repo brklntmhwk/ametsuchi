@@ -33,7 +33,7 @@
 
 (require 'dashboard)
 
-(defconst brk/dashboard-banner
+(defconst brk-dashboard-banner-ascii-text
   "
     █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
    ██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
