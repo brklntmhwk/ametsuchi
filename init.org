@@ -2593,17 +2593,19 @@ Operations on the current project
 #+end_quote
 #+begin_src emacs-lisp
 (use-package project
+  :custom
+  ;; Emacs 29+: Configure this to get `project' to recognize the subproject's root files
+  ;; while keeping the VCS's faster file search.
+  (project-vc-extra-root-markers
+   '("Cargo.toml"
+     "flake.nix"
+     "package.json"
+     "tsconfig.json"
+     "compile_commands.json"))
   :config
-  (defun brk/project-try-nix-store (dir)
-    (save-match-data
-      (when (string-match (rx bol "/nix/store/" (+ (not "/")) "/")
-                          dir)
-        (list 'nix-store (match-string 0 dir)))))
+  (require 'brk-project)
 
-  (add-hook 'project-find-functions #'brk/project-try-nix-store)
-
-  (cl-defmethod project-root ((project (head nix-store)))
-    (cadr project)))
+  (add-hook 'project-find-functions #'brk-project-try-nix-store))
 #+end_src
 **** recentf
 #+begin_quote
