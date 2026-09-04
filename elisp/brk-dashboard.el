@@ -35,16 +35,16 @@
 
 (defconst brk-dashboard-banner-ascii-text
   "
- █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
-██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
-███████║██╔████╔██║█████╗     ██║   ███████╗██║   ██║██║     ███████║██║
-██╔══██║██║╚██╔╝██║██╔══╝     ██║   ╚════██║██║   ██║██║     ██╔══██║██║
-██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████║╚██████╔╝╚██████╗██║  ██║██║
-╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝
+   █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
+  ██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
+  ███████║██╔████╔██║█████╗     ██║   ███████╗██║   ██║██║     ███████║██║
+  ██╔══██║██║╚██╔╝██║██╔══╝     ██║   ╚════██║██║   ██║██║     ██╔══██║██║
+  ██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████║╚██████╔╝╚██████╗██║  ██║██║
+  ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝
 
-Ametsuchi is the universe—It encompasses (almost) everything that forms my
-ideal Emacs workstation, a living cosmos where creativity, logic, and intuition
-                                  intertwine.
+    Ametsuchi is the universe—It encompasses (almost) everything that forms my
+  ideal Emacs workstation, a living cosmos where creativity, logic, and intuition
+                                    intertwine.
 "
   "Ametsuchi ASCII dashboard banner.")
 
