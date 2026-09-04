@@ -35,21 +35,22 @@
 
 (defconst brk-dashboard-banner-ascii-text
   "
-    █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
-   ██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
-   ███████║██╔████╔██║█████╗     ██║   ███████╗██║   ██║██║     ███████║██║
-   ██╔══██║██║╚██╔╝██║██╔══╝     ██║   ╚════██║██║   ██║██║     ██╔══██║██║
-   ██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████║╚██████╔╝╚██████╗██║  ██║██║
-   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝
+ █████╗ ███╗   ███╗███████╗████████╗███████╗██╗   ██╗ ██████╗██╗  ██╗██╗
+██╔══██╗████╗ ████║██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝██║  ██║██║
+███████║██╔████╔██║█████╗     ██║   ███████╗██║   ██║██║     ███████║██║
+██╔══██║██║╚██╔╝██║██╔══╝     ██║   ╚════██║██║   ██║██║     ██╔══██║██║
+██║  ██║██║ ╚═╝ ██║███████╗   ██║   ███████║╚██████╔╝╚██████╗██║  ██║██║
+╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝
 
-  Ametsuchi is the universe—It encompasses (almost) everything that forms my
- ideal Emacs workstation, a living cosmos where creativity, logic, and intuition
+Ametsuchi is the universe—It encompasses (almost) everything that forms my
+ideal Emacs workstation, a living cosmos where creativity, logic, and intuition
                                   intertwine.
 "
   "Ametsuchi ASCII dashboard banner.")
 
 (defun brk-dashboard-insert-my-agenda-section (list-size)
   "Insert LIST-SIZE number of agenda entries into the dashboard."
+  (require 'org-ql)
   (dashboard-insert-section
    (concat
     "Today's Agenda"
@@ -65,7 +66,6 @@
    (brk-dashboard--my-agenda-format el)))
 
 (defun brk-dashboard--my-agenda-items ()
-  (require 'org-ql)
   (let* ((today (brk-dashboard--adjusted-today))
          (tomorrow (decoded-time-add today (make-decoded-time :day 1)))
          (regexp (brk-dashboard--org-timestamp-regexp-for-decoded-dates
