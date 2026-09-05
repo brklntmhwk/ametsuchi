@@ -5,7 +5,7 @@
 ;; Author: Ohma Togaki
 ;; Version: 0.1
 ;; Keywords: convenience
-;; URL: https://github.com/brklntmhwk/elisp/brk-org-super-agenda.el
+;; URL: https://github.com/brklntmhwk/elisp/brk-project.el
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is not part of GNU Emacs.
