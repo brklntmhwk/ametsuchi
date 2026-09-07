@@ -2562,7 +2562,19 @@ Support for `direnv' that operates buffer-locally
 (use-package envrc
   :ensure t
   :if (executable-find "direnv")
-  :hook (after-init-hook . envrc-global-mode))
+  :hook (after-init-hook . envrc-global-mode)
+  :config
+  (defun brk/envrc-propagate-org-babel-ad (orig-fn &rest args)
+    "Propagate the buffer-local envrc environment to org-babel.
+org-babel uses temporary buffers to execute commands, which normally
+do not inherit the `envrc-mode' environment. This wrapper explicitly
+injects the environment into the execution context."
+    (if (bound-and-true-p envrc-mode)
+        (envrc-propagate-environment
+         (apply orig-fn args))
+      (apply orig-fn args)))
+
+  (advice-add 'org-babel-execute-src-block :around #'brk/envrc-propagate-org-babel-ad))
 #+end_src
 **** files
 #+begin_quote
