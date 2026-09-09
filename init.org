@@ -2903,10 +2903,9 @@ Major mode for Nix expressions, powered by tree-sitter
 (use-package nix-ts-mode
   :ensure t
   :mode "\\.nix\\'"
-  :hook
-  (nix-ts-mode-hook . (lambda ()
-                        (eglot-ensure)
-                        (nixfmt-on-save-mode))))
+  :hook (nix-ts-mode-hook . (lambda ()
+                              (eglot-ensure)
+                              (nixfmt-on-save-mode))))
 #+end_src
 ***** nix-mode
 #+begin_quote
@@ -2917,6 +2916,15 @@ An Emacs major mode for editing Nix expressions.
   :ensure t
   :commands nix-repl)
 #+end_src
+***** php-ts-mode
+#+begin_quote
+Tree-sitter support for PHP
+#+end_quote
+#+begin_src emacs-lisp
+(use-package php-ts-mode
+  :mode "\\.php\\'"
+  :hook (php-ts-mode-hook . eglot-ensure))
+#+end_src
 ***** rust-ts-mode
 #+begin_quote
 tree-sitter support for Rust
@@ -2924,8 +2932,7 @@ tree-sitter support for Rust
 #+begin_src emacs-lisp
 (use-package rust-ts-mode
   :mode "\\.rs\\'"
-  :hook
-  (rust-ts-mode-hook . eglot-ensure))
+  :hook (rust-ts-mode-hook . eglot-ensure))
 #+end_src
 ***** toml-ts-mode
 #+begin_quote
@@ -2934,10 +2941,9 @@ tree-sitter support for TOML
 #+begin_src emacs-lisp
 (use-package toml-ts-mode
   :mode "\\.toml\\'"
-  :hook
-  (toml-ts-mode-hook . (lambda ()
-                         (eglot-ensure)
-                         (dprint-on-save-mode))))
+  :hook (toml-ts-mode-hook . (lambda ()
+                               (eglot-ensure)
+                               (dprint-on-save-mode))))
 #+end_src
 ***** typescript-ts-mode
 #+begin_quote
@@ -2958,11 +2964,8 @@ web template editing mode for emacs
   :custom
   (web-mode-enable-front-matter-block t)
   (web-mode-enable-current-element-highlight t)
-  :mode
-  "\\.html?\\'"
-  "\\.mdx\\'"
-  :hook
-  (web-mode-hook . eglot-ensure))
+  :mode "\\.html?\\'" "\\.mdx\\'"
+  :hook (web-mode-hook . eglot-ensure))
 #+end_src
 ***** yaml-ts-mode
 #+begin_quote
@@ -2971,10 +2974,9 @@ tree-sitter support for YAML
 #+begin_src emacs-lisp
 (use-package yaml-ts-mode
   :mode "\\.ya?ml\\'"
-  :hook
-  (yaml-ts-mode-hook . (lambda ()
-                         (eglot-ensure)
-                         (yamlfmt-on-save-mode))))
+  :hook (yaml-ts-mode-hook . (lambda ()
+                               (eglot-ensure)
+                               (yamlfmt-on-save-mode))))
 #+end_src
 ***** zig-ts-mode
 #+begin_quote
@@ -2984,8 +2986,7 @@ major mode for editing web templates
 (use-package zig-ts-mode
   :ensure t
   :mode "\\(?:\\.z\\(?:ig\\|on\\)\\)\\'"
-  :hook
-  (zig-ts-mode-hook . eglot-ensure))
+  :hook (zig-ts-mode-hook . eglot-ensure))
 #+end_src
 *** Version Control System
 :PROPERTIES:
