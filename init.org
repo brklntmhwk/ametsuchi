@@ -1340,11 +1340,10 @@ Xref integration for Consult
 #+begin_src emacs-lisp
 (use-package consult-xref
   :after xref
-  :functions
-  (consult-xref)
+  :functions consult-xref
   :init
-  (setq xref-show-xrefs-function #'consult-xref)
-  (setq xref-show-definitions-function #'consult-xref))
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 #+end_src
 **** corfu
 #+begin_quote
@@ -2687,6 +2686,7 @@ Jump to definition for 50+ languages without configuration
   :ensure t
   :custom
   (dumb-jump-selector 'completing-read)
+  (dumb-jump-prefer-searcher 'rg)
   :hook
   (xref-backend-functions . dumb-jump-xref-activate))
 #+end_src
@@ -2696,7 +2696,6 @@ The Emacs Client for LSP servers
 #+end_quote
 #+begin_src emacs-lisp
 (use-package eglot
-  :defer 3
   :custom
   (eglot-autoshutdown t)
   (eglot-code-action-indications nil)
@@ -2723,15 +2722,7 @@ The Emacs Client for LSP servers
   (dolist (entry '((just-mode . ("just-lsp"))
                    ((nix-ts-mode nix-mode) . ("nil"))
                    (zig-ts-mode . ("zls"))))
-    (cl-pushnew entry eglot-server-programs :test #'equal))
-
-  (defun brk/eglot-xref-read-id-ad (orig-fn backend)
-    "Replace Eglot's dummy string with the real symbol at point for fallback backends."
-    (let ((id (funcall orig-fn backend)))
-      (if (string= id "LSP identifier at point")
-          (or (thing-at-point 'symbol t) id)
-        id)))
-  (advice-add 'xref-backend-identifier-at-point :around #'brk/eglot-xref-read-id-ad))
+    (cl-pushnew entry eglot-server-programs :test #'equal)))
 #+end_src
 ***** eglot-booster
 #+begin_quote
